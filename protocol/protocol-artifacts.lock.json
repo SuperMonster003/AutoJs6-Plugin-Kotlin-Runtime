@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "status": "worktree-snapshot",
+  "sourceRepository": "AutoJs6",
+  "sourceRevision": "b7c76e726cd4ebb498f987f12ce4b5bb70aa7db8",
+  "sourceDirty": true,
+  "snapshotDate": "2026-08-22",
+  "artifacts": [
+    {
+      "file": "common-plugin-api.aar",
+      "sourceModule": ":plugin-api:common-plugin-api",
+      "sha256": "d745bb24d6a6995e68ebea27d592faec162f0bad4f9bf70cb038a480ad8c6df2"
+    },
+    {
+      "file": "protocol-wire-api.aar",
+      "sourceModule": ":plugin-api:protocol-wire-api",
+      "sha256": "6c597ec095852eac7e6277574191141100dc96b6c5a803725ed540f42aa7d871"
+    },
+    {
+      "file": "jvm-source-api.aar",
+      "sourceModule": ":plugin-api:jvm-source-api",
+      "sha256": "87615dc0d7f678e13d6823fd1d4ad226dc5f04a2599ae93700882577d7bb7e2e"
+    }
+  ]
+}

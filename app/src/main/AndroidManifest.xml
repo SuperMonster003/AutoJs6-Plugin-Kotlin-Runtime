@@ -1,0 +1,66 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <queries>
+        <package android:name="org.autojs.autojs6" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:hasCode="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:usesCleartextTraffic="false">
+
+        <meta-data
+            android:name="org.autojs.plugin.info.AUTHOR"
+            android:value="@string/plugin_author" />
+
+        <service
+            android:name="org.autojs.plugin.jvmsource.kotlin.service.JavaPluginInfoService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN"
+            android:process=":compiler">
+
+            <intent-filter>
+                <action android:name="org.autojs.plugin.INFO" />
+            <category android:name="kotlin-runtime" />
+            </intent-filter>
+
+            <meta-data
+                android:name="requiresHostVersion"
+                android:value="@string/plugin_requires_host_version" />
+        </service>
+
+        <service
+            android:name="org.autojs.plugin.jvmsource.kotlin.service.JavaSourceCompilerService"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN"
+            android:process=":compiler">
+
+            <intent-filter>
+                <action android:name="org.autojs.plugin.JVM_SOURCE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="org.autojs.plugin.JVM_SOURCE_LANGUAGE"
+                android:value="kotlin" />
+
+            <meta-data
+                android:name="requiresHostVersion"
+                android:value="@string/plugin_requires_host_version" />
+        </service>
+
+        <service
+            android:name="org.autojs.plugin.jvmsource.kotlin.worker.JavaExecutionWorkerService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":worker"
+            android:stopWithTask="true" />
+
+    </application>
+</manifest>

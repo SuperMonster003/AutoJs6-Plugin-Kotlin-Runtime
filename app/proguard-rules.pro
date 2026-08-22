@@ -1,0 +1,6 @@
+-keep class org.jetbrains.kotlin.cli.** { *; }
+-keep class org.jetbrains.kotlin.com.intellij.** { *; }
+-keep class com.android.tools.r8.** { *; }
+-keep class org.autojs.plugin.jvmsource.api.** { *; }
+-keep class org.autojs.plugin.jvmsource.kotlin.worker.** { *; }
+-keepattributes Exceptions,InnerClasses,EnclosingMethod,Signature,*Annotation*

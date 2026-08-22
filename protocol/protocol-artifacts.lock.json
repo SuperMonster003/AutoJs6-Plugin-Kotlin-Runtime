@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "status": "worktree-snapshot",
+  "status": "host-clean-snapshot",
   "sourceRepository": "AutoJs6",
-  "sourceRevision": "b7c76e726cd4ebb498f987f12ce4b5bb70aa7db8",
-  "sourceDirty": true,
+  "sourceRevision": "d21c69a2523a529ce6e2cd5d7dc3ced49cbaf74d",
+  "sourceDirty": false,
   "snapshotDate": "2026-08-22",
   "artifacts": [
     {
@@ -14,7 +14,7 @@
     {
       "file": "protocol-wire-api.aar",
       "sourceModule": ":plugin-api:protocol-wire-api",
-      "sha256": "6c597ec095852eac7e6277574191141100dc96b6c5a803725ed540f42aa7d871"
+      "sha256": "a850d2d649638e9131b68a0a3806c950e6be8aa0fa5c5f1e7a575c9260ebf202"
     },
     {
       "file": "jvm-source-api.aar",

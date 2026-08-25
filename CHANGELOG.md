@@ -7,6 +7,45 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with milestone s
 
 ## [Unreleased]
 
+## [0.4.0-m7] - 2026-08-25
+
+### Added
+
+- Added a same-signer Android M7 harness that drives Protocol 1.1 through the real AutoJs6 process
+  for five-pair cold/warm benchmarks, 50-session release/debug stress runs, resource snapshots, and
+  four contract-level fault injections.
+- Added PowerShell and POSIX-shell one-command device runners that build offline, install the
+  release/debug variants in sequence, capture structured evidence, verify process retirement, and
+  restore the signed release APK.
+- Added reproducible APK-size, compile-latency, compiler-lifecycle, and stress/fault evidence under
+  `docs/perf/` and `docs/decisions/`, plus exact telemetry regression vectors for benchmark and
+  stress source sequences.
+- Extended CI to assemble and Lint the M7 harness alongside the existing application gates.
+
+### Changed
+
+- Replaced the embedded full API 24 platform archive with a deterministic class-only compiler
+  classpath, reducing the release APK from 45.34 MB to 30.38 MB (32.99%) without changing the
+  compile/runtime contract.
+- Moved metadata discovery to a dedicated `:discovery` process and made the compiler process
+  binding-scoped: Kotlin application state is disposed after each invocation and the dedicated
+  `:compiler` process retires on final unbind or after the existing critical-session grace period.
+- Centralized the shared AndroidX instrumentation dependencies in the version catalog and removed
+  the now-obsolete Lint baseline entry; both the app and M7 harness report zero new issues.
+- Advanced the package to `0.4.0-m7` / build 4.
+
+### Fixed
+
+- Prevented repeated cache-disabled compiler invocations from retaining Kotlin compiler application
+  state across host binding epochs; the final 50-session resource audit kept workspaces at zero,
+  file descriptors stable, and total PSS growth within the documented budget.
+
+### Security
+
+- Kept R8 and resource shrinking disabled after compatibility evaluation showed that the embedded
+  compiler would require broad missing-JDK suppressions. Debug-only kill/snapshot receivers are
+  signature-protected and excluded from the release manifest.
+
 ## [0.3.0-m6] - 2026-08-25
 
 ### Added

@@ -144,15 +144,4 @@
             column="24"/>
     </issue>
 
-    <issue
-        id="UseTomlInstead"
-        message="Use version catalog instead"
-        errorLine1="    androidTestImplementation(&quot;androidx.test:runner:1.7.0&quot;)"
-        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="build.gradle.kts"
-            line="262"
-            column="31"/>
-    </issue>
-
 </issues>

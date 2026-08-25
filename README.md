@@ -50,7 +50,7 @@ The companion [cancellation sample](samples/m6-cancellation.kt) and AutoJs6-side
 
 ## Versioning
 
-`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.3.0-m6`), while
+`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.4.0-m7`), while
 `VERSION_BUILD` is a positive, monotonically increasing Android package version. Release metadata
 declares engine `jvm-source`, provider ID `kotlin-jvm`, variant `kotlin-jvm-d8`, Protocol 1.1, and
 required host version code 5276 for schema-v2 official-index generation.
@@ -66,9 +66,8 @@ Release/debug APKs must be signed with the same certificate as AutoJs6. Local si
 expected at the ignored files `sign.properties` and `app/sm003.jks`.
 
 ```powershell
-.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease --offline
-.\gradlew.bat :app:assembleDebugAndroidTest --offline
-.\gradlew.bat :app:lintDebug --offline
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest --offline
+.\gradlew.bat :app:lintDebug :m7-harness:assembleDebug :m7-harness:lintDebug --offline
 .\gradlew.bat :app:verifyPinnedInputs :app:verifyPinnedInputsFailurePath :app:verifyPinnedInputsWiring --offline
 ```
 
@@ -86,14 +85,42 @@ exact-component selection for each language.
 GitHub Actions uses a short-lived, generated certificate for its debug artifact. That APK is useful
 for build inspection only and cannot replace the host-aligned APK required for AutoJs6 integration.
 
+## M7 performance and stability baseline
+
+On the designated Sony XQ-AT72 / Android 12 device, five identical cache-cold compilations had a
+577 ms median and five authenticated cache hits had a 46 ms median (about 12.5x faster). Median
+execution time was 30 ms in both groups. The corresponding telemetry was exactly 5 hits, 5 misses,
+5 publications, and 0 failures. A separate 50-session release mix reported 44 hits, 6 misses,
+1 publication, and 0 cache failures, matching the requested source sequence.
+
+The signed M7 release APK is 30.38 MB, down 32.99% from the M6 45.34 MB baseline and below the
+40 MB release budget. R8/resource shrinking remain disabled after an explicit compatibility
+evaluation; the safe reduction comes from embedding a deterministic class-only API 24 compiler
+classpath instead of the full platform archive.
+
+The compiler is retained only for one host binding epoch so warm cache hits remain fast. Kotlin's
+application environment is disposed after every invocation, and the dedicated `:compiler` process
+retires on final unbind. Plugin metadata lives in `:discovery`, while every execution still gets a
+fresh single-use `:worker` process. See the
+[size baseline](docs/perf/size-baseline.md),
+[latency benchmark](docs/perf/compile-latency.md),
+[compiler lifecycle decision](docs/decisions/compiler-lifecycle.md), and
+[stress/fault record](docs/perf/stress-and-faults.md) for measurements and reproduction commands.
+
+Run the complete device suite against a connected, host-aligned test device with:
+
+```powershell
+.\scripts\stress\run-m7-device.ps1 -Serial <adb-serial>
+```
+
 See [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), and the
 [release checklist](docs/RELEASE_CHECKLIST.md) for milestone status and release gates.
 
 ## Discovery
 
-The APK provides two signature-protected services:
+The APK provides two signature-protected services in separate auxiliary processes:
 
-- `org.autojs.plugin.INFO` for Plugin Center metadata;
-- `org.autojs.plugin.JVM_SOURCE` for compilation/execution sessions.
+- `org.autojs.plugin.INFO` for Plugin Center metadata in `:discovery`;
+- `org.autojs.plugin.JVM_SOURCE` for compilation/execution sessions in `:compiler`.
 
 AutoJs6 discovers both by action. It does not depend on this plugin's package name.

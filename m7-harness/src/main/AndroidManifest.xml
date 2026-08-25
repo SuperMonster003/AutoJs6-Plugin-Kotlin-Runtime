@@ -1,0 +1,25 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="org.autojs.permission.PLUGIN" />
+
+    <queries>
+        <package android:name="io.github.supermonster003.autojs6.plugin.kotlin.runtime" />
+    </queries>
+
+    <!-- Test-only instrumentation package: it has no launcher surface or persistent user data. -->
+    <application
+        android:allowBackup="false"
+        android:hasCode="true"
+        android:label="M7 JVM Source Harness"
+        android:testOnly="true"
+        tools:ignore="DataExtractionRules,MissingApplicationIcon" />
+
+    <instrumentation
+        android:name="androidx.test.runner.AndroidJUnitRunner"
+        android:functionalTest="true"
+        android:handleProfiling="false"
+        android:label="M7 JVM Source Harness"
+        android:targetPackage="org.autojs.autojs6" />
+
+</manifest>

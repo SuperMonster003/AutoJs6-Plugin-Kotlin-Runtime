@@ -34,3 +34,4 @@ dependencyResolutionManagement {
 }
 
 include(":app")
+include(":m7-harness")

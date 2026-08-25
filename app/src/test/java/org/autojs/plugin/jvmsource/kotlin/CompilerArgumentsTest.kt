@@ -142,6 +142,66 @@ class CompilerArgumentsTest {
     }
 
     @Test
+    fun compilerRuntimeIsRetiredAfterSuccessAndInvokerFailure() {
+        val root = temporaryFolder.newFolder("compiler runtime retirement")
+        val classpath = CompilerClasspath(
+            root.resolve("android.jar"),
+            root.resolve("entry-api.jar"),
+            root.resolve("kotlin-stdlib.jar"),
+            identities = emptyList(),
+            fingerprint = JvmSha256.digest(byteArrayOf(6)),
+        )
+        var retirements = 0
+        val retire = KotlinCompilerRuntimeRetirer { retirements += 1 }
+        val successful = KotlinJvmCompiler(
+            classpath = classpath,
+            runtimeRetirer = retire,
+            invoker = KotlinCompilerInvoker { _, _, _ ->
+                org.jetbrains.kotlin.cli.common.ExitCode.OK
+            },
+        ).compile(root.resolve("Success.kt"), root.resolve("success-classes")) {}
+        val failed = KotlinJvmCompiler(
+            classpath = classpath,
+            runtimeRetirer = retire,
+            invoker = KotlinCompilerInvoker { _, _, _ ->
+                throw IllegalStateException("private compiler failure")
+            },
+        ).compile(root.resolve("Failure.kt"), root.resolve("failure-classes")) {}
+
+        assertTrue(successful.succeeded)
+        assertFalse(failed.succeeded)
+        assertEquals(2, retirements)
+    }
+
+    @Test
+    fun compilerRuntimeRetirementFailureFailsClosedWithStableDiagnostic() {
+        val root = temporaryFolder.newFolder("compiler retirement failure")
+        val compiler = KotlinJvmCompiler(
+            classpath = CompilerClasspath(
+                root.resolve("android.jar"),
+                root.resolve("entry-api.jar"),
+                root.resolve("kotlin-stdlib.jar"),
+                identities = emptyList(),
+                fingerprint = JvmSha256.digest(byteArrayOf(7)),
+            ),
+            runtimeRetirer = KotlinCompilerRuntimeRetirer {
+                throw IllegalStateException("private runtime retirement state")
+            },
+            invoker = KotlinCompilerInvoker { _, _, _ ->
+                org.jetbrains.kotlin.cli.common.ExitCode.OK
+            },
+        )
+
+        val result = compiler.compile(
+            root.resolve("Main.kt"),
+            root.resolve("classes"),
+        ) {}
+
+        assertFalse(result.succeeded)
+        assertEquals("Kotlin compiler failed before source analysis", result.diagnostics.single().message)
+    }
+
+    @Test
     fun d8UsesOnlyControlledLibrariesAndKeepsEveryPathAsOneArgument() {
         val root = temporaryFolder.newFolder("d8 path with spaces")
         val androidJar = root.resolve("android --lib.jar")

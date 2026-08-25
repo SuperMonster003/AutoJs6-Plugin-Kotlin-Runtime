@@ -6,7 +6,9 @@ import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSourceLocation
 import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
+import org.jetbrains.kotlin.cli.jvm.compiler.KotlinCoreEnvironment
 import org.jetbrains.kotlin.config.Services
+import org.jetbrains.kotlin.K1Deprecation
 import org.autojs.plugin.jvmsource.api.JvmDiagnosticSeverity
 import java.io.File
 
@@ -31,10 +33,19 @@ internal fun interface KotlinCompilerInvoker {
     ): ExitCode
 }
 
+internal fun interface KotlinCompilerRuntimeRetirer {
+    fun retire()
+}
+
 private val embeddedKotlinCompilerInvoker = KotlinCompilerInvoker { collector, services, arguments ->
     K2JVMCompiler().apply {
         isReadingSettingsFromEnvironmentAllowed = false
     }.exec(collector, services, arguments)
+}
+
+@OptIn(K1Deprecation::class)
+private val embeddedKotlinCompilerRuntimeRetirer = KotlinCompilerRuntimeRetirer {
+    KotlinCoreEnvironment.disposeApplicationEnvironment()
 }
 
 internal object KotlinCompilerFailureDiagnostic {
@@ -56,6 +67,7 @@ internal object KotlinCompilerDiagnosticPolicy {
 
 internal class KotlinJvmCompiler(
     private val classpath: CompilerClasspath,
+    private val runtimeRetirer: KotlinCompilerRuntimeRetirer = embeddedKotlinCompilerRuntimeRetirer,
     private val invoker: KotlinCompilerInvoker = embeddedKotlinCompilerInvoker,
 ) {
     fun compile(
@@ -65,7 +77,7 @@ internal class KotlinJvmCompiler(
     ): KotlinCompilationResult {
         val collector = CollectingMessageCollector()
         ensureActive()
-        val exitCode = try {
+        var exitCode = try {
             invoker.exec(
                 collector,
                 Services.EMPTY,
@@ -78,6 +90,14 @@ internal class KotlinJvmCompiler(
                 null,
             )
             ExitCode.INTERNAL_ERROR
+        }
+        runCatching(runtimeRetirer::retire).exceptionOrNull()?.let { error ->
+            collector.report(
+                CompilerMessageSeverity.ERROR,
+                KotlinCompilerFailureDiagnostic.message(error),
+                null,
+            )
+            exitCode = ExitCode.INTERNAL_ERROR
         }
         ensureActive()
         return KotlinCompilationResult(

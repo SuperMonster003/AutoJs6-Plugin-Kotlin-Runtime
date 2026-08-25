@@ -1,8 +1,9 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前候选版本: `0.3.0-m6` (VERSION_BUILD 3) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前候选版本: `0.4.0-m7` (VERSION_BUILD 4) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
 >
-> 基线验证 (2026-08-25): `:app:testDebugUnitTest --offline` 全绿; debug APK 54.1 MB / release APK 45.3 MB。
+> M7 候选验证 (2026-08-25): release APK 30.38 MB（较 M6 降 32.99%）；真机冷编译/
+> 缓存命中中位数 577/46 ms（约 12.5x）；release/debug 各 50 会话压测及四类故障注入全绿。
 >
 > M6 已完成 (2026-08-25): 119 个单测、离线双 APK 与 Android test APK、严格 Lint、
 > 协议正常/损坏/连线三门禁、platform-versions 1.4.1 源码快照测试及 `v0.3.0-m6`
@@ -23,7 +24,7 @@
 
 **因此，继续精进的空间不在"补功能"，而在五个方向：**
 1. **工程化维护** — M6 已落地 build-logic、CI、CHANGELOG、发布清单与 Lint 基线，后续按同一门禁持续维护;
-2. **体积与性能** — release 45 MB（编译器 DEX 占大头）、minify 关闭、编译时延无基准数据;
+2. **体积与性能** — M7 已把 release 降至 30.38 MB，建立冷/热基准、遥测与 50 会话资源门禁;
 3. **语言与诊断体验** — 仅 ASCII 包名、入口固定 `Main`、诊断中文可读性未走查、jvmTarget 钉在 1.8;
 4. **受控运行库扩展** — worker 运行库仅 `android.jar + entry-api + kotlin-stdlib`，脚本不可用协程/反射;
 5. **协议 1.2 协同** — 新能力（剪贴板/存储/HTTP 等）需与宿主联动演进，本仓库需演练协议刷新流程。
@@ -31,7 +32,7 @@
 ## 二、验证约定（网络受限环境）
 
 - 本地验证**一律默认 `--offline`**，标准命令:
-  `.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease --offline`
+  `.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :m7-harness:assembleDebug --offline`
 - 需要联网的条目显式标注 **[需联网]**，集中在单一时间窗口执行（一次 `--refresh-dependencies` 拉全，之后回到离线）; 遇 Cloudflare 502/524/529 仅重试该窗口，不阻塞其他条目。
 - GitHub Actions 属云端网络，不受本地网络约束，视为离线条目。
 
@@ -77,22 +78,22 @@
 ## M7 — 体积与性能（`0.4.0-m7`）
 
 ### 7.1 APK 体积
-- [ ] 固化基线数据入 `docs/perf/size-baseline.md`: debug 54.1 MB / release 45.3 MB（2026-08-25），并用 `apkanalyzer` 拆解 top-10 占比（预期 kotlin-compiler DEX 为大头）
-- [ ] 开启 `isShrinkResources` 并验证功能无回归（离线三连 + 设备冒烟）
-- [ ] 评估 release 开启 R8（compat 模式 + 现有宽 keep 规则）: 可行则量化收益，不可行（编译器反射/ServiceLoader 破坏）则记录结论与证据后关闭该项
-- [ ] 设定并记录体积预算（建议 release ≤ 40 MB，或明确记录"编译器体积不可再压"结论）
+- [x] 固化 M6/M7 debug 与 release 基线及 `apkanalyzer` top-10 到 [`docs/perf/size-baseline.md`](docs/perf/size-baseline.md)：release 从 45,339,694 B 降至 30,383,822 B（-32.99%）
+- [x] 评估 `isShrinkResources`：该项要求同时启用 R8；因 R8 兼容性门未通过，保持关闭并记录可复现证据，不以牺牲编译器完整性换体积
+- [x] 实测 R8 compat：`minifyReleaseWithR8` 产生 144 条覆盖缺失完整 JDK/编译器可选接口的 `-dontwarn` 建议；判定宽泛抑制不可接受，恢复 `isMinifyEnabled=false` / `isShrinkResources=false`
+- [x] 设定 release ≤ 40 MB 预算；确定性 class-only API 24 编译类路径使当前 30.38 MB 候选留有约 9.62 MB 余量
 
 ### 7.2 编译时延与缓存效果
-- [ ] 新增基准样例脚本与记录表 `docs/perf/compile-latency.md`: 同一源码冷编译/缓存命中各 5 次取中位数（数据来源 `JvmSourceResult.compilationElapsedMillis` / `executionElapsedMillis`）
-- [ ] 核对 `CompilationCacheTelemetry` 命中/未命中计数与实际行为一致，并把典型值写入 README
-- [ ] 产出决策记录: 编译器进程保活/预热 与 `CompilerProcessMemoryIsolationPolicy` 内存回收的权衡（保持现状也算完成，需写明理由）
+- [x] 新增同一源码冷编译/缓存命中各 5 次的真机基准与记录表 [`docs/perf/compile-latency.md`](docs/perf/compile-latency.md)：编译中位数 577/46 ms，执行中位数均为 30 ms
+- [x] 核对 `CompilationCacheTelemetry`：基准 5/5/5/0、release 混压 44/6/1/0 均与请求序列完全一致，并把典型值写入 README 与精确单测
+- [x] 产出 [`docs/decisions/compiler-lifecycle.md`](docs/decisions/compiler-lifecycle.md)：保留同一 host binding epoch 内的热缓存，逐次 dispose Kotlin 环境，final unbind 退休专用 `:compiler`；INFO 服务隔离到 `:discovery`
 
 ### 7.3 稳定性压测（设备端）
-- [ ] 连环 50 次会话（编译+执行+中途取消混合）: worker 进程按代退休、`PrivateSessionWorkspace` 无残留、无 fd/内存泄漏
-- [ ] 故障注入四件套全部按契约错误码/阶段返回: 超大源码（> `MAX_SOURCE_BYTES`）、编译死循环超时、执行死循环超时+强杀、worker 进程被外部 kill
-- [ ] 上述压测脚本入库 `scripts/stress/`（adb + shell，可离线执行）
+- [x] 连环 50 次混合会话全绿：release 40 成功/5 编译失败/5 取消、40 个不同 worker PID 且代数递增；debug 资源审计 workspace 始终 0、FD 79→78、PSS 增长 32,834,560 B（预算 ≤64 MiB）
+- [x] 故障注入四件套均返回契约错误码/阶段：`SOURCE_TOO_LARGE / INPUT`、`TIMEOUT / COMPILATION`、`TIMEOUT / EXECUTION`、`WORKER_DIED / EXECUTION`
+- [x] 压测 harness 与 [`scripts/stress/`](scripts/stress/) 入库，PowerShell 一键链路已在 `QV710AF65F` 实跑并恢复 release；完整证据见 [`docs/perf/stress-and-faults.md`](docs/perf/stress-and-faults.md)
 
-**M7 完成判据**: 基线与预算文档就位、缓存遥测数据可信、压测四件套全绿。
+**M7 完成判据**: ✅ 已满足（2026-08-25）。体积基线/预算和 R8 决策有据可复现；缓存遥测与真机五对基准一致；release/debug 50 会话、资源预算、四类故障注入及进程退休全部通过。
 
 ---
 

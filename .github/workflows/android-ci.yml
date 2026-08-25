@@ -128,13 +128,15 @@ jobs:
             'keyAlias=ci' \
             'keyPassword=android' > sign.properties
 
-      - name: Run unit tests, assemble debug and Android test APKs, and enforce Lint
+      - name: Run unit tests, assemble debug and harness APKs, and enforce Lint
         run: >-
           bash scripts/ci/retry.sh bash gradlew
           :app:testDebugUnitTest
           :app:assembleDebug
           :app:assembleDebugAndroidTest
           :app:lintDebug
+          :m7-harness:assembleDebug
+          :m7-harness:lintDebug
           --no-daemon
           --stacktrace
 
@@ -147,6 +149,7 @@ jobs:
             app/build/test-results/testDebugUnitTest/
             app/build/reports/tests/testDebugUnitTest/
             app/build/reports/lint-results-debug.*
+            m7-harness/build/reports/lint-results-debug.*
           if-no-files-found: warn
           retention-days: 14
 

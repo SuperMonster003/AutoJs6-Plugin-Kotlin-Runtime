@@ -113,8 +113,9 @@ Run the complete device suite against a connected, host-aligned test device with
 .\scripts\stress\run-m7-device.ps1 -Serial <adb-serial>
 ```
 
-See [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), and the
-[release checklist](docs/RELEASE_CHECKLIST.md) for milestone status and release gates.
+See [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), the
+[release checklist](docs/RELEASE_CHECKLIST.md), and the
+[0.4.0-m7 verification record](docs/releases/0.4.0-m7.md) for milestone status and release gates.
 
 ## Discovery
 

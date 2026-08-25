@@ -1,9 +1,10 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前候选版本: `0.4.0-m7` (VERSION_BUILD 4) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前发布版本: `0.4.0-m7` (VERSION_BUILD 4) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
 >
-> M7 候选验证 (2026-08-25): release APK 30.38 MB（较 M6 降 32.99%）；真机冷编译/
-> 缓存命中中位数 577/46 ms（约 12.5x）；release/debug 各 50 会话压测及四类故障注入全绿。
+> M7 已完成 (2026-08-25): release APK 30.38 MB（较 M6 降 32.99%）；真机冷编译/
+> 缓存命中中位数 577/46 ms（约 12.5x）；release/debug 各 50 会话及四类故障注入全绿；
+> 124 个单测、双 Lint、Protocol 三门禁、Private CI、`v0.4.0-m7` 标签归档隔离重建均通过。
 >
 > M6 已完成 (2026-08-25): 119 个单测、离线双 APK 与 Android test APK、严格 Lint、
 > 协议正常/损坏/连线三门禁、platform-versions 1.4.1 源码快照测试及 `v0.3.0-m6`
@@ -92,8 +93,9 @@
 - [x] 连环 50 次混合会话全绿：release 40 成功/5 编译失败/5 取消、40 个不同 worker PID 且代数递增；debug 资源审计 workspace 始终 0、FD 79→78、PSS 增长 32,834,560 B（预算 ≤64 MiB）
 - [x] 故障注入四件套均返回契约错误码/阶段：`SOURCE_TOO_LARGE / INPUT`、`TIMEOUT / COMPILATION`、`TIMEOUT / EXECUTION`、`WORKER_DIED / EXECUTION`
 - [x] 压测 harness 与 [`scripts/stress/`](scripts/stress/) 入库，PowerShell 一键链路已在 `QV710AF65F` 实跑并恢复 release；完整证据见 [`docs/perf/stress-and-faults.md`](docs/perf/stress-and-faults.md)
+- [x] release commit `acc27d4`、annotated tag `v0.4.0-m7`（tag object `e4d161b`）、Private CI [`32822203503`](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/actions/runs/32822203503) 与标签归档独立离线重建全绿；发布证据见 [`docs/releases/0.4.0-m7.md`](docs/releases/0.4.0-m7.md)
 
-**M7 完成判据**: ✅ 已满足（2026-08-25）。体积基线/预算和 R8 决策有据可复现；缓存遥测与真机五对基准一致；release/debug 50 会话、资源预算、四类故障注入及进程退休全部通过。
+**M7 完成判据**: ✅ 已满足（2026-08-25）。体积基线/预算和 R8 决策有据可复现；缓存遥测与真机五对基准一致；release/debug 50 会话、资源预算、四类故障注入及进程退休全部通过；Private CI、annotated tag 与标签源码归档复验闭环完成。
 
 ---
 

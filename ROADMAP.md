@@ -2,9 +2,9 @@
 
 > 当前发布版本: `0.5.0-m8` (VERSION_BUILD 5) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
 >
-> M8 已完成功能与本地发布门禁 (2026-08-25): 三份源码/工具链决策、四类双语错误样例、
-> 141 个单测、双 Lint、Protocol 三门禁及指定真机 Binder 诊断用例 1/1 全绿；BOM 首行
-> 定位、Unicode 截断、4 MiB 边界与替代入口均有可执行证据。
+> M8 已完成 (2026-08-26): 三份源码/工具链决策、四类双语错误样例、141 个单测、
+> 双 Lint、Protocol 三门禁及指定真机 Binder 诊断用例 1/1 全绿；Private CI、
+> `v0.5.0-m8` annotated tag 与标签归档隔离重建也已闭环。
 >
 > M7 已完成 (2026-08-25): release APK 30.38 MB（较 M6 降 32.99%）；真机冷编译/
 > 缓存命中中位数 577/46 ms（约 12.5x）；release/debug 各 50 会话及四类故障注入全绿；
@@ -121,7 +121,13 @@
 - [x] `jvmTarget 1.8 → 11/17` 调研完成：M8 保持 1.8，明确 class major、D8、API 26/31 真机、缓存身份与完整发布门禁后才可升级，见 [`docs/decisions/jvm-target.md`](docs/decisions/jvm-target.md)
 - [x] Kotlin 2.3.x → 后续升级 SOP 完成：当前保持 2.3.21；每次升级必须依次通过形状锁定 patch → runtime verify → 离线/归档/真机全测，见 [`docs/decisions/kotlin-compiler-upgrade.md`](docs/decisions/kotlin-compiler-upgrade.md)
 
-**M8 完成判据**: ✅ 已满足（2026-08-25）。三份决策记录和四类双语错误 fixture 就位；141/141 单测、冻结协议、双 APK、Android-test、双 Lint 离线门禁全绿；`QV710AF65F` release Binder 用例 1/1 通过并确认三个辅助进程全部退休。
+### 8.4 私有发布闭环
+
+- [x] release commit `7f42864`、annotated tag `v0.5.0-m8`（tag object `d402147`）及 peeled commit 已在 Private remote 双向核验
+- [x] Private CI [`32867662740`](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/actions/runs/32867662740) 双 job 全绿；标签源码归档在隔离目录完成 7-task platform 测试与 193-task 离线重建，141/141 单测及双 Lint 再次通过
+- [x] canonical release APK、同签名、设备回拉哈希、Binder 五场景、进程退休与私有发布边界均固化在 [`docs/releases/0.5.0-m8.md`](docs/releases/0.5.0-m8.md)
+
+**M8 完成判据**: ✅ 已满足（2026-08-26）。三份决策记录和四类双语错误 fixture 就位；141/141 单测、冻结协议、双 APK、Android-test、双 Lint 离线门禁全绿；`QV710AF65F` release Binder 用例 1/1 通过并确认三个辅助进程全部退休；Private CI、annotated tag、标签源码归档与发布证据记录闭环完成。
 
 ---
 

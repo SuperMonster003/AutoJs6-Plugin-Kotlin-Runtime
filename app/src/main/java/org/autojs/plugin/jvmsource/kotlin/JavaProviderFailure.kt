@@ -8,4 +8,6 @@ internal class JavaProviderFailure(
     val phase: JvmSourceFailurePhase,
     message: String,
     cause: Throwable? = null,
+    /** Stable, pre-sanitized text that may cross the provider boundary. */
+    val publicMessage: String? = null,
 ) : Exception(message, cause)

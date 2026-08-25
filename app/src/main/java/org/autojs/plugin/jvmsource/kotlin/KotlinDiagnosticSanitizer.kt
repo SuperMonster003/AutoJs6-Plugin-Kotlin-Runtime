@@ -51,7 +51,8 @@ internal object KotlinDiagnosticSanitizer {
                 .ifBlank { fallback(value.severity) }
         }
         val locatedInSource = value.sourcePath?.let { reported ->
-            pathVariants(sourceFile).any { it == reported }
+            pathVariants(sourceFile).any { it == reported } ||
+                runCatching { File(reported).canonicalFile == sourceFile.canonicalFile }.getOrDefault(false)
         } == true
         val line = value.line?.takeIf { locatedInSource && it in 1..MAX_SOURCE_POSITION }
         val column = value.column?.takeIf { line != null && it in 1..MAX_SOURCE_POSITION }

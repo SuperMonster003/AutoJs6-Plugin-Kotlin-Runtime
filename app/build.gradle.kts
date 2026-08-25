@@ -887,10 +887,13 @@ tasks.matching { task ->
 
 tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
     dependsOn(prepareJvmSourceCompilerClasspath)
+    val errorSamples = rootProject.file("samples/errors")
+    inputs.dir(errorSamples)
     systemProperty(
         "autojs.kotlin.compilerClasspathRoot",
         generatedCompilerClasspathAssets.get().asFile.resolve("compiler-classpath").absolutePath,
     )
+    systemProperty("autojs.kotlin.errorSamplesRoot", errorSamples.absolutePath)
 }
 
 versions.handleIfNeeded(project, "", listOf("debug", "release"))

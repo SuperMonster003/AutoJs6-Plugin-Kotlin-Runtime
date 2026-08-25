@@ -58,6 +58,8 @@ internal data class M7SessionOutcome(
 )
 
 internal data class M7RequestProfile(
+    val sourceFileName: String = "Main.kt",
+    val entryClassName: String = "Main",
     val timeoutMillis: Long = JvmSourceContract.DEFAULT_TIMEOUT_MILLIS,
     val declaredSourceSizeBytes: Long? = null,
     val declaredSourceSha256: JvmSha256? = null,
@@ -148,11 +150,11 @@ internal class M7ProviderClient(private val context: Context) : Closeable {
                 JvmSourceContract.PROTOCOL_MINOR,
             ),
             language = JvmSourceLanguage.KOTLIN,
-            sourceFileName = "Main.kt",
+            sourceFileName = profile.sourceFileName,
             sourceSizeBytes = profile.declaredSourceSizeBytes ?: sourceBytes.size.toLong(),
             sourceSha256 = profile.declaredSourceSha256 ?: JvmSha256.digest(sourceBytes),
             expectedToolchainFingerprint = capabilities.toolchainFingerprint,
-            entryClassName = "Main",
+            entryClassName = profile.entryClassName,
             minApi = JvmSourceContract.MIN_ANDROID_API,
             timeoutMillis = profile.timeoutMillis,
             maxStdoutBytes = capabilities.maxStdoutBytes,

@@ -37,6 +37,57 @@ class KotlinDiagnosticSanitizerTest {
     }
 
     @Test
+    fun leadingBomNormalizationKeepsTheFirstLineCompilerCoordinateUnshifted() {
+        val workspace = temporaryFolder.newFolder("provider-bom-root")
+        val source = workspace.resolve("Main.kt")
+        val normalized = KotlinSourcePolicy.decodeAndValidate(
+            "\uFEFFval value: String = 1".toByteArray(Charsets.UTF_8),
+        )
+        source.writeText(normalized)
+
+        val diagnostic = KotlinDiagnosticSanitizer.sanitize(
+            value = RawKotlinDiagnostic(
+                severity = JvmDiagnosticSeverity.ERROR,
+                message = "Initializer type mismatch: expected 'String', actual 'Int'.",
+                sourcePath = source.absolutePath,
+                line = 1,
+                column = 19,
+            ),
+            byteLimit = 1_024,
+            privateFiles = listOf(workspace),
+            sourceFile = source,
+        )
+
+        assertEquals("val value: String = 1", source.readText())
+        assertEquals(1, diagnostic.line)
+        assertEquals(19, diagnostic.column)
+        assertEquals("KOTLIN_ERROR", diagnostic.code)
+    }
+
+    @Test
+    fun canonicalPathEquivalenceKeepsLocationsAcrossSeparatorForms() {
+        val workspace = temporaryFolder.newFolder("provider-separator-root")
+        val source = workspace.resolve("Main.kt").apply { writeText("class Main") }
+        val alternateSeparators = source.absolutePath.replace('\\', '/')
+
+        val diagnostic = KotlinDiagnosticSanitizer.sanitize(
+            value = RawKotlinDiagnostic(
+                severity = JvmDiagnosticSeverity.ERROR,
+                message = "Source diagnostic",
+                sourcePath = alternateSeparators,
+                line = 3,
+                column = 5,
+            ),
+            byteLimit = 1_024,
+            privateFiles = listOf(workspace),
+            sourceFile = source,
+        )
+
+        assertEquals(3, diagnostic.line)
+        assertEquals(5, diagnostic.column)
+    }
+
+    @Test
     fun removesPrivatePathsAndIdentityTokens() {
         val workspace = temporaryFolder.newFolder("provider-sensitive-root")
         val source = workspace.resolve("Main.kt")

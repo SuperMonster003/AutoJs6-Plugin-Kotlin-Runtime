@@ -227,6 +227,70 @@ class M7ProviderHarnessInstrumentedTest {
     }
 
     @Test
+    fun m8SourceShapeAndDiagnosticContract() {
+        M7ProviderClient(context).use { client ->
+            val flexible = completed(
+                client.run(
+                    """
+                        class ScriptEntry : org.autojs.plugin.jvmsource.api.AutoJsJvmEntry {
+                            override fun run(
+                                context: org.autojs.plugin.jvmsource.api.JvmScriptContext,
+                            ): Any = "flexible-entry"
+                        }
+                    """.trimIndent(),
+                    M7RequestProfile(
+                        sourceFileName = "ScriptEntry.kt",
+                        entryClassName = "ScriptEntry",
+                    ),
+                ),
+            )
+            assertEquals("\"flexible-entry\"", flexible.resultJson)
+
+            val bomOutcome = client.run("\uFEFFval value: String = 1")
+            val bomError = failed(bomOutcome)
+            assertEquals(JvmSourceErrorCode.COMPILATION_FAILED, bomError.code)
+            assertEquals(JvmSourceFailurePhase.COMPILATION, bomError.phase)
+            val located = bomOutcome.diagnostics.first { diagnostic ->
+                diagnostic.code == "KOTLIN_ERROR" && diagnostic.line != null
+            }
+            assertEquals("Main.kt", located.sourceFileName)
+            assertEquals(1, located.line)
+            assertEquals(19, located.column)
+            assertTrue(located.message.contains("mismatch", ignoreCase = true))
+
+            val asciiOnly = failed(client.run("package `escaped-name`\nclass Main"))
+            assertEquals(JvmSourceErrorCode.INVALID_REQUEST, asciiOnly.code)
+            assertEquals(JvmSourceFailurePhase.INPUT, asciiOnly.phase)
+            assertEquals(ASCII_PACKAGE_MESSAGE, asciiOnly.message)
+
+            val mismatch = failed(client.run("package sample.actual\nclass Main"))
+            assertEquals(JvmSourceErrorCode.INVALID_REQUEST, mismatch.code)
+            assertEquals(JvmSourceFailurePhase.INPUT, mismatch.phase)
+            assertEquals(PACKAGE_ENTRY_MISMATCH_MESSAGE, mismatch.message)
+
+            val missingEntry = failed(client.run("class Main"))
+            assertEquals(JvmSourceErrorCode.ENTRY_POINT_MISSING, missingEntry.code)
+            assertEquals(JvmSourceFailurePhase.COMPILATION, missingEntry.phase)
+            assertEquals(ENTRY_INTERFACE_MESSAGE, missingEntry.message)
+
+            emit(
+                M8_SOURCE_DIAGNOSTIC_PREFIX,
+                baseEvidence(client)
+                    .put("flexibleEntryResult", flexible.resultJson)
+                    .put("bomDiagnostic", JSONObject()
+                        .put("code", located.code)
+                        .put("sourceFileName", located.sourceFileName)
+                        .put("line", located.line)
+                        .put("column", located.column))
+                    .put("asciiPackageError", asciiOnly.message)
+                    .put("packageMismatchError", mismatch.message)
+                    .put("entryInterfaceError", missingEntry.message)
+                    .put("result", "observed"),
+            )
+        }
+    }
+
+    @Test
     fun compileStarvationTimesOutAtCompilation() {
         M7ProviderClient(context).use { client ->
             val outcome = client.run(
@@ -442,6 +506,7 @@ class M7ProviderHarnessInstrumentedTest {
         const val BENCHMARK_PREFIX = "M7_BENCHMARK_EVIDENCE="
         const val STRESS_PREFIX = "M7_STRESS_EVIDENCE="
         const val FAULT_PREFIX = "M7_FAULT_EVIDENCE="
+        const val M8_SOURCE_DIAGNOSTIC_PREFIX = "M8_SOURCE_DIAGNOSTIC_EVIDENCE="
         const val EXTERNAL_KILL_READY_PREFIX = "M7_EXTERNAL_WORKER_KILL_READY="
         const val DEBUG_WORKER_KILL_ACTION =
             "io.github.supermonster003.autojs6.plugin.kotlin.runtime.debug.KILL_WORKER"
@@ -470,6 +535,13 @@ class M7ProviderHarnessInstrumentedTest {
         const val COMPILE_TIMEOUT_MILLIS = 200L
         const val EXECUTION_TIMEOUT_MILLIS = 2_000L
         const val EXTERNAL_KILL_TIMEOUT_MILLIS = 60_000L
+        const val ASCII_PACKAGE_MESSAGE =
+            "Kotlin package declarations support only ordinary ASCII identifiers; " +
+                "escaped or non-ASCII identifiers are not supported"
+        const val PACKAGE_ENTRY_MISMATCH_MESSAGE =
+            "Kotlin package does not match the requested entry class"
+        const val ENTRY_INTERFACE_MESSAGE =
+            "Requested Kotlin entry class must implement AutoJsJvmEntry"
     }
 
     private data class CompilerResourceSnapshot(

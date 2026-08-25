@@ -44,6 +44,28 @@ class KotlinSourcePolicyTest {
     }
 
     @Test
+    fun acceptsAnAlternativeAsciiEntryNameCarriedByTheProtocolRequest() {
+        val source = """
+            package smoke.flexible
+
+            class ScriptEntry
+        """.trimIndent()
+
+        assertEquals(
+            source,
+            KotlinSourcePolicy.decodeAndValidate(
+                source.toByteArray(),
+                sourceFileName = "ScriptEntry.kt",
+                entryClassName = "smoke.flexible.ScriptEntry",
+            ),
+        )
+        assertEquals(
+            KotlinSourceLayout("ScriptEntry.kt", "smoke.flexible.ScriptEntry"),
+            KotlinSourcePolicy.inspect(source.toByteArray(), "ScriptEntry").layout,
+        )
+    }
+
+    @Test
     fun stripsOnlyInitialUtf8BomAndNormalizesWhitespaceAroundPackageDots() {
         val source = "\uFEFFpackage smoke . m4\nclass Main"
         val inspection = KotlinSourcePolicy.inspect(source.toByteArray())
@@ -54,11 +76,10 @@ class KotlinSourcePolicyTest {
     }
 
     @Test
-    fun rejectsMalformedUtf8NulUnsupportedPackageAndRequestMismatch() {
+    fun rejectsMalformedUtf8NulDuplicatePackagesAndUnterminatedLexicalForms() {
         listOf(
             "class Main\u0000".toByteArray(),
             byteArrayOf(0xc3.toByte(), 0x28),
-            "package `escaped-name`\nclass Main".toByteArray(),
             "package first\npackage second\nclass Main".toByteArray(),
             "/* unterminated".toByteArray(),
         ).forEach { source ->
@@ -66,13 +87,36 @@ class KotlinSourcePolicyTest {
                 KotlinSourcePolicy.decodeAndValidate(source)
             }
         }
-        assertThrows(JavaProviderFailure::class.java) {
+    }
+
+    @Test
+    fun escapedAndNonAsciiPackagesFailWithTheExplicitAsciiOnlyDiagnostic() {
+        listOf(
+            "package `escaped-name`\nclass Main",
+            "package 中文.脚本\nclass Main",
+            "package ordinary.`escaped`\nclass Main",
+        ).forEach { source ->
+            val failure = assertThrows(JavaProviderFailure::class.java) {
+                KotlinSourcePolicy.decodeAndValidate(source.toByteArray())
+            }
+
+            assertEquals(KotlinSourcePolicy.ASCII_PACKAGE_MESSAGE, failure.message)
+            assertEquals(KotlinSourcePolicy.ASCII_PACKAGE_MESSAGE, failure.publicMessage)
+        }
+    }
+
+    @Test
+    fun packageAndRequestedEntryMismatchHasAStablePublicDiagnostic() {
+        val failure = assertThrows(JavaProviderFailure::class.java) {
             KotlinSourcePolicy.decodeAndValidate(
                 "package actual\nclass Main".toByteArray(),
                 sourceFileName = "Main.kt",
                 entryClassName = "claimed.Main",
             )
         }
+
+        assertEquals(KotlinSourcePolicy.PACKAGE_ENTRY_MISMATCH_MESSAGE, failure.message)
+        assertEquals(KotlinSourcePolicy.PACKAGE_ENTRY_MISMATCH_MESSAGE, failure.publicMessage)
     }
 
     @Test

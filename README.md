@@ -15,13 +15,14 @@ the AutoJs6 process.
 - Required AutoJs6 version code: 5276
 - JVM source protocol: 1.1
 - Entry API: 2 (`AutoJsJvmEntry.run(JvmScriptContext)`)
-- Current source shape: one `.kt` file, entry simple name `Main`, optional package/imports
+- Current AutoJs6 host source shape: one `.kt` file normalized to `Main.kt`, entry simple name
+  `Main`, and an optional ordinary ASCII package plus imports
 
 ## Source example
 
 The ready-to-run [M5 capability sample](samples/m5-capabilities.kt) demonstrates the complete first
-capability set. The file name may be arbitrary, but the entry simple name remains `Main` in
-Protocol 1:
+capability set. The editor file name may be arbitrary, but the current AutoJs6 Protocol 1.1 host
+normalizes it to `Main.kt` with entry simple name `Main`:
 
 ```kotlin
 package samples.m5
@@ -48,9 +49,15 @@ session cancellation, while `app().launch` and `toast` cross the explicitly allo
 The companion [cancellation sample](samples/m6-cancellation.kt) and AutoJs6-side
 [stop helper](samples/m6-host-cancel.js) are intended for device stop/worker-retirement smoke tests.
 
+The provider validates the actual `sourceFileName` and fully qualified `entryClassName` request
+fields, so another compliant caller may use a consistent alternative ordinary ASCII simple name.
+Backtick-escaped and non-ASCII package identifiers are rejected explicitly in Protocol 1.1 rather
+than being misdiagnosed as a default-package entry failure. See the
+[source-layout decision](docs/decisions/source-layout.md) for the exact boundary.
+
 ## Versioning
 
-`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.4.0-m7`), while
+`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.5.0-m8`), while
 `VERSION_BUILD` is a positive, monotonically increasing Android package version. Release metadata
 declares engine `jvm-source`, provider ID `kotlin-jvm`, variant `kotlin-jvm-d8`, Protocol 1.1, and
 required host version code 5276 for schema-v2 official-index generation.
@@ -85,6 +92,22 @@ exact-component selection for each language.
 GitHub Actions uses a short-lived, generated certificate for its debug artifact. That APK is useful
 for build inspection only and cannot replace the host-aligned APK required for AutoJs6 integration.
 
+## M8 source and diagnostic contract
+
+M8 keeps Kotlin 2.3.21, D8 8.13.17, and script JVM target 1.8. A higher build JDK does not change the
+validated bytecode contract: class-file major versions above Java 8 remain rejected before D8. The
+[JVM-target decision](docs/decisions/jvm-target.md) records the target-11/17 prerequisites, and the
+[compiler-upgrade SOP](docs/decisions/kotlin-compiler-upgrade.md) makes every future compiler or D8
+change pass the shape-locked patch, runtime verification, full offline/archive suite, and device
+execution gates.
+
+Compiler diagnostics retain actionable K2 text plus a source file, line, and column only when the
+reported path canonicalizes to the private user source. A leading UTF-8 BOM is stripped before
+compilation without shifting the visible first-line coordinate. Complete Protocol diagnostics are
+budgeted in UTF-8 and truncated only at Unicode code-point boundaries. The bilingual
+[intentional error samples](samples/errors/README.md) cover a missing import, type mismatch, missing
+`AutoJsJvmEntry`, and package/request mismatch with their expected failure codes and remedies.
+
 ## M7 performance and stability baseline
 
 On the designated Sony XQ-AT72 / Android 12 device, five identical cache-cold compilations had a
@@ -115,7 +138,8 @@ Run the complete device suite against a connected, host-aligned test device with
 
 See [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), the
 [release checklist](docs/RELEASE_CHECKLIST.md), and the
-[0.4.0-m7 verification record](docs/releases/0.4.0-m7.md) for milestone status and release gates.
+[0.4.0-m7 verification record](docs/releases/0.4.0-m7.md) for the prior milestone baseline and
+release gates.
 
 ## Discovery
 

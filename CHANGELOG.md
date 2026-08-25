@@ -7,6 +7,45 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with milestone s
 
 ## [Unreleased]
 
+## [0.5.0-m8] - 2026-08-25
+
+### Added
+
+- Added executable source-ingress boundaries at exactly 4 MiB and one byte beyond, expanded entry
+  analysis across multiple top-level classes, nested same-name classes, object/interface/abstract
+  shapes, and pinned the current Java 8 class-file ceiling.
+- Added real K2 BOM/line/column snapshots, Chinese and supplementary Unicode diagnostic-budget
+  boundaries, and four bilingual checked-in failure fixtures that are compiled or analyzed by the
+  unit suite.
+- Added accepted decisions for the Protocol 1.1 source layout, retention of JVM target 1.8, and the
+  mandatory Kotlin compiler `patch → verify → full test` upgrade SOP.
+- Extended the same-signer Android harness with an M8 Binder-path case for alternative entry names,
+  BOM diagnostics, ASCII-package rejection, package mismatch, and missing entry-interface messages.
+
+### Changed
+
+- Kept the current AutoJs6 host profile at `Main.kt` / `<ASCII package>.Main`, while explicitly
+  preserving the provider's ability to honor a consistent alternative ASCII source/entry name from
+  Protocol 1.1 request fields.
+- Replaced ambiguous unsupported-package failures with stable, actionable public messages and made
+  Kotlin entry failure text consistently refer to Kotlin rather than Java.
+- Advanced the package to `0.5.0-m8` / build 5 while deliberately retaining Kotlin 2.3.21, D8
+  8.13.17, and script JVM target 1.8.
+
+### Fixed
+
+- Preserved valid K2 source positions when Windows path separators differ between the compiler and
+  provider, while continuing to discard every location that does not canonicalize to the private
+  source file.
+- Verified that complete encoded diagnostics truncate only at Unicode code-point boundaries, never
+  leaving half of an emoji or malformed UTF-8.
+
+### Security
+
+- Allowed only predefined, pre-sanitized source-policy messages to override generic terminal text;
+  arbitrary exceptions, private paths, digests, process identities, and compiler internals remain
+  behind existing redaction and stable fallbacks.
+
 ## [0.4.0-m7] - 2026-08-25
 
 ### Added

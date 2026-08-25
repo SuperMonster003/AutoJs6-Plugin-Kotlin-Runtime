@@ -91,11 +91,17 @@ jobs:
           cache-provider: basic
 
       - name: Install required Android SDK platforms
-        run: >-
-          bash scripts/ci/retry.sh sdkmanager
-          "platforms;android-24"
-          "platforms;android-36"
-          "build-tools;36.0.0"
+        shell: bash
+        run: |
+          set -euo pipefail
+          android_sdk="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-}}"
+          test -n "$android_sdk"
+          sdkmanager="$android_sdk/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$sdkmanager"
+          bash scripts/ci/retry.sh "$sdkmanager" \
+            "platforms;android-24" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
       - name: Create ephemeral CI signing material
         shell: bash

@@ -226,6 +226,14 @@ android {
         abortOnError = true
         warningsAsErrors = true
         ignoreTestSources = true
+        // These checks query mutable remote "latest version" state. Runtime/compiler versions are
+        // intentionally frozen and upgraded through reviewed build-logic changes, so they cannot
+        // be a reproducible zero-new-warning CI gate.
+        disable += setOf(
+            "AndroidGradlePluginVersion",
+            "GradleDependency",
+            "NewerVersionAvailable",
+        )
         baseline = file("lint-baseline.xml")
     }
 }

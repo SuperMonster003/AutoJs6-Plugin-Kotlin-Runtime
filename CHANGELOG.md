@@ -32,6 +32,8 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with milestone s
   resource shrinking preserve them.
 - Tuned the private-repository CI path with bounded artifact retention, concurrent-run
   cancellation, a manual trigger, and no duplicate build for annotated tag pushes.
+- Made the strict Lint gate reproducible by excluding online latest-version advisories; dependency
+  and toolchain upgrades remain explicit build-logic decisions instead of time-varying CI failures.
 
 ## [0.2.0-m5] - 2026-08-22
 

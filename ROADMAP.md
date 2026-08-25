@@ -1,6 +1,10 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前发布版本: `0.4.0-m7` (VERSION_BUILD 4) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前发布版本: `0.5.0-m8` (VERSION_BUILD 5) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+>
+> M8 已完成功能与本地发布门禁 (2026-08-25): 三份源码/工具链决策、四类双语错误样例、
+> 141 个单测、双 Lint、Protocol 三门禁及指定真机 Binder 诊断用例 1/1 全绿；BOM 首行
+> 定位、Unicode 截断、4 MiB 边界与替代入口均有可执行证据。
 >
 > M7 已完成 (2026-08-25): release APK 30.38 MB（较 M6 降 32.99%）；真机冷编译/
 > 缓存命中中位数 577/46 ms（约 12.5x）；release/debug 各 50 会话及四类故障注入全绿；
@@ -26,7 +30,7 @@
 **因此，继续精进的空间不在"补功能"，而在五个方向：**
 1. **工程化维护** — M6 已落地 build-logic、CI、CHANGELOG、发布清单与 Lint 基线，后续按同一门禁持续维护;
 2. **体积与性能** — M7 已把 release 降至 30.38 MB，建立冷/热基准、遥测与 50 会话资源门禁;
-3. **语言与诊断体验** — 仅 ASCII 包名、入口固定 `Main`、诊断中文可读性未走查、jvmTarget 钉在 1.8;
+3. **语言与诊断体验** — M8 已明确 ASCII 包名/当前宿主 `Main` 边界，补齐双语错误样例与位置/Unicode 门禁，并记录保持 jvmTarget 1.8 的升级前置条件;
 4. **受控运行库扩展** — worker 运行库仅 `android.jar + entry-api + kotlin-stdlib`，脚本不可用协程/反射;
 5. **协议 1.2 协同** — 新能力（剪贴板/存储/HTTP 等）需与宿主联动演进，本仓库需演练协议刷新流程。
 
@@ -102,22 +106,22 @@
 ## M8 — 源码形态与诊断体验（`0.5.0-m8`）
 
 ### 8.1 源码策略演进（纯插件侧，无需协议变更）
-- [ ] 非 ASCII / 反引号转义标识符包名: 给出明确决策——支持（改 `KotlinSourcePolicy` 正则与词法擦除器）或维持拒绝但诊断信息明确指出"仅支持 ASCII 包名"（现状: 静默按无包名或误报处理需排查）
-- [ ] 入口类名灵活性评估: 协议 `JvmSourceRequest.entryClassName` 已携带全限定名，确认宿主是否恒发 `Main`; 若否，移除 `DEFAULT_ENTRY_SIMPLE_NAME` 的硬预设并补测
-- [ ] `EntryClassAnalyzer` 边界补测: 单文件多顶层类、嵌套类同名、`Main` 为 object/interface/abstract、入口类缺失时的诊断文案
-- [ ] 单文件 size 逼近 `MAX_SOURCE_BYTES` 的临界用例（恰好等于/超出 1 字节）
+- [x] 非 ASCII / 反引号转义包名维持拒绝，并以稳定公开文案明确“仅支持普通 ASCII 标识符”；宿主、类/JAR/DEX 边界需协同后才可扩展，决策见 [`docs/decisions/source-layout.md`](docs/decisions/source-layout.md)
+- [x] 入口类名灵活性评估完成：当前 AutoJs6 宿主恒发 `Main.kt` / `<package>.Main`，插件仍按协议请求字段驱动；替代 `ScriptEntry.kt` / `ScriptEntry` 已由单测和真实 Binder 真机用例验证
+- [x] `EntryClassAnalyzer` 边界补测完成：多顶层类、嵌套同名类、object/interface/abstract、缺构造器、入口缺失/歧义均有精确错误码与文案；同时钉住 Java 8 class major 52 上限
+- [x] 单文件 size 临界用例完成：`MAX_SOURCE_BYTES`（4 MiB）恰好接受，超出 1 字节返回 `SOURCE_TOO_LARGE / INPUT`
 
 ### 8.2 诊断质量
-- [ ] `KotlinDiagnosticSanitizer` 快照测试扩充: 行列号与用户原始源码对齐（BOM 剥离后偏移是否正确）
-- [ ] `EncodedDiagnosticBudget` 多字节字符（中文/emoji）截断边界用例: 不得产生半个码点
-- [ ] 常见错误中文可读性走查（缺 import、类型不匹配、未实现 `AutoJsJvmEntry`、包名与入口不符），结论样例入库 `samples/errors/`
+- [x] `KotlinDiagnosticSanitizer` 快照扩充：真实 K2 与真机均证明 BOM 剥离后首行位置为 `1:19`；修复 Windows 分隔符差异导致同一源码位置被误删的问题，外部路径仍拒绝
+- [x] `EncodedDiagnosticBudget` 中文/emoji 截断边界完成：完整 wire payload 二分预算只在 Unicode 码点边界截断，无半个代理项、替换字符或畸形 UTF-8
+- [x] 常见错误中文可读性走查完成：缺 import、类型不匹配、未实现 `AutoJsJvmEntry`、包名与入口不符四类双语说明及可执行 fixture 已入库 [`samples/errors/`](samples/errors/)
 - [x] `samples/m5-capabilities.kt` 已补 `app().launch` 演示，并在 M6 指定真机生产链路中验证返回 `true`
 
 ### 8.3 工具链前瞻（决策型条目，产出记录即完成）
-- [ ] 调研 `jvmTarget 1.8 → 11/17`: 对 D8 desugaring、minApi 26、编译产物兼容性的影响与收益，写入 `docs/decisions/jvm-target.md`
-- [ ] 调研 Kotlin 编译器升级节奏（2.3.x → 后续）: 明确"字节码补丁三件套"（patch/verify/全测）回归清单作为升级 SOP
+- [x] `jvmTarget 1.8 → 11/17` 调研完成：M8 保持 1.8，明确 class major、D8、API 26/31 真机、缓存身份与完整发布门禁后才可升级，见 [`docs/decisions/jvm-target.md`](docs/decisions/jvm-target.md)
+- [x] Kotlin 2.3.x → 后续升级 SOP 完成：当前保持 2.3.21；每次升级必须依次通过形状锁定 patch → runtime verify → 离线/归档/真机全测，见 [`docs/decisions/kotlin-compiler-upgrade.md`](docs/decisions/kotlin-compiler-upgrade.md)
 
-**M8 完成判据**: 三个决策记录就位、诊断与源码策略新增用例全绿、样例目录扩充完成。
+**M8 完成判据**: ✅ 已满足（2026-08-25）。三份决策记录和四类双语错误 fixture 就位；141/141 单测、冻结协议、双 APK、Android-test、双 Lint 离线门禁全绿；`QV710AF65F` release Binder 用例 1/1 通过并确认三个辅助进程全部退休。
 
 ---
 

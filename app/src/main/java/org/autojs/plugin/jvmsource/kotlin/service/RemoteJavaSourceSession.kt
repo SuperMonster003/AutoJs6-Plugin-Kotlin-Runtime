@@ -67,10 +67,10 @@ import org.autojs.plugin.jvmsource.kotlin.ProviderProcessIdentity
 import org.autojs.plugin.jvmsource.kotlin.UserClassJarSummary
 import org.autojs.plugin.jvmsource.kotlin.UserClassJarWriter
 import org.autojs.plugin.jvmsource.kotlin.BuildConfig
+import org.autojs.plugin.jvmsource.kotlin.BoundedSourceIngress
 import org.autojs.plugin.jvmsource.kotlin.worker.IJavaExecutionCallback
 import org.autojs.plugin.jvmsource.kotlin.worker.IJavaExecutionWorker
 import org.autojs.plugin.jvmsource.kotlin.worker.JavaExecutionWorkerService
-import java.io.ByteArrayOutputStream
 import java.io.FileOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.RejectedExecutionException
@@ -418,7 +418,7 @@ internal class RemoteJavaSourceSession(
         } catch (_: SessionStopped) {
             Unit
         } catch (error: JavaProviderFailure) {
-            finishError(error.code, error.phase)
+            finishError(error.code, error.phase, publicMessageOverride = error.publicMessage)
         } catch (_: Throwable) {
             if (!termination.snapshot().terminal) {
                 finishError(JvmSourceErrorCode.INTERNAL, JvmSourceFailurePhase.COMPILATION)
@@ -437,7 +437,7 @@ internal class RemoteJavaSourceSession(
             throw JavaProviderFailure(
                 JvmSourceErrorCode.INVALID_REQUEST,
                 JvmSourceFailurePhase.NEGOTIATION,
-                "Request is outside the Kotlin M4 profile",
+                "Request is outside the Kotlin Protocol 1.1 profile",
             )
         }
         if (!capabilities.isolationCapabilities.containsAll(JvmIsolationCapability.entries)) {
@@ -450,27 +450,16 @@ internal class RemoteJavaSourceSession(
     }
 
     private fun copyAndValidateSource(privateWorkspace: PrivateSessionWorkspace): JvmSha256 {
-        val bytes = ByteArrayOutputStream(request.sourceSizeBytes.toInt())
-        var total = 0L
-        try {
+        val sourceBytes = try {
             ParcelFileDescriptor.AutoCloseInputStream(descriptors.source).use { input ->
-                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                while (true) {
-                    ensureActive()
-                    val read = input.read(buffer)
-                    if (read < 0) break
-                    if (read == 0) continue
-                    total = Math.addExact(total, read.toLong())
-                    if (total > request.sourceSizeBytes || total > capabilities.maxSourceBytes) {
-                        throw JavaProviderFailure(
-                            JvmSourceErrorCode.SOURCE_TOO_LARGE,
-                            JvmSourceFailurePhase.INPUT,
-                            "Source stream exceeds its declared size",
-                        )
-                    }
-                    bytes.write(buffer, 0, read)
-                }
+                val bytes = BoundedSourceIngress.read(
+                    input = input,
+                    declaredSizeBytes = request.sourceSizeBytes,
+                    maximumSizeBytes = capabilities.maxSourceBytes,
+                    ensureActive = ::ensureActive,
+                )
                 descriptors.source.checkError()
+                bytes
             }
         } catch (error: JavaProviderFailure) {
             throw error
@@ -482,8 +471,9 @@ internal class RemoteJavaSourceSession(
                 error,
             )
         }
-        val sourceBytes = bytes.toByteArray()
-        if (total != request.sourceSizeBytes || JvmSha256.digest(sourceBytes) != request.sourceSha256) {
+        if (sourceBytes.size.toLong() != request.sourceSizeBytes ||
+            JvmSha256.digest(sourceBytes) != request.sourceSha256
+        ) {
             throw JavaProviderFailure(
                 JvmSourceErrorCode.ARTIFACT_INVALID,
                 JvmSourceFailurePhase.INPUT,
@@ -939,6 +929,7 @@ internal class RemoteJavaSourceSession(
         code: JvmSourceErrorCode,
         phase: JvmSourceFailurePhase,
         retryable: Boolean = false,
+        publicMessageOverride: String? = null,
     ) {
         emitStarted()
         val payload = JvmSourceCodec.encodeError(
@@ -946,7 +937,7 @@ internal class RemoteJavaSourceSession(
                 requestId = request.requestId,
                 code = code,
                 phase = phase,
-                message = publicMessage(code),
+                message = publicMessageOverride ?: publicMessage(code),
                 retryable = retryable,
             ),
         )
@@ -1321,15 +1312,16 @@ internal class RemoteJavaSourceSession(
     }
 
     private fun publicMessage(code: JvmSourceErrorCode): String = when (code) {
-        JvmSourceErrorCode.INVALID_REQUEST -> "Request is outside the Kotlin M4 profile"
+        JvmSourceErrorCode.INVALID_REQUEST -> "Request is outside the Kotlin Protocol 1.1 profile"
         JvmSourceErrorCode.SOURCE_TOO_LARGE -> "Kotlin source exceeds its declared limit"
         JvmSourceErrorCode.COMPILATION_FAILED -> "Kotlin/JVM compiler could not compile the Kotlin source"
         JvmSourceErrorCode.DEXING_FAILED -> "D8 could not produce classes.dex"
         JvmSourceErrorCode.ARTIFACT_INVALID -> "A source or compiled artifact failed integrity validation"
-        JvmSourceErrorCode.ENTRY_POINT_MISSING -> "Java entry point is missing"
+        JvmSourceErrorCode.ENTRY_POINT_MISSING -> "Requested Kotlin entry class must implement AutoJsJvmEntry"
         JvmSourceErrorCode.ENTRY_POINT_AMBIGUOUS -> "More than one entry point was produced"
-        JvmSourceErrorCode.ENTRY_POINT_ABI_INCOMPATIBLE -> "Java entry is incompatible with the entry API"
-        JvmSourceErrorCode.CLASS_LOADING_FAILED -> "Java entry could not be loaded"
+        JvmSourceErrorCode.ENTRY_POINT_ABI_INCOMPATIBLE ->
+            "Kotlin entry class must be public and concrete with a public no-argument constructor"
+        JvmSourceErrorCode.CLASS_LOADING_FAILED -> "Kotlin entry could not be loaded"
         JvmSourceErrorCode.EXECUTION_FAILED -> "AutoJsJvmEntry execution failed"
         JvmSourceErrorCode.OUTPUT_LIMIT_EXCEEDED -> "Program output exceeded its limit"
         JvmSourceErrorCode.TIMEOUT -> "Kotlin source execution timed out"

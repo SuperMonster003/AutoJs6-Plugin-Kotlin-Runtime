@@ -1,6 +1,7 @@
 package org.autojs.plugin.jvmsource.kotlin
 
 import org.autojs.plugin.jvmsource.api.JvmSha256
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -14,20 +15,7 @@ class KotlinCompilerPipelineTest {
 
     @Test
     fun compilesPackagedKotlinEntryAndProducesStrictSingleDex() {
-        val classpathRoot = File(
-            checkNotNull(System.getProperty("autojs.kotlin.compilerClasspathRoot")),
-        )
-        val androidJar = classpathRoot.resolve("android.jar")
-        val entryApiJar = classpathRoot.resolve("entry-api.jar")
-        val kotlinStdlibJar = classpathRoot.resolve("kotlin-stdlib.jar")
-        val identities = listOf(androidJar, entryApiJar, kotlinStdlibJar).map(ProviderDigests::file)
-        val classpath = CompilerClasspath(
-            androidJar = androidJar,
-            entryApiJar = entryApiJar,
-            kotlinStdlibJar = kotlinStdlibJar,
-            identities = identities,
-            fingerprint = ProviderDigests.combine(CompilerClasspath.COMPILER_CLASSPATH_DOMAIN, identities),
-        )
+        val classpath = CompilerTestFixtures.classpath()
         classpath.verifyInstalled()
 
         val root = temporaryFolder.newFolder("kotlin-pipeline")
@@ -74,4 +62,39 @@ class KotlinCompilerPipelineTest {
         assertEquals(summary.dexDescriptors, validated.classDescriptors)
         assertEquals(24, validated.requestMinApi)
     }
+
+    @Test
+    fun compilerAndSanitizerKeepFirstLinePositionAfterLeadingBomNormalization() {
+        val classpath = CompilerTestFixtures.classpath()
+        classpath.verifyInstalled()
+        val root = temporaryFolder.newFolder("bom-diagnostic")
+        val source = root.resolve("Main.kt")
+        val normalized = KotlinSourcePolicy.decodeAndValidate(
+            "\uFEFFval value: String = 1".toByteArray(Charsets.UTF_8),
+        )
+        source.writeText(normalized)
+        val classes = root.resolve("classes").apply { mkdir() }
+
+        val compilation = KotlinJvmCompiler(classpath).compile(source, classes) {}
+        assertFalse(compilation.succeeded)
+        val raw = compilation.diagnostics.firstOrNull { diagnostic ->
+            diagnostic.line == 1 && diagnostic.column != null
+        } ?: throw AssertionError(
+            "Compiler omitted the expected source position: " +
+                compilation.diagnostics.joinToString(" | ") { it.toString() },
+        )
+        val sanitized = KotlinDiagnosticSanitizer.sanitize(
+            value = raw,
+            byteLimit = 1_024,
+            privateFiles = listOf(root),
+            sourceFile = source,
+        )
+
+        assertEquals("val value: String = 1", normalized)
+        assertEquals(1, raw.line)
+        assertEquals(19, raw.column)
+        assertEquals(1, sanitized.line)
+        assertEquals(19, sanitized.column)
+    }
+
 }

@@ -18,8 +18,8 @@ internal data class KotlinSourceInspection(
 
 /**
  * Strict UTF-8 and single-file layout policy shared conceptually with the host snapshot policy.
- * M4 deliberately supports only ordinary ASCII package identifiers; escaped identifiers and
- * multiple compilation units remain outside the single-file protocol profile.
+ * The frozen 1.1 host profile deliberately supports only ordinary ASCII package identifiers;
+ * escaped and non-ASCII identifiers remain outside the single-file protocol profile.
  */
 internal object KotlinSourcePolicy {
     const val CACHE_CHARSET_POLICY = "UTF-8-strict-report-v1"
@@ -32,10 +32,11 @@ internal object KotlinSourcePolicy {
         entryClassName: String = DEFAULT_ENTRY_SIMPLE_NAME,
     ): String {
         val inspection = inspect(bytes, entryClassName.substringAfterLast('.'))
-        if (inspection.layout.sourceFileName != sourceFileName ||
-            inspection.layout.entryClassName != entryClassName
-        ) {
-            throw invalid("Kotlin package does not match the requested entry class")
+        if (inspection.layout.sourceFileName != sourceFileName) {
+            throw invalid("Kotlin source file name must match the requested entry simple name")
+        }
+        if (inspection.layout.entryClassName != entryClassName) {
+            throw invalid(PACKAGE_ENTRY_MISMATCH_MESSAGE)
         }
         return inspection.normalizedSource
     }
@@ -45,7 +46,7 @@ internal object KotlinSourcePolicy {
         entrySimpleName: String = DEFAULT_ENTRY_SIMPLE_NAME,
     ): KotlinSourceInspection {
         if (!IDENTIFIER.matches(entrySimpleName)) {
-            throw invalid("Kotlin entry simple name is invalid")
+            throw invalid("Kotlin entry simple name must be an ordinary ASCII identifier")
         }
         val decoded = try {
             StandardCharsets.UTF_8.newDecoder()
@@ -64,8 +65,11 @@ internal object KotlinSourcePolicy {
         val lexical = eraseCommentsAndLiterals(decoded)
         val packageKeywords = PACKAGE_KEYWORD.findAll(lexical).toList()
         val packageDeclarations = PACKAGE_DECLARATION.findAll(lexical).toList()
-        if (packageKeywords.size != packageDeclarations.size || packageDeclarations.size > 1) {
-            throw invalid("Kotlin source has an unsupported package declaration")
+        if (packageKeywords.size > 1) {
+            throw invalid("Kotlin source must contain at most one package declaration")
+        }
+        if (packageKeywords.size != packageDeclarations.size) {
+            throw invalid(ASCII_PACKAGE_MESSAGE)
         }
         val packageName = packageDeclarations.singleOrNull()
             ?.groupValues
@@ -180,6 +184,7 @@ internal object KotlinSourcePolicy {
         JvmSourceFailurePhase.INPUT,
         message,
         cause,
+        publicMessage = message,
     )
 
     private enum class State {
@@ -197,4 +202,10 @@ internal object KotlinSourcePolicy {
         "(?m)^\\s*package\\s+([A-Za-z_][A-Za-z0-9_]*(?:\\s*\\.\\s*[A-Za-z_][A-Za-z0-9_]*)*)\\s*;?\\s*$",
     )
     private val WHITESPACE = Regex("\\s+")
+
+    const val ASCII_PACKAGE_MESSAGE =
+        "Kotlin package declarations support only ordinary ASCII identifiers; " +
+            "escaped or non-ASCII identifiers are not supported"
+    const val PACKAGE_ENTRY_MISMATCH_MESSAGE =
+        "Kotlin package does not match the requested entry class"
 }

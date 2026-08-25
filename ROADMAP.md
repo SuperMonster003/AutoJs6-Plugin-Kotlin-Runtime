@@ -4,10 +4,10 @@
 >
 > 基线验证 (2026-08-25): `:app:testDebugUnitTest --offline` 全绿; debug APK 54.1 MB / release APK 45.3 MB。
 >
-> M6 本地进度 (2026-08-25): 119 个单测、离线双 APK与 Android test APK、严格 Lint、
-> 协议正常/损坏/连线三门禁、platform-versions 1.4.1 源码快照测试及临时 `git archive`
-> 隔离重建均通过；指定真机的四能力、缓存与主动取消冒烟已通过，正在完成 release
-> commit/tag 与 Private GitHub CI 绿灯。
+> M6 已完成 (2026-08-25): 119 个单测、离线双 APK 与 Android test APK、严格 Lint、
+> 协议正常/损坏/连线三门禁、platform-versions 1.4.1 源码快照测试及 `v0.3.0-m6`
+> 标签归档隔离重建均通过；指定真机的四能力、缓存与主动取消冒烟通过，Private
+> GitHub 冷/热缓存 CI 均为绿色，annotated tag 已推送。
 
 ## 一、能力现状评估（结论）
 
@@ -22,7 +22,7 @@
 | 编译缓存 | 协议未强制 | 完整实现（键、落盘、清理、遥测、启用策略） | ✅ 超出协议 |
 
 **因此，继续精进的空间不在"补功能"，而在五个方向：**
-1. **工程化收尾** — build-logic 迁移尚未提交、无 CI、无 CHANGELOG、无 Lint 基线;
+1. **工程化维护** — M6 已落地 build-logic、CI、CHANGELOG、发布清单与 Lint 基线，后续按同一门禁持续维护;
 2. **体积与性能** — release 45 MB（编译器 DEX 占大头）、minify 关闭、编译时延无基准数据;
 3. **语言与诊断体验** — 仅 ASCII 包名、入口固定 `Main`、诊断中文可读性未走查、jvmTarget 钉在 1.8;
 4. **受控运行库扩展** — worker 运行库仅 `android.jar + entry-api + kotlin-stdlib`，脚本不可用协程/反射;
@@ -39,10 +39,10 @@
 
 ## M6 — 工程化收尾与发布流水线（`0.3.0-m6`）
 
-### 6.1 落地 build-logic 迁移（当前工作区未提交改动）
+### 6.1 落地 build-logic 迁移
 - [x] 审查并落地 platform-versions 插件迁移: `settings.gradle.kts` / `build.gradle.kts` / `version.properties` / `gradle/libs.versions.toml` / `build-logic/`
 - [x] 将未公开的 platform-versions 1.4.1 作为带来源提交与 MPL 许可的 included-build 源码快照入库候选，移除 Maven Local 冷启动依赖
-- [ ] 将迁移与 M6 收尾改动审查后提交为单一 release commit（当前会话保留未提交状态）
+- [x] 将迁移与 M6 收尾改动审查后提交为 release commit `2d8498e`；后续仅有 CI 环境与确定性修正 `1ffdaa9` / `d4db645`
 - [x] 迁移后离线全量验证通过（标准命令三连）
 - [x] 确认 `verifyPinnedInputs` 仍是 assemble 前置依赖，并新增正常摘要、一字节损坏、assemble 连线三项回归任务
 - [x] README「Local build」小节与新构建方式核对无出入
@@ -51,13 +51,13 @@
 - [x] 新增 `CHANGELOG.md`（Keep a Changelog 格式），回填 M1–M5 里程碑要点
 - [x] 新增 `docs/RELEASE_CHECKLIST.md`: 版本号递增（NAME+BUILD 同步）→ 双 APK 签名一致性（与 AutoJs6 同证书）→ `adb install -r` 冒烟 → 官方索引 schema-v2 元数据核对
 - [x] 用当前候选树生成临时 `git archive`，在隔离目录完成 platform 插件测试 + 协议门禁 + 离线单测/双 APK/Lint 重建
-- [ ] release commit 完成后打 tag `v0.3.0-m6`，并按清单对 tag 本身复验归档
+- [x] release commit 完成后创建并推送 annotated tag `v0.3.0-m6`（tag object `687689d` → commit `d4db645`），并按清单对标签归档完成独立离线复验
 
 ### 6.3 CI（云端执行，不受本地网络影响）
 - [x] 新增 GitHub Actions: push/PR 触发 `testDebugUnitTest` + `assembleDebug` + `assembleDebugAndroidTest` + `lintDebug`（启用 Gradle 缓存与有界 step 级重试）
 - [x] CI 上传 test/Lint report 与临时证书签名的 debug APK 为 artifacts
 - [x] CI 独立 job 运行 platform 插件测试与协议正常/损坏/连线三门禁
-- [ ] 推送后确认 GitHub-hosted runner 首次冷构建与缓存命中构建均为绿色
+- [x] 推送后确认 GitHub-hosted runner 首次冷构建与缓存命中构建均为绿色：冷构建 [`32809108755`](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/actions/runs/32809108755)，热缓存复跑 [`32809865814`](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/actions/runs/32809865814)
 
 ### 6.4 静态质量门
 - [x] `lintDebug --offline` 跑通并生成 `lint-baseline.xml` 入库；消除 13 个可修项，保留 14 个历史坐标项，禁用 3 类时变版本提示，其他新增告警视为红线
@@ -70,7 +70,7 @@
 - [x] 真机运行 Kotlin 编译 → D8 → Dex 校验/加载 → 入口调用仪器测试，1/1 通过
 - [x] 发布证据见 [`docs/releases/0.3.0-m6.md`](docs/releases/0.3.0-m6.md)
 
-**M6 完成判据**: 工作区无未提交改动、CI 绿、CHANGELOG/RELEASE_CHECKLIST 就位、离线三连命令通过。
+**M6 完成判据**: ✅ 已满足（2026-08-25）。工作区无未提交改动、CI 绿、CHANGELOG/RELEASE_CHECKLIST 就位、离线三连命令与标签归档复验通过；6.4 的 detekt/ktlint 为明确的可选后续项。
 
 ---
 
@@ -108,7 +108,7 @@
 - [ ] `KotlinDiagnosticSanitizer` 快照测试扩充: 行列号与用户原始源码对齐（BOM 剥离后偏移是否正确）
 - [ ] `EncodedDiagnosticBudget` 多字节字符（中文/emoji）截断边界用例: 不得产生半个码点
 - [ ] 常见错误中文可读性走查（缺 import、类型不匹配、未实现 `AutoJsJvmEntry`、包名与入口不符），结论样例入库 `samples/errors/`
-- [ ] `samples/m5-capabilities.kt` 补 `app().launch` 演示（当前样例未覆盖该能力），或另增 `samples/app-launch.kt`
+- [x] `samples/m5-capabilities.kt` 已补 `app().launch` 演示，并在 M6 指定真机生产链路中验证返回 `true`
 
 ### 8.3 工具链前瞻（决策型条目，产出记录即完成）
 - [ ] 调研 `jvmTarget 1.8 → 11/17`: 对 D8 desugaring、minApi 26、编译产物兼容性的影响与收益，写入 `docs/decisions/jvm-target.md`

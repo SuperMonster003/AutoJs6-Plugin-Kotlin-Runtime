@@ -1,0 +1,152 @@
+name: Android CI
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  protocol-integrity:
+    name: Protocol integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle cache and validate wrapper
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+
+      - name: Test repository-local platform-version plugin
+        run: bash scripts/ci/retry.sh bash gradlew -p build-logic/platform-versions test --no-daemon --stacktrace
+
+      - name: Create ephemeral CI signing material
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e sign.properties
+          test ! -e app/ci-debug.jks
+          keytool -genkeypair -noprompt \
+            -storetype PKCS12 \
+            -keystore app/ci-debug.jks \
+            -storepass android \
+            -keypass android \
+            -alias ci \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 2 \
+            -dname "CN=AutoJs6 Kotlin Runtime CI,OU=Ephemeral,O=CI,L=CI,ST=CI,C=ZZ"
+          printf '%s\n' \
+            'storeFile=ci-debug.jks' \
+            'storePassword=android' \
+            'keyAlias=ci' \
+            'keyPassword=android' > sign.properties
+
+      - name: Verify frozen Protocol inputs and failure path
+        run: >-
+          bash scripts/ci/retry.sh bash gradlew
+          :app:verifyPinnedInputs
+          :app:verifyPinnedInputsFailurePath
+          :app:verifyPinnedInputsWiring
+          --no-daemon
+          --stacktrace
+
+  build:
+    name: Unit test, assemble, and lint
+    needs: protocol-integrity
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v6
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Set up Gradle cache and validate wrapper
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+
+      - name: Install required Android SDK platforms
+        run: >-
+          bash scripts/ci/retry.sh sdkmanager
+          "platforms;android-24"
+          "platforms;android-36"
+          "build-tools;36.0.0"
+
+      - name: Create ephemeral CI signing material
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e sign.properties
+          test ! -e app/ci-debug.jks
+          keytool -genkeypair -noprompt \
+            -storetype PKCS12 \
+            -keystore app/ci-debug.jks \
+            -storepass android \
+            -keypass android \
+            -alias ci \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 2 \
+            -dname "CN=AutoJs6 Kotlin Runtime CI,OU=Ephemeral,O=CI,L=CI,ST=CI,C=ZZ"
+          printf '%s\n' \
+            'storeFile=ci-debug.jks' \
+            'storePassword=android' \
+            'keyAlias=ci' \
+            'keyPassword=android' > sign.properties
+
+      - name: Run unit tests, assemble debug and Android test APKs, and enforce Lint
+        run: >-
+          bash scripts/ci/retry.sh bash gradlew
+          :app:testDebugUnitTest
+          :app:assembleDebug
+          :app:assembleDebugAndroidTest
+          :app:lintDebug
+          --no-daemon
+          --stacktrace
+
+      - name: Upload test and Lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verification-reports
+          path: |
+            app/build/test-results/testDebugUnitTest/
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/reports/lint-results-debug.*
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload ephemeral-signed debug APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-ephemeral-signing
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
+          compression-level: 0

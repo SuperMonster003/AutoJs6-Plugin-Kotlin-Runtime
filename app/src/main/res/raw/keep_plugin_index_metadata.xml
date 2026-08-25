@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@string/plugin_backend,@string/plugin_engine,@string/plugin_id,@string/plugin_protocol_api_max,@string/plugin_protocol_api_min,@string/plugin_runtime_component,@string/plugin_task,@string/plugin_variant" />

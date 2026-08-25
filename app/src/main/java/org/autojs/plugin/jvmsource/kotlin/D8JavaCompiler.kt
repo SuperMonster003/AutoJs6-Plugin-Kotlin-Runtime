@@ -1,7 +1,5 @@
 package org.autojs.plugin.jvmsource.kotlin
 
-import android.annotation.TargetApi
-import android.os.Build
 import com.android.tools.r8.CompilationFailedException
 import com.android.tools.r8.CompilationMode
 import com.android.tools.r8.D8
@@ -21,11 +19,7 @@ internal class D8JavaCompiler(private val runtimeLibraries: D8RuntimeLibraries) 
     ): File {
         ensureActive()
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                runWithPathApi(programJar, outputDirectory, minApi)
-            } else {
-                D8.main(arguments(programJar, outputDirectory, minApi))
-            }
+            runWithPathApi(programJar, outputDirectory, minApi)
         } catch (error: CompilationFailedException) {
             throw failure(error.message ?: "D8 rejected the Kotlin/JVM bytecode", error)
         } catch (error: IOException) {
@@ -52,7 +46,6 @@ internal class D8JavaCompiler(private val runtimeLibraries: D8RuntimeLibraries) 
         add(programJar.absolutePath)
     }.toTypedArray()
 
-    @TargetApi(Build.VERSION_CODES.O)
     private fun runWithPathApi(programJar: File, outputDirectory: File, minApi: Int) {
         val builder = D8Command.builder()
             .addProgramFiles(programJar.toPath())

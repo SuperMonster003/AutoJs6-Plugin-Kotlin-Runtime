@@ -1,0 +1,22 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <!--
+          Debug-only fault injection. The signature permission keeps arbitrary apps from killing
+          the worker, while the separate process preserves the production death-observation path.
+        -->
+        <receiver
+            android:name="org.autojs.plugin.jvmsource.kotlin.worker.DebugWorkerKillReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN"
+            android:process=":worker" />
+
+        <receiver
+            android:name="org.autojs.plugin.jvmsource.kotlin.DebugCompilerSnapshotReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="org.autojs.permission.PLUGIN"
+            android:process=":compiler" />
+    </application>
+</manifest>

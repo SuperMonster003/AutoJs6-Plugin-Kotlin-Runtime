@@ -57,6 +57,7 @@ val expectedProtocolModules = linkedMapOf(
 val protocolArtifacts = expectedProtocolModules.keys.map { rootProject.file("protocol/$it") }
 val jvmSourceApiAar = rootProject.file("protocol/jvm-source-api.aar")
 val generatedCompilerClasspathAssets = layout.buildDirectory.dir("generated/assets/compilerClasspath")
+val androidCompilerStubProfile = "class-only-v1"
 val kotlinCompilerLibraries = configurations.create("kotlinCompilerLibraries") {
     isCanBeConsumed = false
     isCanBeResolved = true
@@ -261,13 +262,13 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.eclipse.jdt:ecj:3.26.0")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0") {
+    androidTestImplementation(libs.androidx.test.ext.junit) {
         // AndroidX also requests the multiplatform root module, while this Android target already
         // resolves the concrete core-jvm runtime through test-core. Avoid making offline lint model
         // generation depend on a redundant metadata-only artifact.
         exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
     }
-    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation(libs.androidx.test.runner)
 }
 
 val kotlinPerformanceManagerClass = "org/jetbrains/kotlin/util/PerformanceManager"
@@ -768,11 +769,12 @@ val sdkAndroidJar = File(androidSdkDirectory, "platforms/android-$compilerStubAp
 
 val prepareJvmSourceCompilerClasspath = tasks.register("prepareJvmSourceCompilerClasspath") {
     group = "build"
-    description = "Packages controlled API 24, entry ABI, and Kotlin stdlib compiler assets."
+    description = "Packages class-only API 24, entry ABI, and Kotlin stdlib compiler assets."
     dependsOn(verifyPinnedInputs)
     inputs.file(sdkAndroidJar)
     inputs.file(jvmSourceApiAar)
     inputs.files(kotlinCompilerLibraries)
+    inputs.property("androidCompilerStubProfile", androidCompilerStubProfile)
     outputs.dir(generatedCompilerClasspathAssets)
 
     doLast {
@@ -811,7 +813,34 @@ val prepareJvmSourceCompilerClasspath = tasks.register("prepareJvmSourceCompiler
         }
         val classpathRoot = assetRoot.resolve("compiler-classpath")
         check(classpathRoot.mkdirs()) { "Unable to create compiler classpath: $classpathRoot" }
-        sdkAndroidJar.copyTo(classpathRoot.resolve("android.jar"), overwrite = false)
+        val androidClassEntries = ZipFile(sdkAndroidJar).use { input ->
+            input.entries().asSequence()
+                .filterNot { it.isDirectory }
+                .filter { it.name.endsWith(".class") }
+                .sortedBy { it.name }
+                .map { entry -> entry.name to input.getInputStream(entry).use { it.readBytes() } }
+                .toList()
+        }
+        check(androidClassEntries.size >= 3_000) {
+            "API $compilerStubApi android.jar exposed too few class stubs: ${androidClassEntries.size}"
+        }
+        val androidClassNames = androidClassEntries.mapTo(linkedSetOf()) { it.first }
+        check(
+            setOf(
+                "android/app/Activity.class",
+                "android/os/Build.class",
+                "java/lang/Object.class",
+            ).all(androidClassNames::contains),
+        ) { "API $compilerStubApi class-only stub is missing a required platform class" }
+        JarOutputStream(
+            FileOutputStream(classpathRoot.resolve("android.jar")).buffered(),
+        ).use { output ->
+            androidClassEntries.forEach { (name, bytes) ->
+                output.putNextEntry(JarEntry(name).apply { time = 0L })
+                output.write(bytes)
+                output.closeEntry()
+            }
+        }
         kotlinStdlibJar.copyTo(classpathRoot.resolve("kotlin-stdlib.jar"), overwrite = false)
         JarOutputStream(
             FileOutputStream(classpathRoot.resolve("entry-api.jar")).buffered(),

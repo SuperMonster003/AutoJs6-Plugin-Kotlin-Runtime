@@ -3,6 +3,7 @@ package org.autojs.plugin.jvmsource.kotlin.service
 /** Pure decision boundary for retiring the disposable compiler process. */
 internal class CompilerServiceShutdownPolicy {
     data class Plan(
+        val retireImmediately: Boolean,
         val armIndependentProcessKill: Boolean,
         val graceMillis: Long,
     )
@@ -10,14 +11,10 @@ internal class CompilerServiceShutdownPolicy {
     fun begin(criticalSessions: Int): Plan {
         require(criticalSessions >= 0)
         return Plan(
+            retireImmediately = criticalSessions == 0,
             armIndependentProcessKill = criticalSessions > 0,
             graceMillis = COMPILER_SHUTDOWN_GRACE_MILLIS,
         )
-    }
-
-    fun shouldKillAfterGrace(criticalSessions: Int): Boolean {
-        require(criticalSessions >= 0)
-        return criticalSessions > 0
     }
 
     /** Binding/handoff state never suppresses a watchdog while the compiler thread is live. */

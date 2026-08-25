@@ -23,7 +23,7 @@
             android:enabled="true"
             android:exported="true"
             android:permission="org.autojs.permission.PLUGIN"
-            android:process=":compiler">
+            android:process=":discovery">
 
             <intent-filter>
                 <action android:name="org.autojs.plugin.INFO" />

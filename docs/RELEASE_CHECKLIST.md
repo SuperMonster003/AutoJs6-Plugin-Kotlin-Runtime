@@ -1,6 +1,6 @@
 # Release checklist
 
-Use this checklist for `0.3.0-m6` and later releases. Run local Gradle verification with
+Use this checklist for `0.4.0-m7` and later releases. Run local Gradle verification with
 `--offline` after dependencies have been warmed once. A release is not complete until every
 applicable box is checked and the CI run for the release commit is green.
 
@@ -8,7 +8,7 @@ applicable box is checked and the CI run for the release commit is green.
 
 - [ ] Start from the intended release branch and confirm `git status --short --branch` contains
   only the reviewed release changes.
-- [ ] Set `VERSION_NAME` in `version.properties` to the release name, for example `0.3.0-m6`.
+- [ ] Set `VERSION_NAME` in `version.properties` to the release name, for example `0.4.0-m7`.
 - [ ] Increment `VERSION_BUILD` to a positive value greater than every previously published APK.
   `VERSION_NAME` and `VERSION_BUILD` must change in the same release commit.
 - [ ] Do not hand-edit `BuildConfig.VERSION_*`; the Android build reads both values through the
@@ -24,15 +24,16 @@ Run from the repository root:
 
 ```powershell
 .\gradlew.bat :app:verifyPinnedInputs :app:verifyPinnedInputsFailurePath :app:verifyPinnedInputsWiring --offline
-.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest --offline
-.\gradlew.bat :app:lintDebug --offline
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :m7-harness:assembleDebug --offline
+.\gradlew.bat :app:lintDebug :m7-harness:lintDebug --offline
 ```
 
 - [ ] `verifyPinnedInputs` accepts all three AARs and the lock file.
 - [ ] `verifyPinnedInputsFailurePath` proves a one-byte AAR change is rejected for the expected
   digest-mismatch reason.
 - [ ] `verifyPinnedInputsWiring` proves both assemble variants directly depend on the verifier.
-- [ ] Unit tests, debug/release assembly, Android test APK assembly, and Lint all exit with code 0.
+- [ ] Unit tests, debug/release assembly, Android test/harness APK assembly, and both Lint tasks all
+  exit with code 0.
 - [ ] Lint reports no new issues; existing entries may only be changed through a reviewed
   `updateLintBaselineDebug` diff.
 - [ ] The platform-version snapshot tests pass:
@@ -93,8 +94,9 @@ $apkanalyzer = "$androidSdk\cmdline-tools\latest\bin\apkanalyzer.bat"
 | required host version | `5276` |
 | runtime component | `io.github.supermonster003.autojs6.plugin.kotlin.runtime/org.autojs.plugin.jvmsource.kotlin.service.JavaSourceCompilerService` |
 
-- [ ] The manifest exports exactly the signature-protected `org.autojs.plugin.INFO` and
-  `org.autojs.plugin.JVM_SOURCE` services; the worker service remains non-exported.
+- [ ] The manifest exports exactly the signature-protected `org.autojs.plugin.INFO` service in
+  `:discovery` and `org.autojs.plugin.JVM_SOURCE` service in `:compiler`; the worker remains
+  non-exported and debug fault/resource receivers are absent from release.
 - [ ] Validate the release entry against the current AutoJs6 Official Plugins Index schema-v2
   validator before publishing metadata.
 
@@ -119,6 +121,13 @@ adb -s $serial shell dumpsys package io.github.supermonster003.autojs6.plugin.ko
   telemetry semantics remain enforced by the provider cache unit-test suite.
 - [ ] Cancel one running request and confirm the disposable worker retires after the grace period
   with no private session workspace left behind.
+- [ ] Run the M7 device gate and retain its structured evidence directory. It exercises five
+  cold/warm pairs, release/debug 50-session mixes, resource budgets, four fault classes, auxiliary
+  process retirement, and final restoration of the signed release APK:
+
+```powershell
+.\scripts\stress\run-m7-device.ps1 -Serial $serial
+```
 
 ## 6. Verify the source archive and publish
 
@@ -126,7 +135,7 @@ The signing files are intentionally absent from `git archive`; copy trusted loca
 into the extracted test tree before running the full three-command build.
 
 ```powershell
-$releaseTag = "v0.3.0-m6"
+$releaseTag = "v0.4.0-m7"
 $archiveRoot = Join-Path ([IO.Path]::GetTempPath()) "autojs6-kotlin-runtime-$([guid]::NewGuid())"
 New-Item -ItemType Directory -Path $archiveRoot | Out-Null
 git archive --format=zip --output (Join-Path $archiveRoot "$releaseTag.zip") $releaseTag
@@ -134,7 +143,7 @@ Expand-Archive (Join-Path $archiveRoot "$releaseTag.zip") (Join-Path $archiveRoo
 Copy-Item -LiteralPath sign.properties -Destination (Join-Path $archiveRoot "source/sign.properties")
 Copy-Item -LiteralPath app/sm003.jks -Destination (Join-Path $archiveRoot "source/app/sm003.jks")
 Push-Location (Join-Path $archiveRoot "source")
-.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug --offline
+.\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest :app:lintDebug :m7-harness:assembleDebug :m7-harness:lintDebug --offline
 Pop-Location
 ```
 
@@ -145,9 +154,9 @@ Pop-Location
 - [ ] Create an annotated tag only after that commit is immutable:
 
 ```powershell
-git tag -a v0.3.0-m6 -m "AutoJs6 Kotlin Runtime Plugin 0.3.0-m6"
-git show --no-patch --decorate v0.3.0-m6
-git push origin v0.3.0-m6
+git tag -a v0.4.0-m7 -m "AutoJs6 Kotlin Runtime Plugin 0.4.0-m7"
+git show --no-patch --decorate v0.4.0-m7
+git push origin v0.4.0-m7
 ```
 
 - [ ] For a private milestone, push the host-signed release APK checksum and release evidence only

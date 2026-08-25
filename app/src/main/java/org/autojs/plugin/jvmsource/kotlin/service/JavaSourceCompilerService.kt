@@ -52,17 +52,21 @@ class JavaSourceCompilerService : Service() {
     override fun onDestroy() {
         val retiringSessions = sessions.toList()
         retiringSessions.forEach(RemoteJavaSourceSession::serviceDestroyed)
-        armIndependentCompilerProcessKill(retiringSessions)
         sessions.clear()
         compilerExecutor.shutdownNow()
         scheduler.shutdownNow()
         callbackLane.close()
         super.onDestroy()
+        retireDedicatedCompilerProcess(retiringSessions)
     }
 
-    private fun armIndependentCompilerProcessKill(retiringSessions: List<RemoteJavaSourceSession>) {
+    private fun retireDedicatedCompilerProcess(retiringSessions: List<RemoteJavaSourceSession>) {
         val policy = CompilerServiceShutdownPolicy()
         val plan = policy.begin(retiringSessions.count(RemoteJavaSourceSession::hasCriticalWorkForServiceShutdown))
+        if (plan.retireImmediately) {
+            Process.killProcess(Process.myPid())
+            return
+        }
         if (!plan.armIndependentProcessKill) return
         Thread(
             {
@@ -71,8 +75,7 @@ class JavaSourceCompilerService : Service() {
                 } catch (_: InterruptedException) {
                     Thread.currentThread().interrupt()
                 }
-                val live = retiringSessions.count(RemoteJavaSourceSession::hasCriticalWorkForServiceShutdown)
-                if (policy.shouldKillAfterGrace(live)) Process.killProcess(Process.myPid())
+                Process.killProcess(Process.myPid())
             },
             "jvm-source-compiler-shutdown-watchdog",
         ).apply {

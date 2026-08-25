@@ -11,17 +11,19 @@ class CompilerServiceShutdownPolicyTest {
 
         val plan = policy.begin(criticalSessions = 1)
 
+        assertFalse(plan.retireImmediately)
         assertTrue(plan.armIndependentProcessKill)
         assertTrue(plan.graceMillis > 0L)
-        assertTrue(policy.shouldKillAfterGrace(criticalSessions = 1))
     }
 
     @Test
-    fun completedCompilerNeedsNeitherFallbackKillNorResidualGateReset() {
+    fun completedCompilerRetiresItsDedicatedProcessImmediately() {
         val policy = CompilerServiceShutdownPolicy()
 
-        assertFalse(policy.begin(criticalSessions = 0).armIndependentProcessKill)
-        assertFalse(policy.shouldKillAfterGrace(criticalSessions = 0))
+        val plan = policy.begin(criticalSessions = 0)
+
+        assertTrue(plan.retireImmediately)
+        assertFalse(plan.armIndependentProcessKill)
     }
 
     @Test

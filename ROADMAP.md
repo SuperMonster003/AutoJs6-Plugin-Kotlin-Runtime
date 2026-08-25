@@ -60,7 +60,7 @@
 - [ ] 推送后确认 GitHub-hosted runner 首次冷构建与缓存命中构建均为绿色
 
 ### 6.4 静态质量门
-- [x] `lintDebug --offline` 跑通并生成 `lint-baseline.xml` 入库；消除 13 个可修项，保留 18 个历史坐标项，新增告警视为红线
+- [x] `lintDebug --offline` 跑通并生成 `lint-baseline.xml` 入库；消除 13 个可修项，保留 14 个历史坐标项，禁用 3 类时变版本提示，其他新增告警视为红线
 - [ ] （可选）detekt/ktlint 离线配置，规则集最小化，仅卡新增代码
 
 ### 6.5 发布候选验证

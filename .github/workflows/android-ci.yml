@@ -34,6 +34,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-provider: basic
+          # Basic cache entries are immutable and shared by both jobs for the same build hash.
+          # Let the comprehensive build job own the write so its full dependency graph is cached.
+          cache-read-only: true
 
       - name: Test repository-local platform-version plugin
         run: bash scripts/ci/retry.sh bash gradlew -p build-logic/platform-versions test --no-daemon --stacktrace

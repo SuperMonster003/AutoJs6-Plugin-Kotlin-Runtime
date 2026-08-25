@@ -138,8 +138,9 @@ Run the complete device suite against a connected, host-aligned test device with
 
 See [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), the
 [release checklist](docs/RELEASE_CHECKLIST.md), and the
-[0.4.0-m7 verification record](docs/releases/0.4.0-m7.md) for the prior milestone baseline and
-release gates.
+[0.5.0-m8 verification record](docs/releases/0.5.0-m8.md) for the current private release evidence.
+The prior performance/stability milestone remains captured in the
+[0.4.0-m7 verification record](docs/releases/0.4.0-m7.md).
 
 ## Discovery
 

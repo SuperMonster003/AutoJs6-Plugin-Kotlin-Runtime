@@ -6,12 +6,15 @@ import org.autojs.plugin.jvmsource.api.JvmScriptContext
 class Main : AutoJsJvmEntry {
     override fun run(context: JvmScriptContext): Any {
         val startedAt = System.currentTimeMillis()
-        context.console().log("M5 Kotlin log: 你好")
-        context.toast("M5 Kotlin toast")
+        context.console().log("M6_CAPABILITIES_START")
+        val appLaunchSucceeded = context.app().launch("org.autojs.autojs6")
+        context.console().log("M6 Kotlin log: 你好; appLaunch=$appLaunchSucceeded")
+        context.toast("M6 Kotlin toast")
         context.sleep(500L)
         context.console().error(
-            "M5 Kotlin error after ${System.currentTimeMillis() - startedAt} ms",
+            "M6_CAPABILITIES_STDERR after ${System.currentTimeMillis() - startedAt} ms",
         )
-        return 5
+        context.console().log("M6_CAPABILITIES_OK appLaunch=$appLaunchSucceeded")
+        return appLaunchSucceeded
     }
 }

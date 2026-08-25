@@ -2,11 +2,13 @@
 .idea/
 .kotlin/
 **/build/
+!**/src/**/build/
+!**/src/**/build/**
 local.properties
 *.jks
 *.keystore
 sign.properties
-releases/
+/releases/
 .migration-backup/
 !protocol/*.aar
 !gradle/wrapper/gradle-wrapper.jar

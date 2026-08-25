@@ -33,11 +33,9 @@ buildscript {
 }
 
 plugins {
+    id("org.autojs.build.versions")
+    id("org.autojs.build.jvm-convention")
     id("com.android.application")
-}
-
-val versionProperties = Properties().apply {
-    rootProject.file("version.properties").inputStream().use(::load)
 }
 
 val kotlinCompilerVersion = "2.3.21"
@@ -118,14 +116,14 @@ val hostAlignedSigning = loadHostAlignedSigningMaterial()
 
 android {
     namespace = providerNamespace
-    compileSdk = versionProperties.getProperty("COMPILE_SDK_VERSION").toInt()
+    compileSdk = versions.sdkVersionCompile
 
     defaultConfig {
         applicationId = globalApplicationId
-        minSdk = versionProperties.getProperty("MIN_SDK_VERSION").toInt()
-        targetSdk = versionProperties.getProperty("TARGET_SDK_VERSION").toInt()
-        versionCode = versionProperties.getProperty("VERSION_CODE").toInt()
-        versionName = versionProperties.getProperty("VERSION_NAME")
+        minSdk = versions.sdkVersionMin
+        targetSdk = versions.sdkVersionTarget
+        versionCode = versions.appVersionCode
+        versionName = versions.appVersionName
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -133,7 +131,7 @@ android {
         buildConfigField(
             "long",
             "MIN_HOST_VERSION_CODE",
-            "${versionProperties.getProperty("REQUIRED_HOST_VERSION_CODE")}L",
+            "${versions["REQUIRED_HOST_VERSION_CODE"]}L",
         )
         buildConfigField("String", "KOTLIN_COMPILER_VERSION", "\"$kotlinCompilerVersion\"")
         buildConfigField("String", "D8_VERSION", "\"$d8Version\"")
@@ -161,8 +159,6 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -227,7 +223,10 @@ android {
     }
 
     lint {
-        abortOnError = false
+        abortOnError = true
+        warningsAsErrors = true
+        ignoreTestSources = true
+        baseline = file("lint-baseline.xml")
     }
 }
 
@@ -254,7 +253,12 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.eclipse.jdt:ecj:3.26.0")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0") {
+        // AndroidX also requests the multiplatform root module, while this Android target already
+        // resolves the concrete core-jvm runtime through test-core. Avoid making offline lint model
+        // generation depend on a redundant metadata-only artifact.
+        exclude(group = "org.jetbrains.kotlinx", module = "kotlinx-coroutines-core")
+    }
     androidTestImplementation("androidx.test:runner:1.7.0")
 }
 
@@ -637,6 +641,49 @@ fun File.sha256(): String {
     return digest.digest().joinToString("") { "%02x".format(it.toInt() and 0xff) }
 }
 
+fun verifyPinnedProtocolInputs(protocolDirectory: File) {
+    check(versions["REQUIRED_HOST_VERSION_CODE"] == "5276") {
+        "plugin_requires_host_version must stay aligned with REQUIRED_HOST_VERSION_CODE"
+    }
+    val lockFile = protocolDirectory.resolve("protocol-artifacts.lock.json")
+    check(lockFile.isFile) { "Missing protocol lock: $lockFile" }
+    val lock = JsonSlurper().parse(lockFile) as? Map<*, *>
+        ?: error("Protocol lock root must be a JSON object")
+    check((lock["schemaVersion"] as? Number)?.toInt() == 1) {
+        "Unsupported protocol lock schema"
+    }
+    val rows = lock["artifacts"] as? List<*>
+        ?: error("Protocol lock artifacts must be an array")
+    val lockedArtifacts = rows.associate { rawRow ->
+        val row = rawRow as? Map<*, *> ?: error("Protocol artifact row must be an object")
+        val fileName = row["file"] as? String ?: error("Protocol artifact file is missing")
+        val sourceModule = row["sourceModule"] as? String
+            ?: error("Protocol artifact sourceModule is missing")
+        val sha256 = row["sha256"] as? String ?: error("Protocol artifact sha256 is missing")
+        check(sha256.matches(Regex("^[0-9a-f]{64}$"))) {
+            "Protocol artifact digest is not lowercase SHA-256: $fileName"
+        }
+        fileName to (sourceModule to sha256)
+    }
+    check(lockedArtifacts.keys == expectedProtocolModules.keys) {
+        "Protocol lock file set differs: ${lockedArtifacts.keys}"
+    }
+    expectedProtocolModules.forEach { (fileName, sourceModule) ->
+        val artifact = protocolDirectory.resolve(fileName)
+        check(artifact.isFile) { "Pinned protocol artifact is missing: $artifact" }
+        check(!Files.isSymbolicLink(artifact.toPath())) {
+            "Pinned protocol artifact must not be a symlink: $artifact"
+        }
+        val locked = checkNotNull(lockedArtifacts[fileName])
+        check(locked.first == sourceModule) {
+            "Protocol source module differs for $fileName: ${locked.first}"
+        }
+        check(artifact.sha256() == locked.second) {
+            "Pinned protocol artifact digest differs: $fileName"
+        }
+    }
+}
+
 val verifyPinnedInputs = tasks.register("verifyPinnedInputs") {
     group = "verification"
     description = "Verifies the frozen AutoJs6 protocol AAR set and exact digests."
@@ -644,44 +691,45 @@ val verifyPinnedInputs = tasks.register("verifyPinnedInputs") {
     inputs.files(protocolArtifacts)
 
     doLast {
-        check(versionProperties.getProperty("REQUIRED_HOST_VERSION_CODE") == "5276") {
-            "plugin_requires_host_version must stay aligned with REQUIRED_HOST_VERSION_CODE"
-        }
-        check(protocolLockFile.isFile) { "Missing protocol lock: $protocolLockFile" }
-        val lock = JsonSlurper().parse(protocolLockFile) as? Map<*, *>
-            ?: error("Protocol lock root must be a JSON object")
-        check((lock["schemaVersion"] as? Number)?.toInt() == 1) {
-            "Unsupported protocol lock schema"
-        }
-        val rows = lock["artifacts"] as? List<*>
-            ?: error("Protocol lock artifacts must be an array")
-        val lockedArtifacts = rows.associate { rawRow ->
-            val row = rawRow as? Map<*, *> ?: error("Protocol artifact row must be an object")
-            val fileName = row["file"] as? String ?: error("Protocol artifact file is missing")
-            val sourceModule = row["sourceModule"] as? String
-                ?: error("Protocol artifact sourceModule is missing")
-            val sha256 = row["sha256"] as? String ?: error("Protocol artifact sha256 is missing")
-            check(sha256.matches(Regex("^[0-9a-f]{64}$"))) {
-                "Protocol artifact digest is not lowercase SHA-256: $fileName"
+        verifyPinnedProtocolInputs(rootProject.file("protocol"))
+    }
+}
+
+val verifyPinnedInputsFailurePath = tasks.register("verifyPinnedInputsFailurePath") {
+    group = "verification"
+    description = "Proves that one-byte protocol AAR corruption is rejected by the pinned-input verifier."
+    inputs.file(protocolLockFile)
+    inputs.files(protocolArtifacts)
+
+    doLast {
+        val isolatedProtocolDirectory = temporaryDir.resolve("protocol").also { directory ->
+            if (directory.exists()) check(directory.deleteRecursively()) {
+                "Unable to reset pinned-input failure-path directory: $directory"
             }
-            fileName to (sourceModule to sha256)
+            check(directory.mkdirs()) {
+                "Unable to create pinned-input failure-path directory: $directory"
+            }
         }
-        check(lockedArtifacts.keys == expectedProtocolModules.keys) {
-            "Protocol lock file set differs: ${lockedArtifacts.keys}"
+        protocolLockFile.copyTo(
+            isolatedProtocolDirectory.resolve(protocolLockFile.name),
+            overwrite = false,
+        )
+        protocolArtifacts.forEach { artifact ->
+            artifact.copyTo(isolatedProtocolDirectory.resolve(artifact.name), overwrite = false)
         }
-        expectedProtocolModules.forEach { (fileName, sourceModule) ->
-            val artifact = rootProject.file("protocol/$fileName")
-            check(artifact.isFile) { "Pinned protocol artifact is missing: $artifact" }
-            check(!Files.isSymbolicLink(artifact.toPath())) {
-                "Pinned protocol artifact must not be a symlink: $artifact"
-            }
-            val locked = checkNotNull(lockedArtifacts[fileName])
-            check(locked.first == sourceModule) {
-                "Protocol source module differs for $fileName: ${locked.first}"
-            }
-            check(artifact.sha256() == locked.second) {
-                "Pinned protocol artifact digest differs: $fileName"
-            }
+        val corruptedArtifactName = expectedProtocolModules.keys.first()
+        FileOutputStream(isolatedProtocolDirectory.resolve(corruptedArtifactName), true).use { output ->
+            output.write(0)
+        }
+
+        val failure = runCatching {
+            verifyPinnedProtocolInputs(isolatedProtocolDirectory)
+        }.exceptionOrNull()
+        checkNotNull(failure) {
+            "Pinned-input verifier accepted one-byte corruption in $corruptedArtifactName"
+        }
+        check(failure.message == "Pinned protocol artifact digest differs: $corruptedArtifactName") {
+            "Pinned-input corruption failed for an unexpected reason: ${failure.message}"
         }
     }
 }
@@ -778,6 +826,21 @@ tasks.matching { task ->
     dependsOn(verifyKotlinCompilerRuntime)
 }
 
+val verifyPinnedInputsWiring = tasks.register("verifyPinnedInputsWiring") {
+    group = "verification"
+    description = "Verifies that debug and release assembly cannot bypass frozen protocol inputs."
+
+    doLast {
+        val verifier = verifyPinnedInputs.get()
+        listOf("assembleDebug", "assembleRelease").forEach { taskName ->
+            val guardedTask = tasks.named(taskName).get()
+            check(verifier in guardedTask.taskDependencies.getDependencies(guardedTask)) {
+                "$taskName must depend directly on ${verifier.name}"
+            }
+        }
+    }
+}
+
 tasks.matching { task ->
     task.name.startsWith("merge") && task.name.endsWith("Assets") ||
         task.name.contains("lint", ignoreCase = true)
@@ -792,3 +855,5 @@ tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
         generatedCompilerClasspathAssets.get().asFile.resolve("compiler-classpath").absolutePath,
     )
 }
+
+versions.handleIfNeeded(project, "", listOf("debug", "release"))

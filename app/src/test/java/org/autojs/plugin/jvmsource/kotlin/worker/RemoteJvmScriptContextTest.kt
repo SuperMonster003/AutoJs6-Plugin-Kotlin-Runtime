@@ -53,9 +53,14 @@ class RemoteJvmScriptContextTest {
     }
 
     @Test
-    fun ungrantedCapabilityFailsBeforeAnyHostDispatch() {
-        val context = context(capabilities = listOf(JvmScriptCapability.SLEEP))
+    fun everyUngrantedCapabilityFailsBeforeAnyHostDispatch() {
+        val context = context(capabilities = emptyList())
 
+        assertThrows(IllegalArgumentException::class.java) {
+            context.app().launch("org.autojs.autojs6")
+        }
+        assertThrows(IllegalArgumentException::class.java) { context.console().log("not granted") }
+        assertThrows(IllegalArgumentException::class.java) { context.sleep(0L) }
         assertThrows(IllegalArgumentException::class.java) { context.toast("not granted") }
     }
 

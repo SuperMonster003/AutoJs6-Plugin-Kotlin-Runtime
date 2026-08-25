@@ -6,6 +6,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.autojs.plugin.jvmsource.api.AutoJsJvmEntry
 import org.autojs.plugin.jvmsource.api.JvmAppApi
 import org.autojs.plugin.jvmsource.api.JvmCancellation
+import org.autojs.plugin.jvmsource.api.JvmConsoleApi
 import org.autojs.plugin.jvmsource.api.JvmDexRuntimeProfile
 import org.autojs.plugin.jvmsource.api.JvmScriptContext
 import org.autojs.plugin.jvmsource.api.JvmSourceContract
@@ -29,7 +30,7 @@ class KotlinProviderPipelineInstrumentedTest {
     fun kotlinD8DexValidationAndEntryInvocationRunOnAndroid() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val environment = JavaProviderEnvironment.get(context)
-        PrivateSessionWorkspace.create(context).use { workspace ->
+        PrivateSessionWorkspace.create(context, sourceFileName = "Main.kt").use { workspace ->
             FileOutputStream(workspace.sourceFile).use { output ->
                 output.write(SOURCE.toByteArray(Charsets.UTF_8))
                 output.fd.sync()
@@ -108,10 +109,25 @@ class KotlinProviderPipelineInstrumentedTest {
 
             override fun throwIfCancellationRequested() = Unit
         }
+        private val console = object : JvmConsoleApi {
+            override fun log(message: String): Unit =
+                throw AssertionError("The internal smoke source must not write stdout")
+
+            override fun error(message: String): Unit =
+                throw AssertionError("The internal smoke source must not write stderr")
+        }
 
         override fun app(): JvmAppApi = app
 
+        override fun console(): JvmConsoleApi = console
+
         override fun cancellation(): JvmCancellation = cancellation
+
+        override fun sleep(millis: Long): Unit =
+            throw AssertionError("The internal smoke source must not sleep")
+
+        override fun toast(message: String): Unit =
+            throw AssertionError("The internal smoke source must not show toast")
     }
 
     private companion object {

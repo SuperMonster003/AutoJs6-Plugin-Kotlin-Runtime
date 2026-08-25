@@ -8,12 +8,12 @@ unit ambiguity.
 
 ## Result
 
-| Build | M6 baseline | M7 candidate | Change |
+| Build | M6 baseline | M7 release | Change |
 |---|---:|---:|---:|
 | debug | 54.1 MB (recorded baseline) | 38,437,253 B / 38.44 MB / 36.66 MiB | about -15.66 MB |
 | release | 45,339,694 B / 45.34 MB / 43.24 MiB | 30,383,822 B / 30.38 MB / 28.98 MiB | -14,955,872 B / -32.99% |
 
-The M7 release budget is **at most 40 MB decimal**. The candidate is 9.62 MB below that limit.
+The M7 release budget is **at most 40 MB decimal**. The release is 9.62 MB below that limit.
 
 ## What changed
 

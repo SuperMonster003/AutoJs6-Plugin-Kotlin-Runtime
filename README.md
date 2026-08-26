@@ -57,7 +57,7 @@ than being misdiagnosed as a default-package entry failure. See the
 
 ## Versioning
 
-`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.5.0-m8`), while
+`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.6.0-m9`), while
 `VERSION_BUILD` is a positive, monotonically increasing Android package version. Release metadata
 declares engine `jvm-source`, provider ID `kotlin-jvm`, variant `kotlin-jvm-d8`, Protocol 1.1, and
 required host version code 5276 for schema-v2 official-index generation.
@@ -107,6 +107,30 @@ compilation without shifting the visible first-line coordinate. Complete Protoco
 budgeted in UTF-8 and truncated only at Unicode code-point boundaries. The bilingual
 [intentional error samples](samples/errors/README.md) cover a missing import, type mismatch, missing
 `AutoJsJvmEntry`, and package/request mismatch with their expected failure codes and remedies.
+
+## Script runtime matrix
+
+M9 adds one deliberately pinned library rather than a general dependency resolver. The supported
+source/D8 surface is the following exact profile:
+
+| Surface | Script availability | Version/profile | Boundary |
+| --- | --- | --- | --- |
+| Android framework | Yes | class-only API 24 compiler stubs | Runtime behavior still depends on the device API; host actions remain capability checked. |
+| AutoJs6 JVM Entry API | Yes | Entry API 2 / Protocol 1.1 | `JvmScriptContext` is the only supported host bridge. |
+| Kotlin stdlib | Yes | 2.3.21 | Pinned with the embedded compiler. |
+| `kotlinx-coroutines-core-jvm` | Yes | 1.11.0 | Structured scopes plus `Default`, `IO`, and `Unconfined` are supported. |
+| `kotlinx-coroutines-android` / `Dispatchers.Main` | No | Not packaged as a script module | No worker UI/Looper contract; dispatching to Main fails because no Main dispatcher is installed. |
+| Full `kotlin-reflect` extensions | No | Not on the script classpath | Basic stdlib class literals remain; `kotlin.reflect.full.*` is unsupported. |
+| Serialization, coroutine debug/test, compiler APIs/plugins | No | Not controlled | No arbitrary Maven or transitive script dependencies are resolved. |
+
+The ready-to-run [coroutine sample](samples/coroutines.kt) demonstrates `runBlocking`, structured
+`async`, `Dispatchers.Default`, `delay`, and host-cancellation polling. Host cancellation interrupts
+the worker entry thread; the `runBlocking` contract cancels its structured children, while the
+worker grace-period hard kill remains the fallback for uncooperative or unstructured code. Do not
+use `GlobalScope` or expect coroutines to survive `AutoJsJvmEntry.run`—the worker process is retired
+after every execution. The exact artifact hash, cancellation mapping, rejected-module rationale,
+and cache-invalidation boundary are recorded in the
+[controlled-runtime decision](docs/decisions/controlled-runtime-libraries.md).
 
 ## M7 performance and stability baseline
 

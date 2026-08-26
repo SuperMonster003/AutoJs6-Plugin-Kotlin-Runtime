@@ -11,22 +11,22 @@ internal data class CompilerClasspath(
     val androidJar: File,
     val entryApiJar: File,
     val kotlinStdlibJar: File,
+    val kotlinxCoroutinesCoreJar: File,
     val identities: List<ProviderFileIdentity>,
     val fingerprint: JvmSha256,
 ) {
-    val kotlinClasspath: String = listOf(
+    val controlledFiles: List<File> = listOf(
         androidJar,
         entryApiJar,
         kotlinStdlibJar,
-    ).joinToString(File.pathSeparator) { it.absolutePath }
+        kotlinxCoroutinesCoreJar,
+    )
+
+    val kotlinClasspath: String = controlledFiles.joinToString(File.pathSeparator) { it.absolutePath }
 
     fun verifyInstalled() {
         try {
-            val actual = listOf(
-                ProviderDigests.file(androidJar, MAX_ASSET_BYTES),
-                ProviderDigests.file(entryApiJar, MAX_ASSET_BYTES),
-                ProviderDigests.file(kotlinStdlibJar, MAX_ASSET_BYTES),
-            )
+            val actual = controlledFiles.map { ProviderDigests.file(it, MAX_ASSET_BYTES) }
             require(actual == identities && ProviderDigests.combine(COMPILER_CLASSPATH_DOMAIN, actual) == fingerprint)
         } catch (error: Throwable) {
             throw JavaProviderFailure(
@@ -43,6 +43,7 @@ internal data class CompilerClasspath(
         private const val ANDROID_JAR = "android.jar"
         private const val ENTRY_API_JAR = "entry-api.jar"
         private const val KOTLIN_STDLIB_JAR = "kotlin-stdlib.jar"
+        private const val KOTLINX_COROUTINES_CORE_JAR = "kotlinx-coroutines-core-jvm.jar"
         internal const val MAX_ASSET_BYTES = 64L * 1024L * 1024L
 
         fun install(context: Context): CompilerClasspath {
@@ -58,15 +59,19 @@ internal data class CompilerClasspath(
             val androidJar = installAsset(context, root, ANDROID_JAR)
             val entryApiJar = installAsset(context, root, ENTRY_API_JAR)
             val kotlinStdlibJar = installAsset(context, root, KOTLIN_STDLIB_JAR)
-            val identities = listOf(
-                ProviderDigests.file(androidJar, MAX_ASSET_BYTES),
-                ProviderDigests.file(entryApiJar, MAX_ASSET_BYTES),
-                ProviderDigests.file(kotlinStdlibJar, MAX_ASSET_BYTES),
+            val kotlinxCoroutinesCoreJar = installAsset(context, root, KOTLINX_COROUTINES_CORE_JAR)
+            val controlledFiles = listOf(
+                androidJar,
+                entryApiJar,
+                kotlinStdlibJar,
+                kotlinxCoroutinesCoreJar,
             )
+            val identities = controlledFiles.map { ProviderDigests.file(it, MAX_ASSET_BYTES) }
             return CompilerClasspath(
                 androidJar = androidJar,
                 entryApiJar = entryApiJar,
                 kotlinStdlibJar = kotlinStdlibJar,
+                kotlinxCoroutinesCoreJar = kotlinxCoroutinesCoreJar,
                 identities = identities.toList(),
                 fingerprint = ProviderDigests.combine(COMPILER_CLASSPATH_DOMAIN, identities),
             )
@@ -112,6 +117,6 @@ internal data class CompilerClasspath(
             }
         }
 
-        internal const val COMPILER_CLASSPATH_DOMAIN = "org.autojs.jvm-source.kotlin.compiler-classpath.v1"
+        internal const val COMPILER_CLASSPATH_DOMAIN = "org.autojs.jvm-source.kotlin.compiler-classpath.v2"
     }
 }

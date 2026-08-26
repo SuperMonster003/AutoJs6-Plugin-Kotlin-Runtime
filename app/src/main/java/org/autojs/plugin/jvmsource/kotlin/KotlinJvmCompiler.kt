@@ -171,6 +171,7 @@ internal class KotlinJvmCompiler(
             "kotlin-home=controlled-provider-directory",
             "jdk=controlled-android-stubs",
             "stdlib=controlled-provider-asset",
+            "coroutines-core=${BuildConfig.CONTROLLED_COROUTINES_VERSION}-controlled-provider-asset",
             "reflect=disabled",
             "scripts=disabled",
             "compiler-plugins=disabled",

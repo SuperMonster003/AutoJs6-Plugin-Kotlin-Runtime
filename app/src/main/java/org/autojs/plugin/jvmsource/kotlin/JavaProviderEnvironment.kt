@@ -57,7 +57,7 @@ internal class JavaProviderEnvironment private constructor(
             return JavaProviderEnvironment(
                 compilerClasspath,
                 d8Libraries,
-                compilerClasspath.fingerprint,
+                d8Libraries.fingerprint,
                 compilationCache,
                 compilationCache?.let { CompilationCacheOperationLane() },
                 cacheEnablement,

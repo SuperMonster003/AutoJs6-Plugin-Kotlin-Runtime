@@ -10,7 +10,7 @@ internal data class D8RuntimeLibraries(
 ) {
     companion object {
         fun controlled(classpath: CompilerClasspath): D8RuntimeLibraries = D8RuntimeLibraries(
-            files = listOf(classpath.androidJar, classpath.entryApiJar, classpath.kotlinStdlibJar),
+            files = classpath.controlledFiles.toList(),
             identities = classpath.identities.toList(),
             fingerprint = classpath.fingerprint,
         )

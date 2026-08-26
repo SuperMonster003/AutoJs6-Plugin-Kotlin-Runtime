@@ -9,6 +9,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.SystemClock
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -291,6 +292,43 @@ class M7ProviderHarnessInstrumentedTest {
     }
 
     @Test
+    fun m9ControlledCoroutinesAndCancellationContract() {
+        M7ProviderClient(context).use { client ->
+            val successOutcome = client.run(m9CoroutineSuccessSource())
+            val success = completed(successOutcome)
+            assertEquals("\"sum=30;mainUnavailable=true\"", success.resultJson)
+
+            val cancellationOutcome = client.start(
+                m9CoroutineCancellationSource().toByteArray(Charsets.UTF_8),
+                controlledProfile(launchResult = true, timeoutMillis = 30_000L),
+            ).use { active ->
+                assertTrue("Coroutine cancellation fixture did not enter execution", active.awaitHostCall())
+                SystemClock.sleep(COROUTINE_CHILD_START_GRACE_MILLIS)
+                active.cancel()
+                active.awaitTerminal()
+            }
+            val cancellation = cancelled(cancellationOutcome)
+            assertEquals(JvmCancellationReason.REQUESTED, cancellation.reason)
+            assertEquals(JvmSourceFailurePhase.EXECUTION, cancellation.phase)
+            assertEquals(1, cancellationOutcome.hostCallCount)
+
+            emit(
+                M9_CONTROLLED_RUNTIME_PREFIX,
+                baseEvidence(client)
+                    .put("coroutinesVersion", "1.11.0")
+                    .put("runtimeLibraryFingerprint", client.capabilities.runtimeLibraryFingerprint.toHexString())
+                    .put("toolchainFingerprint", client.capabilities.toolchainFingerprint.toHexString())
+                    .put("successResult", success.resultJson)
+                    .put("successWorkerPid", success.workerPid)
+                    .put("mainDispatcherAvailable", false)
+                    .put("cancellationReason", cancellation.reason.name)
+                    .put("cancellationPhase", cancellation.phase.name)
+                    .put("result", "observed"),
+            )
+        }
+    }
+
+    @Test
     fun compileStarvationTimesOutAtCompilation() {
         M7ProviderClient(context).use { client ->
             val outcome = client.run(
@@ -489,6 +527,48 @@ class M7ProviderHarnessInstrumentedTest {
         }
     """.trimIndent()
 
+    private fun m9CoroutineSuccessSource(): String = """
+        import kotlinx.coroutines.Dispatchers
+        import kotlinx.coroutines.async
+        import kotlinx.coroutines.awaitAll
+        import kotlinx.coroutines.delay
+        import kotlinx.coroutines.runBlocking
+        import kotlinx.coroutines.withContext
+
+        class Main : org.autojs.plugin.jvmsource.api.AutoJsJvmEntry {
+            override fun run(context: org.autojs.plugin.jvmsource.api.JvmScriptContext): Any = runBlocking {
+                val sum = (1..4).map { value ->
+                    async(Dispatchers.Default) {
+                        delay(25L)
+                        value * value
+                    }
+                }.awaitAll().sum()
+                val mainUnavailable = try {
+                    withContext(Dispatchers.Main) { false }
+                } catch (_: IllegalStateException) {
+                    true
+                }
+                "sum=${'$'}sum;mainUnavailable=${'$'}mainUnavailable"
+            }
+        }
+    """.trimIndent()
+
+    private fun m9CoroutineCancellationSource(): String = """
+        import kotlinx.coroutines.Dispatchers
+        import kotlinx.coroutines.awaitCancellation
+        import kotlinx.coroutines.launch
+        import kotlinx.coroutines.runBlocking
+
+        class Main : org.autojs.plugin.jvmsource.api.AutoJsJvmEntry {
+            override fun run(context: org.autojs.plugin.jvmsource.api.JvmScriptContext): Any = runBlocking {
+                launch(Dispatchers.Default) {
+                    check(context.app().launch("org.autojs.m9.control"))
+                    awaitCancellation()
+                }.join()
+            }
+        }
+    """.trimIndent()
+
     private fun compileStarvationSource(token: String): String = buildString {
         appendLine("class Main : org.autojs.plugin.jvmsource.api.AutoJsJvmEntry {")
         appendLine("override fun run(context: org.autojs.plugin.jvmsource.api.JvmScriptContext): Any = f0(1)")
@@ -507,6 +587,7 @@ class M7ProviderHarnessInstrumentedTest {
         const val STRESS_PREFIX = "M7_STRESS_EVIDENCE="
         const val FAULT_PREFIX = "M7_FAULT_EVIDENCE="
         const val M8_SOURCE_DIAGNOSTIC_PREFIX = "M8_SOURCE_DIAGNOSTIC_EVIDENCE="
+        const val M9_CONTROLLED_RUNTIME_PREFIX = "M9_CONTROLLED_RUNTIME_EVIDENCE="
         const val EXTERNAL_KILL_READY_PREFIX = "M7_EXTERNAL_WORKER_KILL_READY="
         const val DEBUG_WORKER_KILL_ACTION =
             "io.github.supermonster003.autojs6.plugin.kotlin.runtime.debug.KILL_WORKER"
@@ -535,6 +616,7 @@ class M7ProviderHarnessInstrumentedTest {
         const val COMPILE_TIMEOUT_MILLIS = 200L
         const val EXECUTION_TIMEOUT_MILLIS = 2_000L
         const val EXTERNAL_KILL_TIMEOUT_MILLIS = 60_000L
+        const val COROUTINE_CHILD_START_GRACE_MILLIS = 250L
         const val ASCII_PACKAGE_MESSAGE =
             "Kotlin package declarations support only ordinary ASCII identifiers; " +
                 "escaped or non-ASCII identifiers are not supported"

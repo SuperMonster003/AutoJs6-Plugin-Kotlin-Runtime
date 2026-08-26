@@ -40,7 +40,8 @@ plugins {
 
 val kotlinCompilerVersion = "2.3.21"
 val kotlinCompilerReflectVersion = "1.6.10"
-val kotlinCompilerCoroutinesVersion = "1.8.0"
+val controlledCoroutinesVersion = "1.11.0"
+val controlledCoroutinesSha256 = "d1d75aa01dffbb4d1c520e67e4c4e7f5f6174718e7cb4632412503f2f0e604fa"
 val kotlinCompilerTroveVersion = "1.0.20200330"
 val d8Version = "8.13.17"
 val desugarArtifact = "desugar_jdk_libs_nio"
@@ -59,6 +60,11 @@ val jvmSourceApiAar = rootProject.file("protocol/jvm-source-api.aar")
 val generatedCompilerClasspathAssets = layout.buildDirectory.dir("generated/assets/compilerClasspath")
 val androidCompilerStubProfile = "class-only-v1"
 val kotlinCompilerLibraries = configurations.create("kotlinCompilerLibraries") {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isTransitive = false
+}
+val controlledScriptRuntimeLibraries = configurations.create("controlledScriptRuntimeLibraries") {
     isCanBeConsumed = false
     isCanBeResolved = true
     isTransitive = false
@@ -135,6 +141,7 @@ android {
             "${versions["REQUIRED_HOST_VERSION_CODE"]}L",
         )
         buildConfigField("String", "KOTLIN_COMPILER_VERSION", "\"$kotlinCompilerVersion\"")
+        buildConfigField("String", "CONTROLLED_COROUTINES_VERSION", "\"$controlledCoroutinesVersion\"")
         buildConfigField("String", "D8_VERSION", "\"$d8Version\"")
         // Literal schema-v2 release metadata is intentionally kept parser-friendly for
         // AutoJs6-Official-Plugins-Index. Keep the host version in sync with version.properties.
@@ -213,6 +220,8 @@ android {
             "kotlin/reflect/reflect.kotlin_builtins",
         )
         resources.excludes += setOf(
+            // The coroutine debugger probe is not needed in a non-debuggable disposable worker.
+            "DebugProbesKt.bin",
             "META-INF/*.SF",
             "META-INF/*.DSA",
             "META-INF/*.RSA",
@@ -252,11 +261,15 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-script-runtime:$kotlinCompilerVersion")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinCompilerReflectVersion")
     implementation("org.jetbrains.kotlin:kotlin-daemon-embeddable:$kotlinCompilerVersion")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCompilerCoroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$controlledCoroutinesVersion")
     implementation("org.jetbrains.intellij.deps:trove4j:$kotlinCompilerTroveVersion")
     implementation("com.android.tools:r8:$d8Version")
     coreLibraryDesugaring("com.android.tools:$desugarArtifact:$desugarVersion")
     add(kotlinCompilerLibraries.name, "org.jetbrains.kotlin:kotlin-stdlib:$kotlinCompilerVersion")
+    add(
+        controlledScriptRuntimeLibraries.name,
+        "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$controlledCoroutinesVersion",
+    )
     add(kotlinCompilerEmbeddable.name, "org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinCompilerVersion")
     add(kotlinCompilerTrove.name, "org.jetbrains.intellij.deps:trove4j:$kotlinCompilerTroveVersion")
 
@@ -769,12 +782,15 @@ val sdkAndroidJar = File(androidSdkDirectory, "platforms/android-$compilerStubAp
 
 val prepareJvmSourceCompilerClasspath = tasks.register("prepareJvmSourceCompilerClasspath") {
     group = "build"
-    description = "Packages class-only API 24, entry ABI, and Kotlin stdlib compiler assets."
+    description = "Packages the controlled API 24, entry ABI, stdlib, and coroutine compiler assets."
     dependsOn(verifyPinnedInputs)
     inputs.file(sdkAndroidJar)
     inputs.file(jvmSourceApiAar)
     inputs.files(kotlinCompilerLibraries)
+    inputs.files(controlledScriptRuntimeLibraries)
     inputs.property("androidCompilerStubProfile", androidCompilerStubProfile)
+    inputs.property("controlledCoroutinesVersion", controlledCoroutinesVersion)
+    inputs.property("controlledCoroutinesSha256", controlledCoroutinesSha256)
     outputs.dir(generatedCompilerClasspathAssets)
 
     doLast {
@@ -784,6 +800,17 @@ val prepareJvmSourceCompilerClasspath = tasks.register("prepareJvmSourceCompiler
         val kotlinStdlibJar = kotlinCompilerLibraries.singleFile
         check(kotlinStdlibJar.isFile && kotlinStdlibJar.name == "kotlin-stdlib-$kotlinCompilerVersion.jar") {
             "Unexpected Kotlin stdlib compiler classpath artifact: $kotlinStdlibJar"
+        }
+        val controlledCoroutinesJar = controlledScriptRuntimeLibraries.singleFile
+        check(
+            controlledCoroutinesJar.isFile &&
+                controlledCoroutinesJar.name ==
+                "kotlinx-coroutines-core-jvm-$controlledCoroutinesVersion.jar",
+        ) {
+            "Unexpected controlled coroutine runtime artifact: $controlledCoroutinesJar"
+        }
+        check(controlledCoroutinesJar.sha256() == controlledCoroutinesSha256) {
+            "Controlled coroutine runtime digest differs: ${controlledCoroutinesJar.name}"
         }
         val classesJarBytes = ZipFile(jvmSourceApiAar).use { aar ->
             val entry = checkNotNull(aar.getEntry("classes.jar")) {
@@ -842,6 +869,10 @@ val prepareJvmSourceCompilerClasspath = tasks.register("prepareJvmSourceCompiler
             }
         }
         kotlinStdlibJar.copyTo(classpathRoot.resolve("kotlin-stdlib.jar"), overwrite = false)
+        controlledCoroutinesJar.copyTo(
+            classpathRoot.resolve("kotlinx-coroutines-core-jvm.jar"),
+            overwrite = false,
+        )
         JarOutputStream(
             FileOutputStream(classpathRoot.resolve("entry-api.jar")).buffered(),
         ).use { output ->
@@ -888,12 +919,15 @@ tasks.matching { task ->
 tasks.withType<org.gradle.api.tasks.testing.Test>().configureEach {
     dependsOn(prepareJvmSourceCompilerClasspath)
     val errorSamples = rootProject.file("samples/errors")
+    val coroutineSample = rootProject.file("samples/coroutines.kt")
     inputs.dir(errorSamples)
+    inputs.file(coroutineSample)
     systemProperty(
         "autojs.kotlin.compilerClasspathRoot",
         generatedCompilerClasspathAssets.get().asFile.resolve("compiler-classpath").absolutePath,
     )
     systemProperty("autojs.kotlin.errorSamplesRoot", errorSamples.absolutePath)
+    systemProperty("autojs.kotlin.samplesRoot", coroutineSample.parentFile.absolutePath)
 }
 
 versions.handleIfNeeded(project, "", listOf("debug", "release"))

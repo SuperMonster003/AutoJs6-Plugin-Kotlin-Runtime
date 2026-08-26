@@ -20,15 +20,18 @@ class CompilerArgumentsTest {
         val androidJar = root.resolve("android.jar")
         val entryApiJar = root.resolve("entry api --flag.jar")
         val kotlinStdlibJar = root.resolve("kotlin stdlib.jar")
+        val kotlinxCoroutinesCoreJar = root.resolve("coroutines core.jar")
         val identity = JvmSha256.digest(byteArrayOf(1))
         val classpath = CompilerClasspath(
             androidJar,
             entryApiJar,
             kotlinStdlibJar,
+            kotlinxCoroutinesCoreJar,
             identities = listOf(
                 ProviderFileIdentity("android.jar", 1L, identity),
                 ProviderFileIdentity("entry-api.jar", 1L, identity),
                 ProviderFileIdentity("kotlin-stdlib.jar", 1L, identity),
+                ProviderFileIdentity("kotlinx-coroutines-core-jvm.jar", 1L, identity),
             ),
             fingerprint = identity,
         )
@@ -38,7 +41,7 @@ class CompilerArgumentsTest {
         val arguments = KotlinJvmCompiler(classpath).arguments(source, output)
         assertEquals(output.absolutePath, arguments.destination)
         assertEquals(
-            listOf(androidJar, entryApiJar, kotlinStdlibJar)
+            listOf(androidJar, entryApiJar, kotlinStdlibJar, kotlinxCoroutinesCoreJar)
                 .joinToString(java.io.File.pathSeparator) { it.absolutePath },
             arguments.classpath,
         )
@@ -60,6 +63,7 @@ class CompilerArgumentsTest {
             root.resolve("android.jar"),
             root.resolve("entry-api.jar"),
             root.resolve("kotlin-stdlib.jar"),
+            root.resolve("kotlinx-coroutines-core-jvm.jar"),
             identities = emptyList(),
             fingerprint = identity,
         )
@@ -90,6 +94,7 @@ class CompilerArgumentsTest {
             root.resolve("android.jar"),
             root.resolve("entry-api.jar"),
             root.resolve("kotlin-stdlib.jar"),
+            root.resolve("kotlinx-coroutines-core-jvm.jar"),
             identities = emptyList(),
             fingerprint = identity,
         )
@@ -120,6 +125,7 @@ class CompilerArgumentsTest {
                 root.resolve("android.jar"),
                 root.resolve("entry-api.jar"),
                 root.resolve("kotlin-stdlib.jar"),
+                root.resolve("kotlinx-coroutines-core-jvm.jar"),
                 identities = emptyList(),
                 fingerprint = JvmSha256.digest(byteArrayOf(5)),
             ),
@@ -148,6 +154,7 @@ class CompilerArgumentsTest {
             root.resolve("android.jar"),
             root.resolve("entry-api.jar"),
             root.resolve("kotlin-stdlib.jar"),
+            root.resolve("kotlinx-coroutines-core-jvm.jar"),
             identities = emptyList(),
             fingerprint = JvmSha256.digest(byteArrayOf(6)),
         )
@@ -181,6 +188,7 @@ class CompilerArgumentsTest {
                 root.resolve("android.jar"),
                 root.resolve("entry-api.jar"),
                 root.resolve("kotlin-stdlib.jar"),
+                root.resolve("kotlinx-coroutines-core-jvm.jar"),
                 identities = emptyList(),
                 fingerprint = JvmSha256.digest(byteArrayOf(7)),
             ),
@@ -231,15 +239,20 @@ class CompilerArgumentsTest {
         val androidJar = root.resolve("android.jar").apply { writeBytes(byteArrayOf(1, 2, 3)) }
         val entryApiJar = root.resolve("entry-api.jar").apply { writeBytes(byteArrayOf(4, 5, 6)) }
         val kotlinStdlibJar = root.resolve("kotlin-stdlib.jar").apply { writeBytes(byteArrayOf(7, 8, 9)) }
+        val kotlinxCoroutinesCoreJar = root.resolve("kotlinx-coroutines-core-jvm.jar").apply {
+            writeBytes(byteArrayOf(10, 11, 12))
+        }
         val identities = listOf(
             ProviderDigests.file(androidJar),
             ProviderDigests.file(entryApiJar),
             ProviderDigests.file(kotlinStdlibJar),
+            ProviderDigests.file(kotlinxCoroutinesCoreJar),
         )
         val classpath = CompilerClasspath(
             androidJar,
             entryApiJar,
             kotlinStdlibJar,
+            kotlinxCoroutinesCoreJar,
             identities,
             ProviderDigests.combine(CompilerClasspath.COMPILER_CLASSPATH_DOMAIN, identities),
         )

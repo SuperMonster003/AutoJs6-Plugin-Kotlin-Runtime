@@ -1,6 +1,11 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前发布版本: `0.5.0-m8` (VERSION_BUILD 5) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前发布候选: `0.6.0-m9` (VERSION_BUILD 6) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+>
+> M9 功能与本地发布门禁已完成 (2026-08-26): 受控运行库纳入精确锁定的 coroutines
+> core-jvm 1.11.0，Android/reflect 模块保持排除；145 个单测、双 Lint、Protocol 三门禁、
+> 31.85 MB release 及指定真机结构化协程/取消 Binder 用例 1/1 全绿。Private CI、标签与
+> 标签归档闭环将在 release commit 后补记。
 >
 > M8 已完成 (2026-08-26): 三份源码/工具链决策、四类双语错误样例、141 个单测、
 > 双 Lint、Protocol 三门禁及指定真机 Binder 诊断用例 1/1 全绿；Private CI、
@@ -31,7 +36,7 @@
 1. **工程化维护** — M6 已落地 build-logic、CI、CHANGELOG、发布清单与 Lint 基线，后续按同一门禁持续维护;
 2. **体积与性能** — M7 已把 release 降至 30.38 MB，建立冷/热基准、遥测与 50 会话资源门禁;
 3. **语言与诊断体验** — M8 已明确 ASCII 包名/当前宿主 `Main` 边界，补齐双语错误样例与位置/Unicode 门禁，并记录保持 jvmTarget 1.8 的升级前置条件;
-4. **受控运行库扩展** — worker 运行库仅 `android.jar + entry-api + kotlin-stdlib`，脚本不可用协程/反射;
+4. **受控运行库扩展** — M9 已把精确锁定的 coroutines core-jvm 纳入编译/D8/运行时指纹，Android Main 与完整反射保持排除;
 5. **协议 1.2 协同** — 新能力（剪贴板/存储/HTTP 等）需与宿主联动演进，本仓库需演练协议刷新流程。
 
 ## 二、验证约定（网络受限环境）
@@ -135,14 +140,14 @@
 
 > 现状: worker 运行库白名单仅 `android.jar + jvm-source-api + kotlin-stdlib`（见 `D8RuntimeLibraries.controlled`），脚本不可用协程、反射、序列化。
 
-- [ ] 决策: 是否将 `kotlinx-coroutines-core`（Android 变体）纳入受控运行库; 评估维度: DEX 体积增量、`JvmCancellation` 与协程取消的桥接语义、worker 单线程模型兼容性
-- [ ] 若采纳: **[需联网]** 单窗口拉取并锁定版本 → 更新 `D8RuntimeLibraries` 白名单与 `runtimeLibraryFingerprint` → 确认 `toolchainFingerprint` 变化触发编译缓存整体失效（有用例证明）
-- [ ] 若采纳: 新增 `samples/coroutines.kt`（含取消传播演示），设备冒烟通过
-- [ ] `kotlin-reflect` 单独决策（体积代价大，默认倾向不引入，写明理由即完成）
-- [ ] README 新增「脚本运行库矩阵」小节: 明确脚本可用/不可用的 API 清单与版本
-- [ ] 回归: 离线三连 + 缓存新旧指纹交叉用例全绿
+- [x] 决策采纳 `kotlinx-coroutines-core-jvm:1.11.0`，拒绝 Android Main 模块；DEX/包体、取消桥接、线程与单次 worker 进程边界记录在 [`controlled-runtime-libraries.md`](docs/decisions/controlled-runtime-libraries.md)
+- [x] **[需联网窗口已关闭]** 单窗口精确拉取并核验 1,577,052-byte JAR（SHA-256 `d1d75a…04fa`）；四文件白名单、runtime/toolchain 指纹 v2 与缓存整体失效均有交叉用例
+- [x] 新增可执行 [`samples/coroutines.kt`](samples/coroutines.kt)；真实 K2→JAR→D8 单测与 `QV710AF65F` release Binder 协程/取消用例 1/1 通过
+- [x] `kotlin-reflect` 独立决策为不纳入脚本 classpath：仅保留 stdlib 基础类引用，完整反射扩展继续禁用并有编译失败用例
+- [x] README「脚本运行库矩阵」明确 core/dispatcher 可用面与 Android Main、reflect、serialization、compiler plugin 不可用面
+- [x] 回归: 145/145 单测、离线双 APK + Android-test + Harness、双 Lint、Protocol 三门禁、platform snapshot 与缓存新旧指纹交叉用例全绿
 
-**M9 完成判据**: 决策记录 + （若采纳）指纹/缓存失效链路有测试背书 + 文档矩阵就位。
+**M9 完成判据**: ✅ 功能与本地发布门禁已满足（2026-08-26）。决策记录、受控运行库矩阵、精确依赖锁、指纹/缓存失效测试与可执行样例就位；release 31.85 MB（较 M8 +4.84%，低于 40 MB 预算），指定真机结构化结果、Main 缺席、主动取消、设备回拉哈希及三个辅助进程退休均已验证。Private CI、annotated tag、标签归档与最终发布证据在 release commit 后闭环。
 
 ---
 

@@ -64,6 +64,61 @@ class KotlinCompilerPipelineTest {
     }
 
     @Test
+    fun compilesAndDexesTheControlledCoroutineRuntimeProfile() {
+        val classpath = CompilerTestFixtures.classpath()
+        classpath.verifyInstalled()
+        val root = temporaryFolder.newFolder("coroutine-pipeline")
+        val source = root.resolve("Main.kt").apply {
+            writeText(CompilerTestFixtures.sample("coroutines.kt"))
+        }
+        val classes = root.resolve("classes").apply { mkdir() }
+        val compilation = KotlinJvmCompiler(classpath).compile(source, classes) {}
+        assertTrue(compilation.diagnostics.joinToString("\n") { it.message }, compilation.succeeded)
+
+        val programJar = root.resolve("program.jar")
+        val summary = UserClassJarWriter.write(classes, programJar, "samples.m9.Main")
+        val d8Output = root.resolve("d8").apply { mkdir() }
+        val dex = D8JavaCompiler(D8RuntimeLibraries.controlled(classpath)).compile(
+            programJar = programJar,
+            outputDirectory = d8Output,
+            minApi = 24,
+            ensureActive = {},
+        )
+
+        assertTrue(dex.isFile)
+        assertTrue("Lsamples/m9/Main;" in summary.dexDescriptors)
+    }
+
+    @Test
+    fun compilerDoesNotExposeReflectOrTheAndroidCoroutineModule() {
+        val classpath = CompilerTestFixtures.classpath()
+        val root = temporaryFolder.newFolder("excluded-runtime-modules")
+        val source = root.resolve("Main.kt").apply {
+            writeText(
+                """
+                    import kotlin.reflect.full.memberProperties
+                    import kotlinx.coroutines.android.asCoroutineDispatcher
+                    import org.autojs.plugin.jvmsource.api.AutoJsJvmEntry
+                    import org.autojs.plugin.jvmsource.api.JvmScriptContext
+
+                    class Main : AutoJsJvmEntry {
+                        override fun run(context: JvmScriptContext): Any =
+                            Main::class.memberProperties.size
+                    }
+                """.trimIndent(),
+            )
+        }
+        val classes = root.resolve("classes").apply { mkdir() }
+
+        val compilation = KotlinJvmCompiler(classpath).compile(source, classes) {}
+
+        assertFalse(compilation.succeeded)
+        val messages = compilation.diagnostics.joinToString("\n") { it.message }
+        assertTrue(messages, messages.contains("reflect") || messages.contains("memberProperties"))
+        assertTrue(messages, messages.contains("android") || messages.contains("asCoroutineDispatcher"))
+    }
+
+    @Test
     fun compilerAndSanitizerKeepFirstLinePositionAfterLeadingBomNormalization() {
         val classpath = CompilerTestFixtures.classpath()
         classpath.verifyInstalled()

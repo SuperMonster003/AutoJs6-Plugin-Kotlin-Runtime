@@ -1,6 +1,9 @@
 package org.autojs.plugin.jvmsource.kotlin
 
 import org.autojs.plugin.jvmsource.api.JvmSha256
+import org.autojs.plugin.jvmsource.api.JvmSourceCompilerFamily
+import org.autojs.plugin.jvmsource.api.JvmSourceLanguage
+import org.autojs.plugin.jvmsource.api.JvmToolchainFingerprint
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -42,6 +45,30 @@ class CompilationArtifactCacheKeyTest {
         )
 
         variants.forEach { assertNotEquals(key(base), key(it)) }
+    }
+
+    @Test
+    fun controlledRuntimeUpgradeCannotCrossTheCanonicalCacheBoundary() {
+        val oldRuntime = hash("three-library-runtime")
+        val newRuntime = hash("four-library-runtime-with-coroutines")
+        val oldToolchain = toolchain(oldRuntime)
+        val newToolchain = toolchain(newRuntime)
+        val oldKey = key(
+            provenance().copy(
+                runtimeLibraryFingerprint = oldRuntime,
+                toolchainFingerprint = oldToolchain,
+            ),
+        )
+        val newKey = key(
+            provenance().copy(
+                runtimeLibraryFingerprint = newRuntime,
+                toolchainFingerprint = newToolchain,
+            ),
+        )
+
+        assertNotEquals(oldRuntime, newRuntime)
+        assertNotEquals(oldToolchain, newToolchain)
+        assertNotEquals(oldKey, newKey)
     }
 
     @Test
@@ -140,6 +167,15 @@ class CompilationArtifactCacheKeyTest {
     )
 
     private fun hash(value: String) = JvmSha256.digest(value.toByteArray())
+
+    private fun toolchain(runtimeFingerprint: JvmSha256): JvmSha256 =
+        JvmToolchainFingerprint.compute(
+            language = JvmSourceLanguage.KOTLIN,
+            sourceCompilerFamily = JvmSourceCompilerFamily.KOTLIN_JVM,
+            sourceCompilerVersion = "2.3.21",
+            d8Version = "8.13.17",
+            runtimeLibraryFingerprint = runtimeFingerprint,
+        )
 
     private fun DataInputStream.readFramedUtf8(): String {
         val size = readInt()

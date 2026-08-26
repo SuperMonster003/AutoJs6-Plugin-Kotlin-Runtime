@@ -7,6 +7,35 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with milestone s
 
 ## [Unreleased]
 
+## [0.6.0-m9] - 2026-08-26
+
+### Added
+
+- Added the exact `kotlinx-coroutines-core-jvm` 1.11.0 binary as a verified fourth controlled
+  script artifact, with a pinned SHA-256 digest and no transitive dependency resolution.
+- Added a checked-in coroutine/cancellation sample that is compiled by the real K2 compiler and
+  converted by the pinned D8 during unit tests.
+- Added a same-signer Android harness case for structured `Dispatchers.Default` execution,
+  deliberate `Dispatchers.Main` absence, Protocol cancellation propagation, and worker retirement.
+- Added the controlled-runtime decision and README runtime matrix covering supported core APIs,
+  rejected Android/reflect modules, concurrency boundaries, cancellation, and hard-kill fallback.
+
+### Changed
+
+- Expanded the compiler/D8 runtime identity from API 24 stubs, Entry API, and stdlib to the same
+  ordered set plus coroutine core, and advanced the classpath fingerprint domain to v2.
+- Bound the coroutine artifact identity into runtime/toolchain fingerprints and canonical
+  compilation-cache keys so every pre-M9 artifact is invalidated.
+- Advanced the package to `0.6.0-m9` / build 6 while retaining Kotlin 2.3.21, D8 8.13.17, and script
+  JVM target 1.8.
+
+### Security
+
+- Kept `kotlinx-coroutines-android`, full `kotlin-reflect`, serialization, compiler APIs/plugins,
+  and arbitrary Maven dependencies outside the supported script classpath.
+- Preserved a new disposable process for every execution and the existing hard-retire fallback;
+  structured coroutine cancellation supplements rather than weakens the process boundary.
+
 ## [0.5.0-m8] - 2026-08-25
 
 ### Added

@@ -7,6 +7,40 @@ uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html) with milestone s
 
 ## [Unreleased]
 
+## [0.7.0-m10] - 2026-08-26
+
+### Added
+
+- Added a host-reviewable JVM Source Protocol 1.2 proposal for bounded clipboard, scoped document,
+  host-proxied HTTPS, and host-owned notification capabilities, with nested engine execution
+  explicitly deferred behind separate lifecycle and delegation decisions.
+- Added a seven-case 1.1/1.2 `protocolMin`/`protocolMax` matrix covering old/new host and provider
+  combinations while leaving released metadata at Protocol 1.1 / Entry API 2.
+- Added a staging-only PowerShell refresh helper and a complete frozen-AAR SOP, including a clean
+  detached-host rehearsal, wrong-variant rejection, semantic AAR comparison, and cleanup rules.
+- Added an executable four-stage worker template that orders authorization, payload validation,
+  dispatch, and response validation for every existing and future host-bridged capability.
+
+### Changed
+
+- Upgraded `protocol-artifacts.lock.json` to schema 2 with the exact `debug` artifact variant,
+  Gradle source task/output, and refresh-rehearsal date, while preserving all three frozen AARs.
+- Strengthened `verifyPinnedInputs` to reject incomplete provenance and `sourceDirty=true`; expanded
+  its failure path to prove both dirty metadata and one-byte artifact corruption fail closed.
+- Routed the existing `app.launch` and `toast.show` worker operations through the shared four-stage
+  pipeline without changing their Protocol 1.1 payloads or public behavior.
+- Advanced the package to `0.7.0-m10` / build 7 while retaining Protocol 1.1, Entry API 2, Kotlin
+  2.3.21, D8 8.13.17, coroutine core 1.11.0, and script JVM target 1.8.
+
+### Security
+
+- Kept every proposed Protocol 1.2 capability disabled and unadvertised until matching host policy,
+  user grants, bounded codecs, both providers, conformance tests, and refreshed AARs land together.
+- Defined exact-origin HTTPS/SSRF controls, opaque document grants, foreground clipboard rules,
+  host-owned notification fields, stable public errors, rate limits, and response-size ceilings.
+- Preserved immutable request allowlists, request/caller identity binding, cancellation, and
+  disposable-worker retirement around the newly explicit host-call pipeline.
+
 ## [0.6.0-m9] - 2026-08-26
 
 ### Added

@@ -15,6 +15,7 @@ the AutoJs6 process.
 - Required AutoJs6 version code: 5276
 - JVM source protocol: 1.1
 - Entry API: 2 (`AutoJsJvmEntry.run(JvmScriptContext)`)
+- Protocol 1.2 status: proposal and compatibility matrix only; no 1.2 capability is advertised
 - Current AutoJs6 host source shape: one `.kt` file normalized to `Main.kt`, entry simple name
   `Main`, and an optional ordinary ASCII package plus imports
 
@@ -57,7 +58,7 @@ than being misdiagnosed as a default-package entry failure. See the
 
 ## Versioning
 
-`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.6.0-m9`), while
+`VERSION_NAME` follows SemVer with an optional milestone suffix (currently `0.7.0-m10`), while
 `VERSION_BUILD` is a positive, monotonically increasing Android package version. Release metadata
 declares engine `jvm-source`, provider ID `kotlin-jvm`, variant `kotlin-jvm-d8`, Protocol 1.1, and
 required host version code 5276 for schema-v2 official-index generation.
@@ -71,6 +72,11 @@ must provide platforms 24 and 36.
 
 Release/debug APKs must be signed with the same certificate as AutoJs6. Local signing material is
 expected at the ignored files `sign.properties` and `app/sm003.jks`.
+
+Protocol inputs use a schema-2 lock containing the clean host revision, exact `debug` variant,
+source task/output and digest. Use the staging-only
+[Protocol refresh SOP](docs/PROTOCOL_REFRESH.md) when the host API changes; it never overwrites the
+frozen inputs before semantic review.
 
 ```powershell
 .\gradlew.bat :app:testDebugUnitTest :app:assembleDebug :app:assembleRelease :app:assembleDebugAndroidTest --offline
@@ -132,6 +138,19 @@ after every execution. The exact artifact hash, cancellation mapping, rejected-m
 and cache-invalidation boundary are recorded in the
 [controlled-runtime decision](docs/decisions/controlled-runtime-libraries.md).
 
+## M10 Protocol 1.2 coordination boundary
+
+M10 does not claim that AutoJs6 already implements Protocol 1.2. It provides a host-reviewable
+[capability proposal](docs/proposals/jvm-source-protocol-1.2-capabilities.md), a seven-case
+`protocolMin`/`protocolMax` matrix, and a fixed worker-side pipeline requiring authorization,
+payload validation, dispatch, then response validation. Released metadata remains Protocol 1.1 /
+Entry API 2 until the host and both Java/Kotlin providers land an agreed extension together.
+
+The proposal covers bounded plain-text clipboard access, user-selected document grants,
+host-proxied HTTPS, host-owned notifications, and explicit deferral of nested engine execution. It
+also documents why future capabilities need optional tagged string fields rather than placing
+unknown values into the required Protocol 1.1 enum list during the pre-negotiation handshake.
+
 ## M7 performance and stability baseline
 
 On the designated Sony XQ-AT72 / Android 12 device, five identical cache-cold compilations had a
@@ -162,8 +181,10 @@ Run the complete device suite against a connected, host-aligned test device with
 
 See [ROADMAP.md](ROADMAP.md), [CHANGELOG.md](CHANGELOG.md), the
 [release checklist](docs/RELEASE_CHECKLIST.md), and the
-[0.6.0-m9 verification record](docs/releases/0.6.0-m9.md) for the current private release evidence.
-The prior source/diagnostic milestone remains captured in the
+[0.7.0-m10 verification record](docs/releases/0.7.0-m10.md) for the current private release evidence.
+The controlled-runtime milestone remains captured in the
+[0.6.0-m9 verification record](docs/releases/0.6.0-m9.md), while the prior source/diagnostic
+milestone remains captured in the
 [0.5.0-m8 verification record](docs/releases/0.5.0-m8.md).
 
 ## Discovery

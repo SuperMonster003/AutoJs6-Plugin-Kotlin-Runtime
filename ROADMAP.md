@@ -1,11 +1,11 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前发布候选: `0.6.0-m9` (VERSION_BUILD 6) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前发布版本: `0.6.0-m9` (VERSION_BUILD 6) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
 >
-> M9 功能与本地发布门禁已完成 (2026-08-26): 受控运行库纳入精确锁定的 coroutines
+> M9 已完成 (2026-08-26): 受控运行库纳入精确锁定的 coroutines
 > core-jvm 1.11.0，Android/reflect 模块保持排除；145 个单测、双 Lint、Protocol 三门禁、
-> 31.85 MB release 及指定真机结构化协程/取消 Binder 用例 1/1 全绿。Private CI、标签与
-> 标签归档闭环将在 release commit 后补记。
+> 31.85 MB release 及指定真机结构化协程/取消 Binder 用例 1/1 全绿；Private CI、
+> `v0.6.0-m9` annotated tag 与标签归档隔离重建也已闭环。
 >
 > M8 已完成 (2026-08-26): 三份源码/工具链决策、四类双语错误样例、141 个单测、
 > 双 Lint、Protocol 三门禁及指定真机 Binder 诊断用例 1/1 全绿；Private CI、
@@ -138,7 +138,7 @@
 
 ## M9 — 受控运行库扩展（`0.6.0-m9`）**[需联网: 一次性拉取新依赖]**
 
-> 现状: worker 运行库白名单仅 `android.jar + jvm-source-api + kotlin-stdlib`（见 `D8RuntimeLibraries.controlled`），脚本不可用协程、反射、序列化。
+> M8 基线仅含 `android.jar + jvm-source-api + kotlin-stdlib`；M9 将 coroutine core 作为第四个精确受控项，完整反射与序列化仍不纳入。
 
 - [x] 决策采纳 `kotlinx-coroutines-core-jvm:1.11.0`，拒绝 Android Main 模块；DEX/包体、取消桥接、线程与单次 worker 进程边界记录在 [`controlled-runtime-libraries.md`](docs/decisions/controlled-runtime-libraries.md)
 - [x] **[需联网窗口已关闭]** 单窗口精确拉取并核验 1,577,052-byte JAR（SHA-256 `d1d75a…04fa`）；四文件白名单、runtime/toolchain 指纹 v2 与缓存整体失效均有交叉用例
@@ -147,7 +147,13 @@
 - [x] README「脚本运行库矩阵」明确 core/dispatcher 可用面与 Android Main、reflect、serialization、compiler plugin 不可用面
 - [x] 回归: 145/145 单测、离线双 APK + Android-test + Harness、双 Lint、Protocol 三门禁、platform snapshot 与缓存新旧指纹交叉用例全绿
 
-**M9 完成判据**: ✅ 功能与本地发布门禁已满足（2026-08-26）。决策记录、受控运行库矩阵、精确依赖锁、指纹/缓存失效测试与可执行样例就位；release 31.85 MB（较 M8 +4.84%，低于 40 MB 预算），指定真机结构化结果、Main 缺席、主动取消、设备回拉哈希及三个辅助进程退休均已验证。Private CI、annotated tag、标签归档与最终发布证据在 release commit 后闭环。
+### 9.1 私有发布闭环
+
+- [x] 实现 release commit `d5d3c7b` 与最终 tagged commit `a28182a` 已推送；annotated tag `v0.6.0-m9`（tag object `b77b150`）及 peeled commit 在 Private remote 双向核验一致
+- [x] Private CI [`32928036445`](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/actions/runs/32928036445) 双 job 全绿；标签源码归档在隔离目录完成 7-task platform 测试与 193-task 离线重建，145/145 单测及双 Lint 再次通过
+- [x] canonical release APK、精确协程资产、同签名、真机结构化结果/Main 缺席/主动取消、设备回拉哈希、进程退休与私有发布边界均固化在 [`docs/releases/0.6.0-m9.md`](docs/releases/0.6.0-m9.md)
+
+**M9 完成判据**: ✅ 已满足（2026-08-26）。决策记录、受控运行库矩阵、精确依赖锁、指纹/缓存失效测试与可执行样例就位；release 31.85 MB（较 M8 +4.84%，低于 40 MB 预算），指定真机结构化结果、Main 缺席、主动取消、设备回拉哈希及三个辅助进程退休均已验证；Private CI、annotated tag、标签源码归档与最终发布证据记录闭环完成。
 
 ---
 

@@ -17,6 +17,10 @@ applicable box is checked and the CI run for the release commit is green.
   section and leave a new empty `Unreleased` section.
 - [ ] Confirm `README.md`, `ROADMAP.md`, and this checklist describe the selected milestone and
   actual build commands.
+- [ ] If any frozen protocol input or provenance field changes, follow
+  [`PROTOCOL_REFRESH.md`](PROTOCOL_REFRESH.md): stage from an exact clean host commit, review all
+  three AARs together, and keep `sourceDirty=false`, the `debug` variant, source tasks/outputs and
+  exact digests synchronized in the schema-2 lock.
 
 ## 2. Verify frozen inputs and source quality
 
@@ -28,9 +32,9 @@ Run from the repository root:
 .\gradlew.bat :app:lintDebug :m7-harness:lintDebug --offline
 ```
 
-- [ ] `verifyPinnedInputs` accepts all three AARs and the lock file.
-- [ ] `verifyPinnedInputsFailurePath` proves a one-byte AAR change is rejected for the expected
-  digest-mismatch reason.
+- [ ] `verifyPinnedInputs` accepts the complete schema-2 provenance and all three exact AARs.
+- [ ] `verifyPinnedInputsFailurePath` proves both `sourceDirty=true` and a one-byte AAR change are
+  rejected for their expected reasons.
 - [ ] `verifyPinnedInputsWiring` proves both assemble variants directly depend on the verifier.
 - [ ] Unit tests, debug/release assembly, Android test/harness APK assembly, and both Lint tasks all
   exit with code 0.

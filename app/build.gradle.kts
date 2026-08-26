@@ -55,6 +55,19 @@ val expectedProtocolModules = linkedMapOf(
     "protocol-wire-api.aar" to ":plugin-api:protocol-wire-api",
     "jvm-source-api.aar" to ":plugin-api:jvm-source-api",
 )
+val expectedProtocolSourceTasks = linkedMapOf(
+    "common-plugin-api.aar" to ":plugin-api:common-plugin-api:bundleDebugAar",
+    "protocol-wire-api.aar" to ":plugin-api:protocol-wire-api:bundleDebugAar",
+    "jvm-source-api.aar" to ":plugin-api:jvm-source-api:bundleDebugAar",
+)
+val expectedProtocolSourceOutputs = linkedMapOf(
+    "common-plugin-api.aar" to
+        "plugin-api/common-plugin-api/build/outputs/aar/common-plugin-api-debug.aar",
+    "protocol-wire-api.aar" to
+        "plugin-api/protocol-wire-api/build/outputs/aar/protocol-wire-api-debug.aar",
+    "jvm-source-api.aar" to
+        "plugin-api/jvm-source-api/build/outputs/aar/jvm-source-api-debug.aar",
+)
 val protocolArtifacts = expectedProtocolModules.keys.map { rootProject.file("protocol/$it") }
 val jvmSourceApiAar = rootProject.file("protocol/jvm-source-api.aar")
 val generatedCompilerClasspathAssets = layout.buildDirectory.dir("generated/assets/compilerClasspath")
@@ -671,21 +684,70 @@ fun verifyPinnedProtocolInputs(protocolDirectory: File) {
     check(lockFile.isFile) { "Missing protocol lock: $lockFile" }
     val lock = JsonSlurper().parse(lockFile) as? Map<*, *>
         ?: error("Protocol lock root must be a JSON object")
-    check((lock["schemaVersion"] as? Number)?.toInt() == 1) {
+    check((lock["schemaVersion"] as? Number)?.toInt() == 2) {
         "Unsupported protocol lock schema"
+    }
+    check(lock.keys.map { it as? String }.toSet() == setOf(
+        "schemaVersion",
+        "status",
+        "sourceRepository",
+        "sourceRevision",
+        "sourceDirty",
+        "artifactVariant",
+        "snapshotDate",
+        "refreshRehearsalDate",
+        "artifacts",
+    )) {
+        "Protocol lock metadata field set differs"
+    }
+    check(lock["status"] == "host-clean-snapshot") {
+        "Protocol lock status must identify a clean host snapshot"
+    }
+    check(lock["sourceRepository"] == "AutoJs6") {
+        "Protocol source repository differs"
+    }
+    check((lock["sourceRevision"] as? String)?.matches(Regex("^[0-9a-f]{40}$")) == true) {
+        "Protocol source revision must be a full lowercase Git commit"
+    }
+    check(lock["sourceDirty"] == false) {
+        "Pinned protocol source must be clean"
+    }
+    check(lock["artifactVariant"] == "debug") {
+        "Pinned protocol artifact variant must be debug"
+    }
+    listOf("snapshotDate", "refreshRehearsalDate").forEach { field ->
+        check((lock[field] as? String)?.matches(Regex("^\\d{4}-\\d{2}-\\d{2}$")) == true) {
+            "Protocol $field must use YYYY-MM-DD"
+        }
     }
     val rows = lock["artifacts"] as? List<*>
         ?: error("Protocol lock artifacts must be an array")
+    check(rows.size == expectedProtocolModules.size) {
+        "Protocol lock artifact row count differs"
+    }
     val lockedArtifacts = rows.associate { rawRow ->
         val row = rawRow as? Map<*, *> ?: error("Protocol artifact row must be an object")
+        check(row.keys.map { it as? String }.toSet() == setOf(
+            "file",
+            "sourceModule",
+            "sourceTask",
+            "sourceOutput",
+            "sha256",
+        )) {
+            "Protocol artifact metadata field set differs"
+        }
         val fileName = row["file"] as? String ?: error("Protocol artifact file is missing")
         val sourceModule = row["sourceModule"] as? String
             ?: error("Protocol artifact sourceModule is missing")
+        val sourceTask = row["sourceTask"] as? String
+            ?: error("Protocol artifact sourceTask is missing")
+        val sourceOutput = row["sourceOutput"] as? String
+            ?: error("Protocol artifact sourceOutput is missing")
         val sha256 = row["sha256"] as? String ?: error("Protocol artifact sha256 is missing")
         check(sha256.matches(Regex("^[0-9a-f]{64}$"))) {
             "Protocol artifact digest is not lowercase SHA-256: $fileName"
         }
-        fileName to (sourceModule to sha256)
+        fileName to listOf(sourceModule, sourceTask, sourceOutput, sha256)
     }
     check(lockedArtifacts.keys == expectedProtocolModules.keys) {
         "Protocol lock file set differs: ${lockedArtifacts.keys}"
@@ -697,10 +759,16 @@ fun verifyPinnedProtocolInputs(protocolDirectory: File) {
             "Pinned protocol artifact must not be a symlink: $artifact"
         }
         val locked = checkNotNull(lockedArtifacts[fileName])
-        check(locked.first == sourceModule) {
-            "Protocol source module differs for $fileName: ${locked.first}"
+        check(locked[0] == sourceModule) {
+            "Protocol source module differs for $fileName: ${locked[0]}"
         }
-        check(artifact.sha256() == locked.second) {
+        check(locked[1] == expectedProtocolSourceTasks.getValue(fileName)) {
+            "Protocol source task differs for $fileName: ${locked[1]}"
+        }
+        check(locked[2] == expectedProtocolSourceOutputs.getValue(fileName)) {
+            "Protocol source output differs for $fileName: ${locked[2]}"
+        }
+        check(artifact.sha256() == locked[3]) {
             "Pinned protocol artifact digest differs: $fileName"
         }
     }
@@ -719,12 +787,12 @@ val verifyPinnedInputs = tasks.register("verifyPinnedInputs") {
 
 val verifyPinnedInputsFailurePath = tasks.register("verifyPinnedInputsFailurePath") {
     group = "verification"
-    description = "Proves that one-byte protocol AAR corruption is rejected by the pinned-input verifier."
+    description = "Proves that dirty provenance and one-byte AAR corruption are rejected."
     inputs.file(protocolLockFile)
     inputs.files(protocolArtifacts)
 
     doLast {
-        val isolatedProtocolDirectory = temporaryDir.resolve("protocol").also { directory ->
+        fun isolatedProtocolDirectory(name: String) = temporaryDir.resolve(name).also { directory ->
             if (directory.exists()) check(directory.deleteRecursively()) {
                 "Unable to reset pinned-input failure-path directory: $directory"
             }
@@ -732,13 +800,17 @@ val verifyPinnedInputsFailurePath = tasks.register("verifyPinnedInputsFailurePat
                 "Unable to create pinned-input failure-path directory: $directory"
             }
         }
-        protocolLockFile.copyTo(
-            isolatedProtocolDirectory.resolve(protocolLockFile.name),
-            overwrite = false,
-        )
-        protocolArtifacts.forEach { artifact ->
-            artifact.copyTo(isolatedProtocolDirectory.resolve(artifact.name), overwrite = false)
+        fun copyPinnedInputs(name: String): File = isolatedProtocolDirectory(name).also { directory ->
+            protocolLockFile.copyTo(
+                directory.resolve(protocolLockFile.name),
+                overwrite = false,
+            )
+            protocolArtifacts.forEach { artifact ->
+                artifact.copyTo(directory.resolve(artifact.name), overwrite = false)
+            }
         }
+
+        val isolatedProtocolDirectory = copyPinnedInputs("corrupted-artifact")
         val corruptedArtifactName = expectedProtocolModules.keys.first()
         FileOutputStream(isolatedProtocolDirectory.resolve(corruptedArtifactName), true).use { output ->
             output.write(0)
@@ -752,6 +824,23 @@ val verifyPinnedInputsFailurePath = tasks.register("verifyPinnedInputsFailurePat
         }
         check(failure.message == "Pinned protocol artifact digest differs: $corruptedArtifactName") {
             "Pinned-input corruption failed for an unexpected reason: ${failure.message}"
+        }
+
+        val dirtyProtocolDirectory = copyPinnedInputs("dirty-source")
+        val dirtyLockFile = dirtyProtocolDirectory.resolve(protocolLockFile.name)
+        val cleanText = dirtyLockFile.readText()
+        val dirtyText = cleanText.replace("\"sourceDirty\": false", "\"sourceDirty\": true")
+        check(dirtyText != cleanText) { "Unable to construct dirty-source lock fixture" }
+        dirtyLockFile.writeText(dirtyText)
+
+        val dirtyFailure = runCatching {
+            verifyPinnedProtocolInputs(dirtyProtocolDirectory)
+        }.exceptionOrNull()
+        checkNotNull(dirtyFailure) {
+            "Pinned-input verifier accepted sourceDirty=true"
+        }
+        check(dirtyFailure.message == "Pinned protocol source must be clean") {
+            "Dirty-source metadata failed for an unexpected reason: ${dirtyFailure.message}"
         }
     }
 }

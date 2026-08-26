@@ -1,24 +1,32 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "status": "host-clean-snapshot",
   "sourceRepository": "AutoJs6",
   "sourceRevision": "d21c69a2523a529ce6e2cd5d7dc3ced49cbaf74d",
   "sourceDirty": false,
+  "artifactVariant": "debug",
   "snapshotDate": "2026-08-22",
+  "refreshRehearsalDate": "2026-08-26",
   "artifacts": [
     {
       "file": "common-plugin-api.aar",
       "sourceModule": ":plugin-api:common-plugin-api",
+      "sourceTask": ":plugin-api:common-plugin-api:bundleDebugAar",
+      "sourceOutput": "plugin-api/common-plugin-api/build/outputs/aar/common-plugin-api-debug.aar",
       "sha256": "d745bb24d6a6995e68ebea27d592faec162f0bad4f9bf70cb038a480ad8c6df2"
     },
     {
       "file": "protocol-wire-api.aar",
       "sourceModule": ":plugin-api:protocol-wire-api",
+      "sourceTask": ":plugin-api:protocol-wire-api:bundleDebugAar",
+      "sourceOutput": "plugin-api/protocol-wire-api/build/outputs/aar/protocol-wire-api-debug.aar",
       "sha256": "a850d2d649638e9131b68a0a3806c950e6be8aa0fa5c5f1e7a575c9260ebf202"
     },
     {
       "file": "jvm-source-api.aar",
       "sourceModule": ":plugin-api:jvm-source-api",
+      "sourceTask": ":plugin-api:jvm-source-api:bundleDebugAar",
+      "sourceOutput": "plugin-api/jvm-source-api/build/outputs/aar/jvm-source-api-debug.aar",
       "sha256": "87615dc0d7f678e13d6823fd1d4ad226dc5f04a2599ae93700882577d7bb7e2e"
     }
   ]

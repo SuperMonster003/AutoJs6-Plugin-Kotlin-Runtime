@@ -1,6 +1,11 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前发布版本: `0.6.0-m9` (VERSION_BUILD 6) · Protocol 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前候选版本: `0.7.0-m10` (VERSION_BUILD 7) · 发布协议仍为 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+>
+> M10 发布候选 (2026-08-26): Protocol 1.2 能力提案、schema-2 AAR provenance、
+> staging-only 刷新 SOP、7 组合协商矩阵与四阶段 host-call 模板已落地；153 个单测、
+> 双 Lint、Protocol 三门禁、离线聚合构建及指定真机回归全绿。Private 宿主 issue、
+> annotated tag、canonical APK 与 CI 证据将在发布提交后回填。
 >
 > M9 已完成 (2026-08-26): 受控运行库纳入精确锁定的 coroutines
 > core-jvm 1.11.0，Android/reflect 模块保持排除；145 个单测、双 Lint、Protocol 三门禁、
@@ -161,11 +166,11 @@
 
 > 本仓库消费 `protocol/` 冻结 AAR，新能力必须先在宿主侧落地协议，再刷新快照。
 
-- [ ] 整理并向宿主提交「能力扩展提案」: 候选按优先级——`clipboard.read/write`、`storage`（宿主授权的局部文件读写）、`http.request`（宿主代理出网）、`notification.post`、`engines.exec`（脚本互调）; 每项含权限模型与 payload 上限建议
-- [ ] 演练协议刷新 SOP: 宿主侧生成三 AAR → 同步更新 `protocol-artifacts.lock.json`（`sourceDirty=false`）→ `verifyPinnedInputs` 通过 → 记录为 `docs/PROTOCOL_REFRESH.md`
-- [ ] 双版本协商测试: `JvmProviderInfo.protocolMin/Max` 覆盖 1.1↔1.2 组合（老宿主+新插件 / 新宿主+老插件）
-- [ ] 新能力落地时，`RemoteJvmScriptContext` 按「授权校验 → payload 校验 → dispatch → 响应校验」四段式模板扩展，每个能力独立单测
-- [ ] Entry API 3 前瞻跟踪（仅当宿主推进时展开）
+- [ ] 整理并向宿主提交「能力扩展提案」: 候选按优先级——`clipboard.read/write`、`storage`（宿主授权的局部文件读写）、`http.request`（宿主代理出网）、`notification.post`、`engines.exec`（脚本互调）; 每项含权限模型与 payload 上限建议（提案已落地 `docs/proposals/jvm-source-protocol-1.2-capabilities.md`，待 Private 宿主 issue 链接回填）
+- [x] 演练协议刷新 SOP: 干净 detached 宿主提交离线生成三组 debug AAR，识别并拒绝 release 变体；三份 `classes.jar` 逐字节一致、AIDL/consumer rules 仅 CRLF/LF 差异且归一化后一致；schema-2 lock 固化 `sourceDirty=false`、变体及确切 task/output，`docs/PROTOCOL_REFRESH.md` 与 staging-only 脚本就位，三项 pinned-input 门禁全绿
+- [x] 双版本协商测试: `JvmProviderInfo.protocolMin/Max` 覆盖 7 组 1.1↔1.2 组合，包括老宿主+兼容新插件降级 1.1、新宿主+老插件降级 1.1、双方兼容时选择 1.2，以及 1.2-only 与 1.1-only 无交集时稳定拒绝
+- [x] `RemoteJvmScriptContext` 的现有 `app.launch` / `toast.show` 已经由可执行的「授权校验 → payload 校验 → dispatch → 响应校验」四段式模板承载；每个阶段的短路顺序均有独立单测，未来每项新能力仍须添加方法级正反用例
+- [x] Entry API 3 前瞻跟踪已写入 1.2 提案：只有首项新脚本 API 与宿主/Java/Kotlin provider 成套落地时才升级；当前发布继续锁定 Protocol 1.1 / Entry API 2，不作虚假能力声明
 
 **M10 完成判据**: 提案已提交宿主、刷新 SOP 文档化并演练一次、协商矩阵用例全绿。
 

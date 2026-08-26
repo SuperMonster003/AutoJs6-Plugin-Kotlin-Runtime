@@ -33,18 +33,28 @@ internal class RemoteJvmScriptContext(
     private val callIds = AtomicLong(0L)
     private val appApi = object : JvmAppApi {
         override fun launch(packageName: String): Boolean {
-            workerCancellation.throwIfCancellationRequested()
-            requireCapability(JvmScriptCapability.APP_LAUNCH)
-            require(PACKAGE_NAME.matches(packageName)) { "Package name is outside the R1 profile" }
-            val response = dispatch(METHOD_APP_LAUNCH, "{\"packageName\":\"$packageName\"}")
-            if (!response.succeeded) {
-                throw IllegalStateException(response.errorMessage ?: "Host rejected app.launch")
-            }
-            return when (response.payloadJson) {
-                "true" -> true
-                "false" -> false
-                else -> throw IllegalStateException("Host returned a non-boolean app.launch response")
-            }
+            return callHost(
+                capability = JvmScriptCapability.APP_LAUNCH,
+                method = METHOD_APP_LAUNCH,
+                validatePayload = {
+                    require(PACKAGE_NAME.matches(packageName)) {
+                        "Package name is outside the R1 profile"
+                    }
+                    "{\"packageName\":\"$packageName\"}"
+                },
+                validateResponse = { response ->
+                    if (!response.succeeded) {
+                        throw IllegalStateException(response.errorMessage ?: "Host rejected app.launch")
+                    }
+                    when (response.payloadJson) {
+                        "true" -> true
+                        "false" -> false
+                        else -> throw IllegalStateException(
+                            "Host returned a non-boolean app.launch response",
+                        )
+                    }
+                },
+            )
         }
     }
     private val consoleApi = object : JvmConsoleApi {
@@ -82,15 +92,36 @@ internal class RemoteJvmScriptContext(
     }
 
     override fun toast(message: String) {
-        workerCancellation.throwIfCancellationRequested()
-        requireCapability(JvmScriptCapability.TOAST)
-        val response = dispatch(METHOD_TOAST_SHOW, JvmToastPayload.encode(message))
-        if (!response.succeeded || response.payloadJson != "true") {
-            throw IllegalStateException(response.errorMessage ?: "Host rejected toast.show")
-        }
+        callHost(
+            capability = JvmScriptCapability.TOAST,
+            method = METHOD_TOAST_SHOW,
+            validatePayload = { JvmToastPayload.encode(message) },
+            validateResponse = { response ->
+                if (!response.succeeded || response.payloadJson != "true") {
+                    throw IllegalStateException(response.errorMessage ?: "Host rejected toast.show")
+                }
+            },
+        )
     }
 
+    private fun <Result> callHost(
+        capability: JvmScriptCapability,
+        method: String,
+        validatePayload: () -> String,
+        validateResponse: (JvmHostResponse) -> Result,
+    ): Result = HostCallPipeline.execute(
+        authorize = {
+            workerCancellation.throwIfCancellationRequested()
+            requireCapability(capability)
+            require(method in request.allowedHostCalls) { "$method is not allowed" }
+        },
+        validatePayload = validatePayload,
+        dispatch = { payloadJson -> dispatch(method, payloadJson) },
+        validateResponse = validateResponse,
+    )
+
     private fun dispatch(method: String, payloadJson: String): JvmHostResponse {
+        // Defense in depth: the fixed pipeline checks this in its authorization stage too.
         require(method in request.allowedHostCalls) { "$method is not allowed" }
         val call = JvmHostCall(
             requestId = request.requestId,

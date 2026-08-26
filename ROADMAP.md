@@ -1,11 +1,11 @@
 # Roadmap — AutoJs6 Kotlin Runtime Plugin
 
-> 当前候选版本: `0.7.0-m10` (VERSION_BUILD 7) · 发布协议仍为 1.1 · Entry API 2 · 要求宿主 ≥ 5276
+> 当前发布版本: `0.7.0-m10` (VERSION_BUILD 7) · 发布协议仍为 1.1 · Entry API 2 · 要求宿主 ≥ 5276
 >
-> M10 发布候选 (2026-08-26): Protocol 1.2 能力提案、schema-2 AAR provenance、
+> M10 已完成 (2026-08-26): Protocol 1.2 能力提案、schema-2 AAR provenance、
 > staging-only 刷新 SOP、7 组合协商矩阵与四阶段 host-call 模板已落地；153 个单测、
-> 双 Lint、Protocol 三门禁、离线聚合构建及指定真机回归全绿。Private 宿主 issue、
-> annotated tag、canonical APK 与 CI 证据将在发布提交后回填。
+> 双 Lint、Protocol 三门禁、标签归档及指定真机 canonical 回归全绿；Private 宿主
+> issue #3、`v0.7.0-m10` annotated tag 与 CI `32933570417` 已闭环。
 >
 > M9 已完成 (2026-08-26): 受控运行库纳入精确锁定的 coroutines
 > core-jvm 1.11.0，Android/reflect 模块保持排除；145 个单测、双 Lint、Protocol 三门禁、
@@ -166,13 +166,13 @@
 
 > 本仓库消费 `protocol/` 冻结 AAR，新能力必须先在宿主侧落地协议，再刷新快照。
 
-- [ ] 整理并向宿主提交「能力扩展提案」: 候选按优先级——`clipboard.read/write`、`storage`（宿主授权的局部文件读写）、`http.request`（宿主代理出网）、`notification.post`、`engines.exec`（脚本互调）; 每项含权限模型与 payload 上限建议（提案已落地 `docs/proposals/jvm-source-protocol-1.2-capabilities.md`，待 Private 宿主 issue 链接回填）
+- [x] 整理并向宿主提交「能力扩展提案」: 候选按优先级——`clipboard.read/write`、`storage`（宿主授权的局部文件读写）、`http.request`（宿主代理出网）、`notification.post`、`engines.exec`（脚本互调）; 每项含权限模型与 payload 上限建议；完整提案已通过 Private AutoJs6 [`issue #3`](https://github.com/SuperMonster003/AutoJs6-Private/issues/3) 正式提交
 - [x] 演练协议刷新 SOP: 干净 detached 宿主提交离线生成三组 debug AAR，识别并拒绝 release 变体；三份 `classes.jar` 逐字节一致、AIDL/consumer rules 仅 CRLF/LF 差异且归一化后一致；schema-2 lock 固化 `sourceDirty=false`、变体及确切 task/output，`docs/PROTOCOL_REFRESH.md` 与 staging-only 脚本就位，三项 pinned-input 门禁全绿
 - [x] 双版本协商测试: `JvmProviderInfo.protocolMin/Max` 覆盖 7 组 1.1↔1.2 组合，包括老宿主+兼容新插件降级 1.1、新宿主+老插件降级 1.1、双方兼容时选择 1.2，以及 1.2-only 与 1.1-only 无交集时稳定拒绝
 - [x] `RemoteJvmScriptContext` 的现有 `app.launch` / `toast.show` 已经由可执行的「授权校验 → payload 校验 → dispatch → 响应校验」四段式模板承载；每个阶段的短路顺序均有独立单测，未来每项新能力仍须添加方法级正反用例
 - [x] Entry API 3 前瞻跟踪已写入 1.2 提案：只有首项新脚本 API 与宿主/Java/Kotlin provider 成套落地时才升级；当前发布继续锁定 Protocol 1.1 / Entry API 2，不作虚假能力声明
 
-**M10 完成判据**: 提案已提交宿主、刷新 SOP 文档化并演练一次、协商矩阵用例全绿。
+**M10 完成判据**: ✅ 已满足（2026-08-26）。提案已提交宿主 Private issue #3；刷新 SOP 在干净 detached host commit 上离线演练并固化 schema-2 provenance；1.1↔1.2 七组合协商与四阶段 host-call 管线测试全绿。`0.7.0-m10` canonical release 31,855,642 bytes、153/153 单测、双 Lint、Protocol 门禁、指定真机 1/1、Private CI、annotated tag 与标签归档均已闭环；发布面仍诚实保持 Protocol 1.1 / Entry API 2。
 
 ---
 
@@ -181,4 +181,4 @@
 - [ ] Kotlin/D8 版本升级一律走「补丁三件套」回归: `patchKotlinCompilerForAndroid` 形状断言 → `verifyKotlinCompilerRuntime` → 离线全量单测
 - [ ] 每新增脚本能力同步新增 `samples/` 样例与 README 说明
 - [ ] `values` / `values-zh-rCN` 字符串资源双语同步检查
-- [ ] 每个里程碑收尾: 版本号（NAME 里程碑后缀 + BUILD 递增）、CHANGELOG、tag 三件事一次完成
+- [x] 每个里程碑收尾: M10 已完成 `0.7.0-m10` / build 7、CHANGELOG 与 Private annotated `v0.7.0-m10` 三件套，并附 canonical/CI/归档证据

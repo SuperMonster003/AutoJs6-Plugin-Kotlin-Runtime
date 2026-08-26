@@ -87,8 +87,8 @@ compiled against a three-library runtime profile.
 
 ## Measured package cost
 
-The final local M9 candidate is 31,854,278 bytes (31.85 decimal MB), up 1,469,892 bytes or 4.84%
-from the canonical M8 baseline of 30,384,386 bytes. It remains 8,145,722 bytes below the 40 MB
+The canonical M9 release-commit APK is 31,854,266 bytes (31.85 decimal MB), up 1,469,880 bytes or 4.84%
+from the canonical M8 baseline of 30,384,386 bytes. It remains 8,145,734 bytes below the 40 MB
 release budget. Inside the APK, the controlled coroutine asset occupies 1,577,052 bytes before ZIP
 compression and 1,446,189 bytes after compression; this deterministic duplicate asset accounts for
 nearly all of the release delta. The APK already contained coroutine classes for embedded compiler

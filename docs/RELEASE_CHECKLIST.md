@@ -13,8 +13,10 @@ applicable box is checked and the CI run for the release commit is green.
   `VERSION_NAME` and `VERSION_BUILD` must change in the same release commit.
 - [ ] Do not hand-edit `BuildConfig.VERSION_*`; the Android build reads both values through the
   repository build logic.
-- [ ] Move the relevant entries from `CHANGELOG.md`'s `Unreleased` section to a dated release
-  section and leave a new empty `Unreleased` section.
+- [ ] Add the release's user-facing entries to every `.changelog/lang_*.json` (same version key
+  and order across all ten locales), update `.readme/common.json` version facts and any affected
+  `.readme/lang_*.json` strings, then regenerate with `.python/generate_markdown.py`. Never
+  hand-edit the generated `README*.md`/`CHANGELOG*.md`.
 - [ ] Confirm `README.md`, `ROADMAP.md`, and this checklist describe the selected milestone and
   actual build commands.
 - [ ] If any frozen protocol input or provenance field changes, follow

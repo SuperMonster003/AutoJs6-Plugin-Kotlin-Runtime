@@ -176,9 +176,45 @@
 
 ---
 
+## M11 — 文档易读性与多语言资源（文档线，2026-08-26 启动）
+
+> 背景: 用户反馈 README / CHANGELOG 晦涩难懂。参照 NodeJs-Runtime 等姊妹插件的
+> Python 多语言生成方案重建文档流水线; 深度工程内容保留在 `docs/` 与本路线图,
+> README / CHANGELOG 面向最终用户。
+
+### 11.1 多语言生成流水线（已落地 2026-08-26）
+
+- [x] 建立 `.readme/`（common.json + 模板 + 10 语言 JSON）与 `.changelog/`（模板 + 10 语言 JSON）资源；`.python/generate_markdown.py` 内置键序/版本序校验与占位符残留断言, 全部 22 份输出生成通过
+- [x] 以用户视角重写 README: 简介 / 功能 / 快速上手（装—启用—跑—排错, 含 `JVM_SOURCE_EXPERIMENT_DISABLED`、`JVM_SOURCE_PROVIDER_NOT_SELECTED` 恢复指引）/ 使用示例 / 能力边界 / 脚本运行库白名单 / 安全与隔离 / 构建 / 资源结构 / 相关链接
+- [x] 以用户可读语言重写 CHANGELOG: `v0.2.0-m5` 至 `v0.7.0-m10` 全量历史按 提示/新增/修复/优化 标签归类, 摒弃工程内审措辞
+- [x] 生成并核对 zh-Hans / zh-Hant-HK / zh-Hant-TW / en / fr / es / ja / ko / ru / ar 十语言文档; 根 `README.md` / `CHANGELOG.md` 为 zh-Hans 副本
+- [x] `docs/RELEASE_CHECKLIST.md` 发布步骤与生成式文档对齐: 「CHANGELOG Unreleased 搬运」改为「更新 `.changelog/lang_*.json` + 重新生成」, 禁止手改生成物
+
+### 11.2 文档流水线后续（待办）
+
+- [ ] CI 增加文档一致性门禁: checkout 后重跑 `.python/generate_markdown.py` 并 `git diff --exit-code`, 阻断手改生成物或 JSON 与生成物漂移
+- [ ] 下次发布按新版清单第 1 节实际演练一次（JSON 源更新 → 重新生成 → 归档核对）, 并在发布证据中回填
+- [ ] `values*/strings.xml` 插件名称/描述当前仅 en + zh-rCN; 核对宿主插件中心的展示约定后评估扩展至十语言（与 README 语言清单同源）
+
+---
+
+## M12 — 能力候选方向（未排期, 按宿主与工具链节奏择机启动）
+
+> 协议 1.1 能力面已 100% 覆盖（见「一、能力现状评估」）; 以下条目启动前保持不承诺、
+> 不虚假声明, 发布面继续锁定 Protocol 1.1 / Entry API 2。
+
+- [ ] Protocol 1.2 首能力实装: 待宿主落地协议后, 按 `docs/PROTOCOL_REFRESH.md` 在单一联网窗口刷新冻结 AAR, 用四阶段模板实现首个能力（候选 `clipboard.read`）并补方法级正反用例与真机回归
+- [ ] 1.2 协商真机复验: 与 Java Runtime 同步发布 `protocolMin/Max` 组合, 七场景矩阵在指定真机跑通（老宿主降级、新宿主降级、双兼容选 1.2、无交集稳定拒绝）
+- [ ] Kotlin 编译器升级 SOP 首次实战: 选定下一个 2.3.x/2.4.x 版本, 依次通过形状锁定 patch → `verifyKotlinCompilerRuntime` → 离线全量/归档/真机三段门禁, 并回填 `docs/decisions/kotlin-compiler-upgrade.md`
+- [ ] jvmTarget 1.8 → 11/17 演练: 按 `docs/decisions/jvm-target.md` 前置清单（class major、D8 支持、API 26/31 真机、缓存身份翻转、完整发布门禁）逐项打勾后才允许切换
+- [ ] （可选, M6 遗留）detekt/ktlint 离线最小规则集, 仅卡新增代码
+
+---
+
 ## 持续任务（不绑定里程碑，每次触发即勾选记录）
 
 - [ ] Kotlin/D8 版本升级一律走「补丁三件套」回归: `patchKotlinCompilerForAndroid` 形状断言 → `verifyKotlinCompilerRuntime` → 离线全量单测
-- [ ] 每新增脚本能力同步新增 `samples/` 样例与 README 说明
+- [ ] 每新增脚本能力同步新增 `samples/` 样例, 并更新 `.readme/` JSON 源后重新生成 README
+- [ ] 文档改动只编辑 `.readme/` 与 `.changelog/` JSON 源, 随后运行 `.python/generate_markdown.py` 重新生成全部十语言文档; 生成物不手改
 - [ ] `values` / `values-zh-rCN` 字符串资源双语同步检查
 - [x] 每个里程碑收尾: M10 已完成 `0.7.0-m10` / build 7、CHANGELOG 与 Private annotated `v0.7.0-m10` 三件套，并附 canonical/CI/归档证据

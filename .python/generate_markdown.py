@@ -14,10 +14,16 @@ Outputs:
     .changelog/CHANGELOG-<code>.md
     CHANGELOG.md                 -- repository root, default language copy
 
+Validation also keeps app/src/main/res/values*/strings.xml aligned with the
+same ten-language list and ordered string-key contract. Android resources are
+maintained directly because they are compiled inputs rather than Markdown
+outputs.
+
 Edit the JSON sources, never the generated markdown.
 """
 import json
 import re
+import xml.etree.ElementTree as ElementTree
 from pathlib import Path
 
 
@@ -34,11 +40,24 @@ LANGUAGE_CODES = [
     "ar",
 ]
 LANGUAGE_CODE_DEFAULT = "zh-Hans"
+ANDROID_STRING_DIRECTORIES = {
+    "zh-Hans": "values-zh",
+    "zh-Hant-HK": "values-zh-rHK",
+    "zh-Hant-TW": "values-zh-rTW",
+    "en": "values-en",
+    "fr": "values-fr",
+    "es": "values-es",
+    "ja": "values-ja",
+    "ko": "values-ko",
+    "ru": "values-ru",
+    "ar": "values-ar",
+}
 
 
 ROOT = Path(__file__).resolve().parents[1]
 README_DIR = ROOT / ".readme"
 CHANGELOG_DIR = ROOT / ".changelog"
+ANDROID_RESOURCE_DIR = ROOT / "app" / "src" / "main" / "res"
 TEMPLATE_PATTERN = re.compile(r"\{\{\s*([A-Za-z0-9_$.-]+)\s*\}\}")
 
 
@@ -101,6 +120,50 @@ def validate_changelog_keys(raw_changelogs: dict):
                 f"Changelog version/order mismatch for {code}: "
                 f"expected {expected_versions}, actual {actual_versions}"
             )
+
+
+def load_android_strings(path: Path):
+    root = ElementTree.fromstring(path.read_text(encoding="utf-8"))
+    if root.tag != "resources":
+        raise ValueError(f"Android resource root must be <resources>: {path}")
+
+    values = {}
+    for element in root.findall("string"):
+        name = element.attrib.get("name")
+        if not name:
+            raise ValueError(f"Android string without a name: {path}")
+        if name in values:
+            raise ValueError(f"Duplicate Android string {name!r}: {path}")
+        value = "".join(element.itertext()).strip()
+        if not value:
+            raise ValueError(f"Blank Android string {name!r}: {path}")
+        values[name] = value
+    return values
+
+
+def validate_localized_resources():
+    if list(ANDROID_STRING_DIRECTORIES) != LANGUAGE_CODES:
+        raise ValueError(
+            "Android string locales must exactly match LANGUAGE_CODES in the same order"
+        )
+
+    default_path = ANDROID_RESOURCE_DIR / "values" / "strings.xml"
+    default_values = load_android_strings(default_path)
+    expected_keys = list(default_values)
+    localized_values = {}
+    for code, directory in ANDROID_STRING_DIRECTORIES.items():
+        path = ANDROID_RESOURCE_DIR / directory / "strings.xml"
+        values = load_android_strings(path)
+        actual_keys = list(values)
+        if actual_keys != expected_keys:
+            raise ValueError(
+                f"Android string key/order mismatch for {code}: "
+                f"expected {expected_keys}, actual {actual_keys}"
+            )
+        localized_values[code] = values
+
+    if localized_values["en"] != default_values:
+        raise ValueError("values/strings.xml must match values-en/strings.xml")
 
 
 def bullet_list(items):
@@ -232,6 +295,7 @@ def generate_changelogs(languages, changelogs):
 def main():
     if LANGUAGE_CODE_DEFAULT not in LANGUAGE_CODES:
         raise ValueError(f"Default language code {LANGUAGE_CODE_DEFAULT!r} is not supported")
+    validate_localized_resources()
     languages, changelogs = load_languages()
     generate_changelogs(languages, changelogs)
     generate_readmes(languages, changelogs)

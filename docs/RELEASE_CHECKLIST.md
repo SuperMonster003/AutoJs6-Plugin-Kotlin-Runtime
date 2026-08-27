@@ -16,7 +16,8 @@ applicable box is checked and the CI run for the release commit is green.
 - [ ] Add the release's user-facing entries to every `.changelog/lang_*.json` (same version key
   and order across all ten locales), update `.readme/common.json` version facts and any affected
   `.readme/lang_*.json` strings, then regenerate with `.python/generate_markdown.py`. Never
-  hand-edit the generated `README*.md`/`CHANGELOG*.md`.
+  hand-edit the generated `README*.md`/`CHANGELOG*.md`. The same command must also accept the
+  ten-locale `values*/strings.xml` matrix and its ordered key parity.
 - [ ] Confirm `README.md`, `ROADMAP.md`, and this checklist describe the selected milestone and
   actual build commands.
 - [ ] If any frozen protocol input or provenance field changes, follow

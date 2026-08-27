@@ -194,7 +194,7 @@
 
 - [x] CI 增加独立文档一致性门禁: 固定 Python 3.10, checkout 后重跑 `.python/generate_markdown.py` 并检查 tracked diff 与 untracked 输出；门禁失败时阻断后续 Android build job
 - [ ] 下次发布按新版清单第 1 节实际演练一次（JSON 源更新 → 重新生成 → 归档核对）, 并在发布证据中回填
-- [ ] `values*/strings.xml` 插件名称/描述当前仅 en + zh-rCN; 核对宿主插件中心的展示约定后评估扩展至十语言（与 README 语言清单同源）
+- [x] 核对宿主 `PluginResourceResolver` 与成熟插件约定后, 将 `app_name` / 名称 / 描述 / 使用指引扩展至与 README 同源的十语言资源矩阵；生成器同步校验 locale 映射、XML、键序及默认英文一致性, 决策见 [`plugin-metadata-localization.md`](docs/decisions/plugin-metadata-localization.md)
 
 ---
 

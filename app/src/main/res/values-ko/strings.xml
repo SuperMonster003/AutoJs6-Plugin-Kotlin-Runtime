@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AutoJs6 Kotlin 런타임</string>
+    <string name="plugin_name">Kotlin 런타임</string>
+    <string name="plugin_description">단일 파일 Kotlin 소스를 격리된 컴파일러 및 worker 프로세스에서 컴파일하고 실행합니다.</string>
+    <string name="plugin_instruction">진입 클래스가 AutoJsJvmEntry를 구현하는 .kt 파일을 실행합니다. 현재 진입 클래스의 단순 이름은 Main입니다.</string>
+    <string name="plugin_author">SuperMonster003</string>
+</resources>

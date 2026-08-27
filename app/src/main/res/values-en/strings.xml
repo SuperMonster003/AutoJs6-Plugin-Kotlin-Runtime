@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AutoJs6 Kotlin Runtime</string>
+    <string name="plugin_name">Kotlin Runtime</string>
+    <string name="plugin_description">Compile and run single-file Kotlin source in isolated compiler and worker processes.</string>
+    <string name="plugin_instruction">Run a .kt file whose entry class implements AutoJsJvmEntry. The entry simple name is currently Main.</string>
+    <string name="plugin_author">SuperMonster003</string>
+</resources>

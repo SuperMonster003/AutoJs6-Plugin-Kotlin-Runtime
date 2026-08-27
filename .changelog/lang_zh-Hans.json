@@ -1,0 +1,86 @@
+{
+  "changelog_label_hint": "提示",
+  "changelog_label_feature": "新增",
+  "changelog_label_fix": "修复",
+  "changelog_label_improvement": "优化",
+  "changelog_label_dependency": "依赖",
+  "$data": {
+    "v0.7.0-m10": {
+      "released_date": "2026/08/26",
+      "hint": [
+        "发布能力保持 Protocol 1.1 / Entry API 2 不变, 所有 1.2 新能力在宿主落地前均不开放"
+      ],
+      "feature": [
+        "新增 JVM Source Protocol 1.2 能力提案并提交宿主评审: 有界剪贴板、用户授权文档、宿主代理 HTTPS 与宿主管理的通知",
+        "新增「授权校验 → payload 校验 → 派发 → 响应校验」四阶段宿主调用管线, 现有 `app.launch` 与 `toast.show` 已迁移且行为不变"
+      ],
+      "improvement": [
+        "协议冻结 AAR 升级为 schema-2 来源锁定, 并提供 staging-only 刷新脚本与完整刷新 SOP",
+        "新增 7 组 1.1/1.2 协议协商组合测试, 覆盖新老宿主与插件互配、降级与稳定拒绝路径"
+      ]
+    },
+    "v0.6.0-m9": {
+      "released_date": "2026/08/26",
+      "hint": [
+        "`Dispatchers.Main`、完整 `kotlin-reflect` 与 kotlinx-serialization 仍不在脚本可用面内"
+      ],
+      "feature": [
+        "脚本可用库新增精确锁定的 `kotlinx-coroutines-core-jvm` 1.11.0, 支持结构化并发与协作式取消",
+        "新增可直接运行的协程示例 `samples/coroutines.kt`"
+      ],
+      "improvement": [
+        "运行时指纹与编译缓存键纳入协程库标识, 升级后全部旧缓存自动失效"
+      ]
+    },
+    "v0.5.0-m8": {
+      "released_date": "2026/08/25",
+      "feature": [
+        "新增四类常见编译错误的双语讲解样例: 缺 import、类型不匹配、未实现入口接口、包名与请求不符"
+      ],
+      "fix": [
+        "修复 Windows 路径分隔符差异导致 K2 源码行列位置被误删的问题",
+        "源码开头的 UTF-8 BOM 会被剥离且不再影响首行行列号"
+      ],
+      "improvement": [
+        "包名策略文案更明确: 仅支持普通 ASCII 标识符, 拒绝时给出稳定可读的提示而非误导性报错",
+        "诊断信息按 UTF-8 预算截断且只在 Unicode 码点边界截断, 不会出现半个 emoji"
+      ]
+    },
+    "v0.4.0-m7": {
+      "released_date": "2026/08/25",
+      "feature": [
+        "新增真机压测与故障注入 harness (`m7-harness`) 及 PowerShell/POSIX 一键设备脚本"
+      ],
+      "fix": [
+        "修复缓存关闭时编译器状态跨宿主绑定周期滞留的问题"
+      ],
+      "improvement": [
+        "Release APK 从 45.34 MB 减至 30.38 MB (-32.99%), 改用确定性 class-only API 24 编译类路径",
+        "编译缓存热命中中位数 46 ms、冷编译 577 ms, 实测约 12.5 倍加速",
+        "编译器进程改为绑定期驻留、最终解绑即退休; 元数据发现迁移至独立 `:discovery` 进程"
+      ]
+    },
+    "v0.3.0-m6": {
+      "released_date": "2026/08/25",
+      "feature": [
+        "新增 CHANGELOG、发布清单与 GitHub Actions 全套 CI 门禁: 单元测试、双 APK、Lint 与协议完整性校验"
+      ],
+      "improvement": [
+        "构建逻辑集中到 build-logic 并内置 platform-versions 插件源码快照, 干净检出即可构建",
+        "移除 minSdk 26 下冗余的 Android API 分支代码"
+      ]
+    },
+    "v0.2.0-m5": {
+      "released_date": "2026/08/22",
+      "hint": [
+        "首个可用里程碑版本 (覆盖 M1–M5); 同签名宿主校验、能力逐项授权、一次性 worker 进程与 fail-closed 校验自始启用"
+      ],
+      "feature": [
+        "独立 Kotlin 源码编译/运行插件成型: 内置 Kotlin/JVM 2.3.21 与 D8 8.13.17, 编译与执行分处独立进程",
+        "实现 Protocol 1.1 单文件源码档案: 包名与入口类解析、净化诊断与完整失败阶段映射",
+        "实现四项逐项授权的宿主能力: 应用启动、控制台流、休眠与浮窗",
+        "实现带鉴权的编译缓存与遥测"
+      ]
+    }
+  }
+}

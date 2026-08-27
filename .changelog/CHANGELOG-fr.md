@@ -1,0 +1,62 @@
+******
+
+### Historique des versions
+
+******
+
+# v0.7.0-m10
+
+###### 2026/08/26
+
+* `Note` Les capacités publiées restent en Protocol 1.1 / Entry API 2 ; aucune capacité 1.2 n'est ouverte avant son arrivée côté hôte
+* `Nouveauté` Ajout de la proposition de capacités JVM Source Protocol 1.2, soumise à la revue de l'hôte : presse-papiers borné, documents autorisés par l'utilisateur, HTTPS proxifié par l'hôte et notifications gérées par l'hôte
+* `Nouveauté` Ajout d'un pipeline d'appel hôte en quatre étapes (autorisation → validation du payload → dispatch → validation de la réponse) ; `app.launch` et `toast.show` migrés sans changement de comportement
+* `Amélioration` Passage des AAR de protocole gelés au verrouillage de provenance schema-2, avec script de rafraîchissement staging-only et SOP complète
+* `Amélioration` Ajout de sept tests de négociation 1.1/1.2 couvrant les paires hôte/plugin anciennes et nouvelles, la rétrogradation et les rejets stables
+
+# v0.6.0-m9
+
+###### 2026/08/26
+
+* `Note` `Dispatchers.Main`, `kotlin-reflect` complet et kotlinx-serialization restent hors de la surface de script
+* `Nouveauté` Ajout de `kotlinx-coroutines-core-jvm` 1.11.0, épinglé exactement, aux bibliothèques de script : concurrence structurée et annulation coopérative
+* `Nouveauté` Ajout de l'exemple de coroutines prêt à l'emploi `samples/coroutines.kt`
+* `Amélioration` Les empreintes d'exécution et les clés de cache de compilation intègrent désormais l'identité de la bibliothèque de coroutines : tous les caches antérieurs sont invalidés automatiquement
+
+# v0.5.0-m8
+
+###### 2026/08/25
+
+* `Nouveauté` Ajout d'exemples bilingues expliquant quatre erreurs de compilation courantes : import manquant, incompatibilité de types, interface d'entrée manquante, package non conforme
+* `Correction` Correction de la perte des positions ligne/colonne K2 due aux différences de séparateurs de chemins Windows
+* `Correction` Un BOM UTF-8 en tête est désormais retiré sans décaler les positions de la première ligne
+* `Amélioration` Formulation plus claire de la politique de packages : seuls les identifiants ASCII ordinaires sont acceptés, avec des messages stables et lisibles en cas de rejet
+* `Amélioration` Les diagnostics sont budgétés en UTF-8 et tronqués uniquement aux frontières de points de code Unicode — jamais un demi-emoji
+
+# v0.4.0-m7
+
+###### 2026/08/25
+
+* `Nouveauté` Ajout d'un harnais de stress et d'injection de fautes sur appareil (`m7-harness`) avec scripts PowerShell/POSIX en une commande
+* `Correction` Correction de la persistance de l'état du compilateur entre les époques de binding hôte lorsque le cache est désactivé
+* `Amélioration` Réduction de l'APK release de 45,34 MB à 30,38 MB (-32,99 %) grâce à un classpath de compilation déterministe class-only API 24
+* `Amélioration` Cache de compilation : médiane de 46 ms à chaud contre 577 ms à froid — environ 12,5x plus rapide sur appareil
+* `Amélioration` Le processus compilateur vit désormais par binding et se retire au dernier unbind ; la découverte de métadonnées passe au processus séparé `:discovery`
+
+# v0.3.0-m6
+
+###### 2026/08/25
+
+* `Nouveauté` Ajout du CHANGELOG, de la checklist de publication et des portes CI GitHub Actions complètes : tests unitaires, deux APK, Lint et intégrité du protocole
+* `Amélioration` Centralisation de la logique de build dans build-logic avec un instantané source du plugin platform-versions : un checkout propre se compile tel quel
+* `Amélioration` Suppression des branches d'API Android rendues superflues par minSdk 26
+
+# v0.2.0-m5
+
+###### 2026/08/22
+
+* `Note` Première version jalon utilisable (couvrant M1–M5) ; vérification d'hôte de même signature, autorisation par capacité, processus worker jetables et validation fail-closed actifs dès le départ
+* `Nouveauté` Plugin autonome de compilation/exécution de source Kotlin établi : Kotlin/JVM 2.3.21 et D8 8.13.17 embarqués, compilation et exécution dans des processus séparés
+* `Nouveauté` Implémentation du profil source mono-fichier Protocol 1.1 : analyse de package et de classe d'entrée, diagnostics assainis et cartographie complète des phases d'échec
+* `Nouveauté` Implémentation de quatre capacités hôte autorisées individuellement : lancement d'application, flux console, sleep et toast
+* `Nouveauté` Implémentation du cache de compilation authentifié avec télémétrie

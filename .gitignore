@@ -1,6 +1,7 @@
 .gradle/
 .idea/
 .kotlin/
+__pycache__/
 **/build/
 !**/src/**/build/
 !**/src/**/build/**
@@ -9,6 +10,7 @@ local.properties
 *.keystore
 sign.properties
 /releases/
+/app/release/
 .migration-backup/
 !protocol/*.aar
 !gradle/wrapper/gradle-wrapper.jar

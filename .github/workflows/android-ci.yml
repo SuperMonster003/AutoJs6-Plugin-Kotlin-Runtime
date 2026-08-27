@@ -15,6 +15,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  documentation-integrity:
+    name: Generated documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out sources
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.10"
+
+      - name: Regenerate and verify localized documentation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -B .python/generate_markdown.py
+          if ! git diff --exit-code; then
+            echo "::error::Generated README/CHANGELOG files are stale; update the JSON sources and regenerate them."
+            exit 1
+          fi
+          generated_untracked="$(git ls-files --others --exclude-standard)"
+          if [[ -n "$generated_untracked" ]]; then
+            printf 'Unexpected untracked generated files:\n%s\n' "$generated_untracked"
+            echo "::error::The documentation generator created files that are not committed."
+            exit 1
+          fi
+
   protocol-integrity:
     name: Protocol integrity
     runs-on: ubuntu-latest
@@ -74,7 +104,9 @@ jobs:
 
   build:
     name: Unit test, assemble, and lint
-    needs: protocol-integrity
+    needs:
+      - documentation-integrity
+      - protocol-integrity
     runs-on: ubuntu-latest
     timeout-minutes: 50
 

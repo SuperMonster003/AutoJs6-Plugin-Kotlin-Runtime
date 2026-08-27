@@ -192,7 +192,7 @@
 
 ### 11.2 文档流水线后续（待办）
 
-- [ ] CI 增加文档一致性门禁: checkout 后重跑 `.python/generate_markdown.py` 并 `git diff --exit-code`, 阻断手改生成物或 JSON 与生成物漂移
+- [x] CI 增加独立文档一致性门禁: 固定 Python 3.10, checkout 后重跑 `.python/generate_markdown.py` 并检查 tracked diff 与 untracked 输出；门禁失败时阻断后续 Android build job
 - [ ] 下次发布按新版清单第 1 节实际演练一次（JSON 源更新 → 重新生成 → 归档核对）, 并在发布证据中回填
 - [ ] `values*/strings.xml` 插件名称/描述当前仅 en + zh-rCN; 核对宿主插件中心的展示约定后评估扩展至十语言（与 README 语言清单同源）
 

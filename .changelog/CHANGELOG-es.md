@@ -4,6 +4,12 @@
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `Mejora` La verificación de compilación rechaza dependencias nativas accidentales y genera un informe JSON
+
 # v0.7.0-m10
 
 ###### 2026/08/26

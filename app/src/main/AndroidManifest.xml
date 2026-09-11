@@ -15,6 +15,10 @@
         android:usesCleartextTraffic="false">
 
         <meta-data
+            android:name="org.autojs.plugin.contract.NATIVE_PAGE_ALIGNMENT"
+            android:value="0" />
+
+        <meta-data
             android:name="org.autojs.plugin.info.AUTHOR"
             android:value="@string/plugin_author" />
 

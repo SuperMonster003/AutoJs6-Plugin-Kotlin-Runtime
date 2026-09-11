@@ -154,6 +154,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `تحسين` التحقق أثناء البناء لمنع إدخال تبعيات أصلية غير مقصودة, مع تقرير JSON
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ class Main : AutoJsJvmEntry {
 * `ميزة` إضافة `kotlinx-coroutines-core-jvm` 1.11.0 المثبتة بدقة إلى مكتبات السكربت: تزامن مهيكل وإلغاء تعاوني
 * `ميزة` إضافة مثال الكوروتينات الجاهز للتشغيل `samples/coroutines.kt`
 * `تحسين` أصبحت بصمات وقت التشغيل ومفاتيح ذاكرة الترجمة المخبأة تتضمن هوية مكتبة الكوروتينات، فتُبطل كل الذواكر السابقة تلقائيًا
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `ميزة` إضافة أمثلة شرح ثنائية اللغة لأربعة أخطاء ترجمة شائعة: import مفقود، وعدم توافق الأنواع، وغياب واجهة الدخول، وعدم توافق الحزمة
-* `إصلاح` إصلاح فقدان مواضع السطر/العمود في K2 بسبب اختلاف فواصل مسارات Windows
-* `إصلاح` أصبحت ترويسة UTF-8 BOM في البداية تُزال دون إزاحة مواضع السطر الأول
-* `تحسين` صياغة أوضح لسياسة الحزم: تُقبل معرّفات ASCII العادية فقط، مع رسائل ثابتة مقروءة عند الرفض بدل أخطاء مضللة
-* `تحسين` تُدار التشخيصات بميزانية UTF-8 وتُقتطع فقط عند حدود نقاط ترميز Unicode — فلا نصف إيموجي أبدًا
 
 ##### لمزيد من سجل الإصدارات، انظر
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - مجلد الأمثلة: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - خارطة طريق المشروع (مع سجلات التحقق لكل مرحلة): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - إشعارات الأطراف الثالثة: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

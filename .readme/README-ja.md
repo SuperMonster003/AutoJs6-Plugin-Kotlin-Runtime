@@ -154,6 +154,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `改善` 意図しないネイティブ依存関係をビルド時に拒否し, JSON レポートを生成
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ class Main : AutoJsJvmEntry {
 * `新機能` 厳密に固定した `kotlinx-coroutines-core-jvm` 1.11.0 をスクリプトライブラリに追加. 構造化並行処理と協調キャンセルに対応
 * `新機能` すぐ実行できるコルーチン例 `samples/coroutines.kt` を追加
 * `改善` ランタイム指紋とコンパイルキャッシュキーにコルーチンライブラリの識別を組み込み, 更新後は旧キャッシュを全て自動無効化
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `新機能` よくある 4 つのコンパイルエラーの二言語解説サンプルを追加: import 不足, 型不一致, エントリインターフェース未実装, パッケージ不一致
-* `修正` Windows のパス区切り文字の差異により K2 の行/列位置が失われる問題を修正
-* `修正` 先頭の UTF-8 BOM を除去しても最初の行の位置がずれないように修正
-* `改善` パッケージポリシーの文言を明確化: 通常の ASCII 識別子のみ対応で, 拒否時は誤解を招くエラーではなく安定した読みやすいメッセージを表示
-* `改善` 診断は UTF-8 予算で管理し, Unicode コードポイント境界でのみ切り詰め — 絵文字が半分になることはありません
 
 ##### さらに詳しい履歴はこちら
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - サンプルディレクトリ: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - プロジェクトロードマップ (マイルストーンごとの検証記録付き): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - サードパーティ通知: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

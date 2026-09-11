@@ -4,6 +4,12 @@
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `Amélioration` La vérification de compilation rejette les dépendances natives involontaires et produit un rapport JSON
+
 # v0.7.0-m10
 
 ###### 2026/08/26

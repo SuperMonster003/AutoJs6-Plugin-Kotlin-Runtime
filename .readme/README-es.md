@@ -154,6 +154,12 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `Mejora` La verificación de compilación rechaza dependencias nativas accidentales y genera un informe JSON
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 * `Novedad` Añadida `kotlinx-coroutines-core-jvm` 1.11.0, fijada exactamente, a las bibliotecas de script: concurrencia estructurada y cancelación cooperativa
 * `Novedad` Añadido el ejemplo de corrutinas listo para ejecutar `samples/coroutines.kt`
 * `Mejora` Las huellas de runtime y las claves de la caché de compilación ahora incluyen la identidad de la biblioteca de corrutinas: todas las cachés anteriores se invalidan automáticamente
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `Novedad` Añadidos ejemplos bilingües que explican cuatro errores de compilación comunes: import ausente, tipos incompatibles, interfaz de entrada ausente y paquete no conforme
-* `Corrección` Corregida la pérdida de posiciones línea/columna de K2 por diferencias en los separadores de ruta de Windows
-* `Corrección` Un BOM UTF-8 inicial ahora se elimina sin desplazar las posiciones de la primera línea
-* `Mejora` Redacción más clara de la política de paquetes: solo se aceptan identificadores ASCII ordinarios, con mensajes estables y legibles al rechazar
-* `Mejora` Los diagnósticos se presupuestan en UTF-8 y solo se truncan en fronteras de puntos de código Unicode — nunca medio emoji
 
 ##### Para más historial, consulte
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - Directorio de ejemplos: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - Hoja de ruta (con registros de verificación por hito): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - Avisos de terceros: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

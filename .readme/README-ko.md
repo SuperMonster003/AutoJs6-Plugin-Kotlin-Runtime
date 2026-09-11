@@ -154,6 +154,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `개선` 빌드 시 의도하지 않은 네이티브 의존성을 거부하고 JSON 보고서 생성
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ class Main : AutoJsJvmEntry {
 * `새 기능` 정확히 고정된 `kotlinx-coroutines-core-jvm` 1.11.0을 스크립트 라이브러리에 추가. 구조화 동시성과 협조적 취소 지원
 * `새 기능` 바로 실행 가능한 코루틴 예제 `samples/coroutines.kt` 추가
 * `개선` 런타임 지문과 컴파일 캐시 키에 코루틴 라이브러리 식별 정보를 포함하여 업그레이드 후 이전 캐시 전체 자동 무효화
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `새 기능` 흔한 4가지 컴파일 오류의 이중 언어 해설 샘플 추가: import 누락, 타입 불일치, 진입 인터페이스 미구현, 패키지 불일치
-* `수정` Windows 경로 구분자 차이로 K2 행/열 위치가 사라지는 문제 수정
-* `수정` 선두 UTF-8 BOM 제거 시 첫 행 위치가 밀리지 않도록 수정
-* `개선` 패키지 정책 문구 명확화: 일반 ASCII 식별자만 지원하며, 거부 시 오해를 부르는 오류 대신 안정적이고 읽기 쉬운 메시지 표시
-* `개선` 진단은 UTF-8 예산으로 관리되며 Unicode 코드 포인트 경계에서만 잘림 — 이모지가 반쪽 나는 일이 없습니다
 
 ##### 더 많은 릴리스 이력은 다음을 참조
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - 샘플 디렉터리: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - 프로젝트 로드맵 (마일스톤별 검증 기록 포함): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - 서드파티 고지: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

@@ -182,3 +182,6 @@ app/src/main/res/values*/strings.xml
 - {{ text_link_samples }}: {{ samples_url }}
 - {{ text_link_roadmap }}: {{ roadmap_url }}
 - {{ text_link_third_party }}: {{ third_party_url }}
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

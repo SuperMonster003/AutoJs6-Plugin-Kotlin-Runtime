@@ -154,6 +154,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `優化` 建置階段阻止意外引入原生相依套件, 並輸出 JSON 校驗報告
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ class Main : AutoJsJvmEntry {
 * `新增` 腳本可用庫新增精確鎖定的 `kotlinx-coroutines-core-jvm` 1.11.0, 支援結構化並發與協作式取消
 * `新增` 新增可直接運行的協程示例 `samples/coroutines.kt`
 * `優化` 運行時指紋與編譯緩存鍵納入協程庫標識, 升級後全部舊緩存自動失效
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `新增` 新增四類常見編譯錯誤的雙語講解樣例: 缺 import、類型不匹配、未實現入口介面、包名與請求不符
-* `修復` 修復 Windows 路徑分隔符差異導致 K2 源碼行列位置被誤刪的問題
-* `修復` 源碼開頭的 UTF-8 BOM 會被剝離且不再影響首行行列號
-* `優化` 包名策略文案更明確: 只支援普通 ASCII 識別字, 拒絕時給出穩定可讀的提示而非誤導性報錯
-* `優化` 診斷信息按 UTF-8 預算截斷且只在 Unicode 碼點邊界截斷, 不會出現半個 emoji
 
 ##### 更多發行歷史可參閱
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - 示例目錄: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - 項目路線圖 (含各里程碑驗證記錄): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - 第三方組件聲明: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

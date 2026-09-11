@@ -154,6 +154,12 @@ The plugin is designed deny-by-default; the following restrictions are always in
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `Improvement` Build verification rejects accidental native dependencies and produces a JSON report
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ The plugin is designed deny-by-default; the following restrictions are always in
 * `Feature` Added the exactly pinned `kotlinx-coroutines-core-jvm` 1.11.0 to the script libraries, enabling structured concurrency and cooperative cancellation
 * `Feature` Added the ready-to-run coroutine example `samples/coroutines.kt`
 * `Improvement` Runtime fingerprints and compilation cache keys now include the coroutine library identity, so all pre-upgrade caches invalidate automatically
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `Feature` Added bilingual walkthrough samples for four common compilation errors: missing import, type mismatch, missing entry interface, and package/request mismatch
-* `Fix` Fixed K2 source line/column positions being dropped due to Windows path separator differences
-* `Fix` A leading UTF-8 BOM is now stripped without shifting first-line positions
-* `Improvement` Clearer package policy wording: only ordinary ASCII identifiers are supported, with stable readable messages instead of misleading errors on rejection
-* `Improvement` Diagnostics are budgeted in UTF-8 and truncated only at Unicode code-point boundaries — never half an emoji
 
 ##### For more release history, see
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - Samples directory: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - Project roadmap (with per-milestone verification records): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - Third-party notices: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

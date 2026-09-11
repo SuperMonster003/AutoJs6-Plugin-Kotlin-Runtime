@@ -154,6 +154,12 @@ Le plugin est conçu en refus par défaut ; les restrictions suivantes sont touj
 
 ******
 
+# v0.7.0
+
+###### 2026/09/11
+
+* `Amélioration` La vérification de compilation rejette les dépendances natives involontaires et produit un rapport JSON
+
 # v0.7.0-m10
 
 ###### 2026/08/26
@@ -172,16 +178,6 @@ Le plugin est conçu en refus par défaut ; les restrictions suivantes sont touj
 * `Nouveauté` Ajout de `kotlinx-coroutines-core-jvm` 1.11.0, épinglé exactement, aux bibliothèques de script : concurrence structurée et annulation coopérative
 * `Nouveauté` Ajout de l'exemple de coroutines prêt à l'emploi `samples/coroutines.kt`
 * `Amélioration` Les empreintes d'exécution et les clés de cache de compilation intègrent désormais l'identité de la bibliothèque de coroutines : tous les caches antérieurs sont invalidés automatiquement
-
-# v0.5.0-m8
-
-###### 2026/08/25
-
-* `Nouveauté` Ajout d'exemples bilingues expliquant quatre erreurs de compilation courantes : import manquant, incompatibilité de types, interface d'entrée manquante, package non conforme
-* `Correction` Correction de la perte des positions ligne/colonne K2 due aux différences de séparateurs de chemins Windows
-* `Correction` Un BOM UTF-8 en tête est désormais retiré sans décaler les positions de la première ligne
-* `Amélioration` Formulation plus claire de la politique de packages : seuls les identifiants ASCII ordinaires sont acceptés, avec des messages stables et lisibles en cas de rejet
-* `Amélioration` Les diagnostics sont budgétés en UTF-8 et tronqués uniquement aux frontières de points de code Unicode — jamais un demi-emoji
 
 ##### Pour plus d'historique, voir
 
@@ -239,3 +235,6 @@ app/src/main/res/values*/strings.xml
 - Répertoire d'exemples: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/tree/main/samples
 - Feuille de route (avec les registres de vérification par jalon): https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/ROADMAP.md
 - Mentions tierces: https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/THIRD_PARTY_NOTICES.md
+
+
+[16 KB page alignment and build verification](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/16kb.md)

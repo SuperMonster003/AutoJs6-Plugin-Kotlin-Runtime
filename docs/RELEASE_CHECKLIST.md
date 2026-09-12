@@ -43,11 +43,8 @@ Run from the repository root:
   exit with code 0.
 - [ ] Lint reports no new issues; existing entries may only be changed through a reviewed
   `updateLintBaselineDebug` diff.
-- [ ] The platform-version snapshot tests pass:
-
-```powershell
-.\gradlew.bat -p build-logic/platform-versions test --offline
-```
+- [ ] The public platform-version plugin resolves through the configured plugin repositories, and
+  the main build reports the expected AGP, Kotlin, KSP, and R8 selections.
 
 ## 3. Verify host-aligned signing
 

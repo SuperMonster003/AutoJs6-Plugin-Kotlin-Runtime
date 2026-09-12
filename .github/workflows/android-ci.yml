@@ -68,9 +68,6 @@ jobs:
           # Let the comprehensive build job own the write so its full dependency graph is cached.
           cache-read-only: true
 
-      - name: Test repository-local platform-version plugin
-        run: bash scripts/ci/retry.sh bash gradlew -p build-logic/platform-versions test --no-daemon --stacktrace
-
       - name: Create ephemeral CI signing material
         shell: bash
         run: |

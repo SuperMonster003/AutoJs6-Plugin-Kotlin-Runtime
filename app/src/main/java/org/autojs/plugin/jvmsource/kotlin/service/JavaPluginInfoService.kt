@@ -27,19 +27,21 @@ class JavaPluginInfoService : Service() {
     private val binder = object : IPluginInfoProvider.Stub() {
         override fun getInfo(): PluginInfo {
             callerVerifier.enforceAllowedCaller()
+            @Suppress("DEPRECATION")
+            val installed = packageManager.getPackageInfo(packageName, 0)
             return PluginInfo(
-                name = getString(R.string.plugin_name),
+                name = getString(R.string.app_name),
                 description = getString(R.string.plugin_description),
                 instruction = getString(R.string.plugin_instruction),
                 author = getString(R.string.plugin_author),
                 collaborators = null,
-                versionName = BuildConfig.VERSION_NAME,
-                versionCode = BuildConfig.VERSION_CODE.toLong(),
-                versionDate = null,
+                versionName = requireNotNull(installed.versionName) { "Installed plugin version is missing" },
+                versionCode = if (android.os.Build.VERSION.SDK_INT >= 28) installed.longVersionCode else installed.versionCode.toLong(),
+                versionDate = getString(R.string.plugin_version_date),
                 id = JavaProviderRuntime.PROVIDER_ID,
                 engine = JvmSourceContract.ENGINE_ID,
                 variant = VARIANT,
-                supportedAbis = null,
+                supportedAbis = emptyArray(),
                 capabilities = Bundle().apply {
                     putLong(
                         PluginCapabilityKeys.REQUIRES_HOST_VERSION,

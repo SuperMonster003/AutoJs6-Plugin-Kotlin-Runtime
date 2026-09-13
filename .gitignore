@@ -14,3 +14,11 @@ sign.properties
 .migration-backup/
 !protocol/*.aar
 !gradle/wrapper/gradle-wrapper.jar
+
+/sign.properties
+
+/local.properties
+
+*.pre-platform-versions.bak
+
+/app/releases/

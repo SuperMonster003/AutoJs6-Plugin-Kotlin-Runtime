@@ -12,8 +12,6 @@
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=A24232&label=Issues"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/commit/17f42fa7aa2a2046c74e558f313b7510d155f365"><img alt="Created" src="https://img.shields.io/date/1787396606?color=2e7d32&label=Created"/></a>
     <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=534BAE&label=License"/></a>
   </p>
 </div>
@@ -154,6 +152,13 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.1
+
+###### 2026/09/13
+
+* `إصلاح` يمكن لمركز الإضافات تنشيط المزود المثبت حديثا عبر مدخل محمي; تطابق البيانات المعروضة الحزمة المثبتة
+* `تحسين` توحيد تنشيط المضيف وبيانات الإضافة والوثائق المترجمة وتجميع إصدارات APK الموقعة وفق قواعد الإضافات المشتركة
+
 # v0.7.0
 
 ###### 2026/09/11
@@ -170,18 +175,9 @@ class Main : AutoJsJvmEntry {
 * `تحسين` ترقية ملفات AAR المجمّدة للبروتوكول إلى قفل مصدر schema-2، مع سكربت تحديث خاص بالتحضير و SOP كاملة
 * `تحسين` إضافة سبعة اختبارات توليفية لتفاوض 1.1/1.2 تغطي اقتران المضيف/الإضافة القديم والجديد ومسارات التخفيض والرفض الثابت
 
-# v0.6.0-m9
-
-###### 2026/08/26
-
-* `تلميح` لا تزال `Dispatchers.Main` و`kotlin-reflect` الكاملة و kotlinx-serialization خارج سطح السكربت
-* `ميزة` إضافة `kotlinx-coroutines-core-jvm` 1.11.0 المثبتة بدقة إلى مكتبات السكربت: تزامن مهيكل وإلغاء تعاوني
-* `ميزة` إضافة مثال الكوروتينات الجاهز للتشغيل `samples/coroutines.kt`
-* `تحسين` أصبحت بصمات وقت التشغيل ومفاتيح ذاكرة الترجمة المخبأة تتضمن هوية مكتبة الكوروتينات، فتُبطل كل الذواكر السابقة تلقائيًا
-
 ##### لمزيد من سجل الإصدارات، انظر
 
-* [CHANGELOG-ar.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.changelog/CHANGELOG-ar.md)
+* [CHANGELOG-ar.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/assets/doc/CHANGELOG-ar.md)
 
 ******
 
@@ -201,7 +197,7 @@ class Main : AutoJsJvmEntry {
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-تتركز معاملات البناء في `version.properties`: الإصدار الحالي 0.7.0-m10 (build 7)، minSdk 26، targetSdk 36.
+تتركز معاملات البناء في `version.properties`: الإصدار الحالي 0.7.1-m10 (build 23)، minSdk 26، targetSdk 36.
 
 يجب توقيع APK بنسختي release/debug بنفس شهادة AutoJs6 ليقبلها المضيف؛ وتوجد مواد التوقيع المحلية في `sign.properties` و `app/sm003.jks` المتجاهلين من نظام التحكم بالإصدارات. انظر [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) لأوامر البوابات وسير الإصدار كاملة.
 

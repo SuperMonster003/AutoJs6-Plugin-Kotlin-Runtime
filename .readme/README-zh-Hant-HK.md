@@ -12,8 +12,6 @@
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=A24232&label=Issues"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/commit/17f42fa7aa2a2046c74e558f313b7510d155f365"><img alt="Created" src="https://img.shields.io/date/1787396606?color=2e7d32&label=Created"/></a>
     <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=534BAE&label=License"/></a>
   </p>
 </div>
@@ -154,6 +152,13 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.1
+
+###### 2026/09/13
+
+* `修復` 外掛中心可透過受保護入口啟用新安裝的外掛, 顯示的中繼資料與實際安裝套件一致
+* `優化` 宿主啟用, 外掛中繼資料, 多語言文件與簽章發佈彙整遵循統一外掛規範
+
 # v0.7.0
 
 ###### 2026/09/11
@@ -170,18 +175,9 @@ class Main : AutoJsJvmEntry {
 * `優化` 協議凍結 AAR 升級為 schema-2 來源鎖定, 並提供 staging-only 刷新腳本與完整刷新 SOP
 * `優化` 新增 7 組 1.1/1.2 協議協商組合測試, 覆蓋新舊宿主與插件互配、降級與穩定拒絕路徑
 
-# v0.6.0-m9
-
-###### 2026/08/26
-
-* `提示` `Dispatchers.Main`、完整 `kotlin-reflect` 與 kotlinx-serialization 仍不在腳本可用面內
-* `新增` 腳本可用庫新增精確鎖定的 `kotlinx-coroutines-core-jvm` 1.11.0, 支援結構化並發與協作式取消
-* `新增` 新增可直接運行的協程示例 `samples/coroutines.kt`
-* `優化` 運行時指紋與編譯緩存鍵納入協程庫標識, 升級後全部舊緩存自動失效
-
 ##### 更多發行歷史可參閱
 
-* [CHANGELOG-zh-Hant-HK.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.changelog/CHANGELOG-zh-Hant-HK.md)
+* [CHANGELOG-zh-Hant-HK.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/assets/doc/CHANGELOG-zh-Hant-HK.md)
 
 ******
 
@@ -201,7 +197,7 @@ Release 構建:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-構建參數集中於 `version.properties`: 目前版本 0.7.0-m10 (build 7), minSdk 26, targetSdk 36.
+構建參數集中於 `version.properties`: 目前版本 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
 
 Release/debug APK 必須與 AutoJs6 同證書簽名才能被宿主接受; 本地簽名材料位於被版本控制忽略的 `sign.properties` 與 `app/sm003.jks`. 完整門禁命令與發佈流程見 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 

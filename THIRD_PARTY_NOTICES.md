@@ -7,3 +7,6 @@
 
 The corresponding artifacts are resolved at build time from pinned dependency coordinates; this
 repository does not modify their source code.
+
+
+The upstream compiler source is not vendored or edited here. The build does transform the compiler artifact with shape-checked Android compatibility bytecode patches. See `app/build.gradle.kts` (compiler patch tasks) and `docs/RELEASE_CHECKLIST.md` for the exact pinned compiler, patch validation and release checks. Preserve upstream LICENSE/NOTICE resources from the compiler and its dependencies, including Trove4j, when redistributing the APK or matching sources.

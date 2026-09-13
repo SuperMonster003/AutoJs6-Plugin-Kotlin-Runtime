@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Entorno de ejecución Kotlin de AutoJs6</string>
-    <string name="plugin_name">Entorno de ejecución Kotlin</string>
-    <string name="plugin_description">Compila y ejecuta código fuente Kotlin de un solo archivo en procesos aislados de compilación y ejecución.</string>
-    <string name="plugin_instruction">Ejecuta un archivo .kt cuya clase de entrada implemente AutoJsJvmEntry. Actualmente, el nombre simple de la entrada es Main.</string>
-    <string name="plugin_author">SuperMonster003</string>
+    <string name="plugin_description">Compila y ejecuta código Kotlin en procesos dedicados</string>
+    <string name="plugin_instruction">Ejecuta código .kt cuya clase de entrada implementa AutoJsJvmEntry</string>
+    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

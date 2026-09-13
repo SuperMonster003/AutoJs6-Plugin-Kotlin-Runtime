@@ -12,8 +12,6 @@
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=A24232&label=Issues"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/commit/17f42fa7aa2a2046c74e558f313b7510d155f365"><img alt="Created" src="https://img.shields.io/date/1787396606?color=2e7d32&label=Created"/></a>
     <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=534BAE&label=License"/></a>
   </p>
 </div>
@@ -154,6 +152,13 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 
 ******
 
+# v0.7.1
+
+###### 2026/09/13
+
+* `Corrección` El centro de complementos puede activar un proveedor recién instalado mediante una entrada protegida; los metadatos reflejan el paquete instalado
+* `Mejora` Activación del host, metadatos, documentación traducida y recopilación de APK firmados conforme a las convenciones comunes
+
 # v0.7.0
 
 ###### 2026/09/11
@@ -170,18 +175,9 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 * `Mejora` Los AAR de protocolo congelados pasan a bloqueo de procedencia schema-2, con script de actualización staging-only y SOP completa
 * `Mejora` Añadidas siete pruebas de negociación 1.1/1.2 que cubren combinaciones de host/plugin antiguos y nuevos, degradación y rechazos estables
 
-# v0.6.0-m9
-
-###### 2026/08/26
-
-* `Nota` `Dispatchers.Main`, `kotlin-reflect` completo y kotlinx-serialization siguen fuera de la superficie de script
-* `Novedad` Añadida `kotlinx-coroutines-core-jvm` 1.11.0, fijada exactamente, a las bibliotecas de script: concurrencia estructurada y cancelación cooperativa
-* `Novedad` Añadido el ejemplo de corrutinas listo para ejecutar `samples/coroutines.kt`
-* `Mejora` Las huellas de runtime y las claves de la caché de compilación ahora incluyen la identidad de la biblioteca de corrutinas: todas las cachés anteriores se invalidan automáticamente
-
 ##### Para más historial, consulte
 
-* [CHANGELOG-es.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.changelog/CHANGELOG-es.md)
+* [CHANGELOG-es.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/assets/doc/CHANGELOG-es.md)
 
 ******
 
@@ -201,7 +197,7 @@ Build release:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.0-m10 (build 7), minSdk 26, targetSdk 36.
+Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
 
 Los APK release/debug deben firmarse con el mismo certificado que AutoJs6 para que el host los acepte; el material de firma local reside en `sign.properties` y `app/sm003.jks`, ignorados por el control de versiones. Vea [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) para los comandos de control y el flujo de publicación.
 

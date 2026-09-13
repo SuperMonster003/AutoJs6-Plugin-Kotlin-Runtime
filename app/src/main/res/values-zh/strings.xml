@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AutoJs6 Kotlin 运行时</string>
-    <string name="plugin_name">Kotlin 运行时</string>
-    <string name="plugin_description">在隔离的编译与 worker 进程中编译、运行单文件 Kotlin 源码。</string>
-    <string name="plugin_instruction">运行入口类实现 AutoJsJvmEntry 的 .kt 文件；当前入口简单类名须为 Main。</string>
-    <string name="plugin_author">SuperMonster003</string>
+    <string name="plugin_description">在独立进程中编译和运行 Kotlin 源码</string>
+    <string name="plugin_instruction">运行入口类实现 AutoJsJvmEntry 的 .kt 源码</string>
+    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

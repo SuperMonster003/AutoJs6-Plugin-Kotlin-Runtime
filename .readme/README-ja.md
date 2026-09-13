@@ -12,8 +12,6 @@
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=A24232&label=Issues"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/commit/17f42fa7aa2a2046c74e558f313b7510d155f365"><img alt="Created" src="https://img.shields.io/date/1787396606?color=2e7d32&label=Created"/></a>
     <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=534BAE&label=License"/></a>
   </p>
 </div>
@@ -154,6 +152,13 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.1
+
+###### 2026/09/13
+
+* `修正` プラグインセンターから保護された入口を通じて新規インストールを有効化でき, メタデータはインストール済みパッケージに追従
+* `改善` ホストからの有効化, メタデータ, 多言語文書および署名済み APK の収集を共通規約に統一
+
 # v0.7.0
 
 ###### 2026/09/11
@@ -170,18 +175,9 @@ class Main : AutoJsJvmEntry {
 * `改善` 凍結プロトコル AAR を schema-2 来歴ロックに更新し, staging 専用リフレッシュスクリプトと完全な SOP を追加
 * `改善` 新旧ホスト/プラグインの組み合わせ, ダウングレード, 安定拒否経路を網羅する 7 組の 1.1/1.2 プロトコル交渉テストを追加
 
-# v0.6.0-m9
-
-###### 2026/08/26
-
-* `ヒント` `Dispatchers.Main`, 完全な `kotlin-reflect`, kotlinx-serialization は引き続きスクリプトから利用不可
-* `新機能` 厳密に固定した `kotlinx-coroutines-core-jvm` 1.11.0 をスクリプトライブラリに追加. 構造化並行処理と協調キャンセルに対応
-* `新機能` すぐ実行できるコルーチン例 `samples/coroutines.kt` を追加
-* `改善` ランタイム指紋とコンパイルキャッシュキーにコルーチンライブラリの識別を組み込み, 更新後は旧キャッシュを全て自動無効化
-
 ##### さらに詳しい履歴はこちら
 
-* [CHANGELOG-ja.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.changelog/CHANGELOG-ja.md)
+* [CHANGELOG-ja.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/assets/doc/CHANGELOG-ja.md)
 
 ******
 
@@ -201,7 +197,7 @@ Release ビルド:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.0-m10 (build 7), minSdk 26, targetSdk 36.
+ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
 
 Release/debug APK はホストに受け入れられるために AutoJs6 と同一証明書での署名が必須です. ローカル署名素材はバージョン管理対象外の `sign.properties` と `app/sm003.jks` にあります. ゲートコマンドとリリース手順の全容は [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) を参照.
 

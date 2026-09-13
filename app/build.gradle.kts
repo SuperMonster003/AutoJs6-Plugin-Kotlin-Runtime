@@ -1,3 +1,8 @@
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
+import java.util.zip.CRC32
 import groovy.json.JsonSlurper
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
@@ -145,6 +150,7 @@ android {
         targetSdk = versions.sdkVersionTarget
         versionCode = versions.appVersionCode
         versionName = versions.appVersionName
+        resValue("string", "plugin_version_date", DateTimeFormatter.ofPattern("MMM d, yyyy", Locale.ENGLISH).withZone(ZoneId.of("GMT+08:00")).format(Instant.ofEpochMilli(versions["BUILD_TIME"]!!.toLong())))
         multiDexEnabled = true
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -1024,3 +1030,52 @@ versions.handleIfNeeded(project, "", listOf("debug", "release"))
 
 // Reject accidental native dependencies on every ABI.
 nativeAlignment { expectNoNativeLibraries.set(true) }
+
+tasks.register<Sync>("appendDigestToReleasedFiles") {
+    group = "distribution"
+    description = "Collects the current signed release APKs with CRC32 filenames."
+    dependsOn("assembleRelease")
+    val sourceDirectory = layout.buildDirectory.dir("outputs/apk/release")
+    val expectedNames = setOf("app-release.apk")
+    val destinationDirectory = layout.projectDirectory.dir("releases/${versions.appVersionName}")
+    inputs.property("versionName", versions.appVersionName)
+    inputs.property("versionCode", versions.appVersionCode)
+    doFirst {
+        check(hostAlignedSigning.storeFile.isFile) { "Host signing material is missing" }
+        val source = sourceDirectory.get().asFile
+        val actualNames = source.listFiles { f -> f.isFile && f.extension == "apk" }
+            .orEmpty().mapTo(mutableSetOf()) { it.name }
+        check(actualNames == expectedNames) { "Release APK set differs: expected $expectedNames, found $actualNames" }
+        @Suppress("UNCHECKED_CAST")
+        val metadata = groovy.json.JsonSlurper().parse(source.resolve("output-metadata.json")) as Map<String, Any?>
+        val elements = metadata["elements"] as List<*>
+        check(elements.size == expectedNames.size)
+        elements.forEach { entry ->
+            val item = entry as Map<*, *>
+            check(item["outputFile"] in expectedNames)
+            check(item["versionName"] == versions.appVersionName)
+            check((item["versionCode"] as Number).toInt() == versions.appVersionCode)
+        }
+        val javaExecutable = File(System.getProperty("java.home"), "bin/java" + if (System.getProperty("os.name").startsWith("Windows")) ".exe" else "")
+        val verifier = File(androidComponents.sdkComponents.sdkDirectory.get().asFile, "build-tools/${android.buildToolsVersion}/lib/apksigner.jar")
+        check(verifier.isFile) { "Android SDK APK signature verifier is unavailable" }
+        expectedNames.forEach { name ->
+            val process = ProcessBuilder(javaExecutable.path, "-jar", verifier.path, "verify", source.resolve(name).path)
+                .redirectErrorStream(true).start()
+            val output = process.inputStream.bufferedReader().use { it.readText() }
+            check(process.waitFor() == 0) { "Invalid release APK signature: $name: $output" }
+        }
+    }
+    from(sourceDirectory)
+    into(destinationDirectory)
+    include("*.apk")
+    rename { name ->
+        val crc = CRC32()
+        sourceDirectory.get().file(name).asFile.inputStream().use { input ->
+            val buffer = ByteArray(65536)
+            while (true) { val size = input.read(buffer); if (size < 0) break; crc.update(buffer, 0, size) }
+        }
+        val suffix = if (name == "app-release.apk") "" else "-" + name.removePrefix("app-").removeSuffix("-release.apk")
+        "${rootProject.name}-v${versions.appVersionName}$suffix-${crc.value.toString(16).uppercase().padStart(8, '0')}.apk"
+    }
+}

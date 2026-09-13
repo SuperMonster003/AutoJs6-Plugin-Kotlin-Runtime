@@ -12,8 +12,6 @@
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=A24232&label=Issues"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/commit/17f42fa7aa2a2046c74e558f313b7510d155f365"><img alt="Created" src="https://img.shields.io/date/1787396606?color=2e7d32&label=Created"/></a>
     <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=534BAE&label=License"/></a>
   </p>
 </div>
@@ -154,6 +152,13 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.1
+
+###### 2026/09/13
+
+* `수정` 플러그인 센터에서 보호된 진입점으로 새 설치를 활성화하고 설치된 패키지의 메타데이터를 표시
+* `개선` 호스트 활성화, 메타데이터, 다국어 문서 및 서명된 APK 수집을 공통 규칙에 맞게 정리
+
 # v0.7.0
 
 ###### 2026/09/11
@@ -170,18 +175,9 @@ class Main : AutoJsJvmEntry {
 * `개선` 동결 프로토콜 AAR을 schema-2 출처 잠금으로 업그레이드하고 staging 전용 갱신 스크립트와 완전한 SOP 제공
 * `개선` 신구 호스트/플러그인 조합, 다운그레이드, 안정적 거부 경로를 포괄하는 7가지 1.1/1.2 프로토콜 협상 테스트 추가
 
-# v0.6.0-m9
-
-###### 2026/08/26
-
-* `힌트` `Dispatchers.Main`, 완전한 `kotlin-reflect`, kotlinx-serialization은 여전히 스크립트에서 사용 불가
-* `새 기능` 정확히 고정된 `kotlinx-coroutines-core-jvm` 1.11.0을 스크립트 라이브러리에 추가. 구조화 동시성과 협조적 취소 지원
-* `새 기능` 바로 실행 가능한 코루틴 예제 `samples/coroutines.kt` 추가
-* `개선` 런타임 지문과 컴파일 캐시 키에 코루틴 라이브러리 식별 정보를 포함하여 업그레이드 후 이전 캐시 전체 자동 무효화
-
 ##### 더 많은 릴리스 이력은 다음을 참조
 
-* [CHANGELOG-ko.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.changelog/CHANGELOG-ko.md)
+* [CHANGELOG-ko.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/assets/doc/CHANGELOG-ko.md)
 
 ******
 
@@ -201,7 +197,7 @@ Release 빌드:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 0.7.0-m10 (build 7), minSdk 26, targetSdk 36.
+빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
 
 Release/debug APK는 호스트가 수락하려면 AutoJs6와 동일 인증서로 서명되어야 합니다. 로컬 서명 자료는 버전 관리에서 제외된 `sign.properties`와 `app/sm003.jks`에 있습니다. 전체 게이트 명령과 릴리스 절차는 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) 참조.
 

@@ -11,7 +11,7 @@ Source of truth:
 Outputs:
     .readme/README-<code>.md     -- one README per language
     README.md                    -- repository root, default language copy
-    .changelog/CHANGELOG-<code>.md
+    app/src/main/assets/doc/CHANGELOG-<code>.md
     CHANGELOG.md                 -- repository root, default language copy
 
 Validation also keeps app/src/main/res/values*/strings.xml aligned with the
@@ -21,6 +21,8 @@ outputs.
 
 Edit the JSON sources, never the generated markdown.
 """
+import argparse
+import sys
 import json
 import re
 import xml.etree.ElementTree as ElementTree
@@ -57,6 +59,7 @@ ANDROID_STRING_DIRECTORIES = {
 ROOT = Path(__file__).resolve().parents[1]
 README_DIR = ROOT / ".readme"
 CHANGELOG_DIR = ROOT / ".changelog"
+ANDROID_CHANGELOG_DIR = ROOT / "app/src/main/assets/doc"
 ANDROID_RESOURCE_DIR = ROOT / "app" / "src" / "main" / "res"
 TEMPLATE_PATTERN = re.compile(r"\{\{\s*([A-Za-z0-9_$.-]+)\s*\}\}")
 
@@ -255,15 +258,28 @@ def build_readme_values(code, languages, changelogs):
     ).rstrip()
     content["placeholder_read_more_in_changelog_md"] = markdown_link(
         f"CHANGELOG-{code}.md",
-        f"{repo_url}/blob/{default_branch}/.changelog/CHANGELOG-{code}.md",
+        f"{repo_url}/blob/{default_branch}/app/src/main/assets/doc/CHANGELOG-{code}.md",
     )
     return content
 
 
+GENERATED = {}
+
+
 def write_text(path: Path, content: str):
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(content, encoding="utf-8", newline="\n")
-    print(f"Generated {path.relative_to(ROOT)}")
+    GENERATED[path] = content
+
+
+def finish_outputs(artifacts, check):
+    drift = [p for p, text in artifacts.items() if not p.is_file() or p.read_text(encoding="utf-8") != text]
+    if check:
+        for path in drift:
+            print(f"Out of date: {path}", file=sys.stderr)
+        return 1 if drift else 0
+    for path, text in artifacts.items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8", newline="\n")
+    return 0
 
 
 def generate_readmes(languages, changelogs):
@@ -287,19 +303,26 @@ def generate_changelogs(languages, changelogs):
         output = render_template(template, values)
         if TEMPLATE_PATTERN.search(output):
             raise ValueError(f"Unresolved changelog placeholder for {code}")
-        write_text(CHANGELOG_DIR / f"CHANGELOG-{code}.md", output)
+        write_text(ANDROID_CHANGELOG_DIR / f"CHANGELOG-{code}.md", output)
         if code == LANGUAGE_CODE_DEFAULT:
             write_text(ROOT / "CHANGELOG.md", output)
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="check generated content without writing")
+    args = parser.parse_args(argv)
+    GENERATED.clear()
     if LANGUAGE_CODE_DEFAULT not in LANGUAGE_CODES:
         raise ValueError(f"Default language code {LANGUAGE_CODE_DEFAULT!r} is not supported")
     validate_localized_resources()
     languages, changelogs = load_languages()
     generate_changelogs(languages, changelogs)
     generate_readmes(languages, changelogs)
+    result = finish_outputs(GENERATED, args.check)
+    print(f"MARKDOWN_{'FAIL' if result else 'OK'} artifacts={len(GENERATED)} mode={'check' if args.check else 'write'}")
+    return result
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

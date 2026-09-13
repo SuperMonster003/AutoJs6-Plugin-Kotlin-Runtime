@@ -12,8 +12,6 @@
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/issues"><img alt="GitHub closed issues" src="https://img.shields.io/github/issues/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=A24232&label=Issues"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/commit/17f42fa7aa2a2046c74e558f313b7510d155f365"><img alt="Created" src="https://img.shields.io/date/1787396606?color=2e7d32&label=Created"/></a>
     <br>
-    <a href="https://developer.android.com/studio/archive"><img alt="Android Studio" src="https://img.shields.io/badge/Android%20Studio-2023.3+-B64FC8"/></a>
-    <a href="https://www.jetbrains.com/idea/download/other.html"><img alt="IntelliJ IDEA" src="https://img.shields.io/badge/IntelliJ%20IDEA-2023.3+-EE4677"/></a>
     <a href="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/LICENSE"><img alt="GitHub License" src="https://img.shields.io/github/license/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime?color=534BAE&label=License"/></a>
   </p>
 </div>
@@ -154,6 +152,13 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.1
+
+###### 2026/09/13
+
+* `Исправление` Центр плагинов может активировать новую установку через защищенный вход; метаданные соответствуют установленному пакету
+* `Улучшение` Активация из хоста, метаданные, переведенная документация и сборка подписанных APK приведены к общим правилам
+
 # v0.7.0
 
 ###### 2026/09/11
@@ -170,18 +175,9 @@ class Main : AutoJsJvmEntry {
 * `Улучшение` Замороженные AAR протокола переведены на фиксацию происхождения schema-2, добавлены staging-скрипт обновления и полная SOP
 * `Улучшение` Добавлены семь комбинационных тестов согласования 1.1/1.2, покрывающих пары старый/новый хост-плагин, даунгрейд и стабильные отказы
 
-# v0.6.0-m9
-
-###### 2026/08/26
-
-* `Подсказка` `Dispatchers.Main`, полный `kotlin-reflect` и kotlinx-serialization по-прежнему вне поверхности скриптов
-* `Новое` В библиотеки скриптов добавлена точно зафиксированная `kotlinx-coroutines-core-jvm` 1.11.0: структурированный параллелизм и кооперативная отмена
-* `Новое` Добавлен готовый к запуску пример корутин `samples/coroutines.kt`
-* `Улучшение` Отпечатки рантайма и ключи кэша компиляции теперь включают идентичность библиотеки корутин, поэтому все прежние кэши инвалидируются автоматически
-
 ##### Подробнее об истории выпусков см.
 
-* [CHANGELOG-ru.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.changelog/CHANGELOG-ru.md)
+* [CHANGELOG-ru.md](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/assets/doc/CHANGELOG-ru.md)
 
 ******
 
@@ -201,7 +197,7 @@ Release-сборка:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Параметры сборки централизованы в `version.properties`: текущая версия 0.7.0-m10 (build 7), minSdk 26, targetSdk 36.
+Параметры сборки централизованы в `version.properties`: текущая версия 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
 
 Release/debug APK должны быть подписаны тем же сертификатом, что и AutoJs6, чтобы хост их принял; локальные материалы подписи находятся в игнорируемых системой контроля версий `sign.properties` и `app/sm003.jks`. Полные команды контроля и процесс выпуска см. в [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 

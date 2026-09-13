@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">AutoJs6 Kotlin ランタイム</string>
-    <string name="plugin_name">Kotlin ランタイム</string>
-    <string name="plugin_description">単一ファイルの Kotlin ソースを分離されたコンパイラプロセスと worker プロセスでコンパイルして実行します。</string>
-    <string name="plugin_instruction">AutoJsJvmEntry を実装するエントリクラスを持つ .kt ファイルを実行します。現在、エントリの単純名は Main です。</string>
-    <string name="plugin_author">SuperMonster003</string>
+    <string name="plugin_description">専用プロセスで Kotlin ソースをコンパイルして実行</string>
+    <string name="plugin_instruction">エントリクラスが AutoJsJvmEntry を実装した .kt ソースを実行</string>
+    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

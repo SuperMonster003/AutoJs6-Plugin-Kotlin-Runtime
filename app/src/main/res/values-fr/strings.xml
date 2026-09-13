@@ -2,5 +2,4 @@
 <resources>
     <string name="plugin_description">Compile et exécute du code Kotlin dans des processus dédiés</string>
     <string name="plugin_instruction">Exécute le code .kt dont la classe principale implémente AutoJsJvmEntry</string>
-    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

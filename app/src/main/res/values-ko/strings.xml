@@ -2,5 +2,4 @@
 <resources>
     <string name="plugin_description">전용 프로세스에서 Kotlin 소스를 컴파일하고 실행</string>
     <string name="plugin_instruction">진입 클래스가 AutoJsJvmEntry를 구현하는 .kt 소스를 실행</string>
-    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

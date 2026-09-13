@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 @RunWith(AndroidJUnit4::class)
 class ActivationContractInstrumentedTest {
     @Suppress("DEPRECATION")
-    @Test fun wakeAndInfoAreDiscoverableAndMetadataMatchesInstalledPackage() {
+    @Test fun wakeAndInfoAreDiscoverableAndNonHostUidIsRejected() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val manager = context.packageManager
         val wake = Intent("org.autojs.plugin.action.WAKE").addCategory(Intent.CATEGORY_DEFAULT).setPackage(context.packageName)
@@ -42,13 +42,14 @@ class ActivationContractInstrumentedTest {
         try {
             assertTrue("INFO binding timed out", latch.await(10, TimeUnit.SECONDS))
             assertEquals("org.autojs.plugin.common.api.IPluginInfoProvider", remote!!.interfaceDescriptor)
-            val info = IPluginInfoProvider.Stub.asInterface(remote).info
-            val installed = manager.getPackageInfo(context.packageName, 0)
-            assertEquals(installed.versionName, info.versionName)
-            assertEquals(context.getString(R.string.app_name), info.name)
-            assertEquals(context.getString(R.string.plugin_description), info.description)
-            assertArrayEquals(emptyArray<String>(), info.supportedAbis)
-            assertNotNull(info.capabilities)
+            // This instrumentation runs as the plugin UID. Production metadata is host-only.
+            // The matching AutoJs6 host must perform the positive INFO round trip.
+            try {
+                IPluginInfoProvider.Stub.asInterface(remote).info
+                fail("Non-host UID obtained host-only plugin metadata")
+            } catch (expected: SecurityException) {
+                assertNotNull(expected.message)
+            }
         } finally { context.unbindService(connection) }
     }
 }

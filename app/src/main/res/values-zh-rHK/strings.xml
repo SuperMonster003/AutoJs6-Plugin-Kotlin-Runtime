@@ -2,5 +2,4 @@
 <resources>
     <string name="plugin_description">在獨立程序中編譯和執行 Kotlin 原始碼</string>
     <string name="plugin_instruction">執行入口類別實作 AutoJsJvmEntry 的 .kt 原始碼</string>
-    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

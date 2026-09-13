@@ -2,5 +2,4 @@
 <resources>
     <string name="plugin_description">専用プロセスで Kotlin ソースをコンパイルして実行</string>
     <string name="plugin_instruction">エントリクラスが AutoJsJvmEntry を実装した .kt ソースを実行</string>
-    <string name="plugin_name">Kotlin Runtime</string>
 </resources>

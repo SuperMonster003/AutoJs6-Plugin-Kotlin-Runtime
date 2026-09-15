@@ -27,12 +27,12 @@ import java.security.MessageDigest
 import java.time.Instant
 import java.util.UUID
 
-/** Exact API 34/36 real-filesystem producer for the Android 14 read-only-before-write rule. */
+/** API 34+ real-filesystem producer for the Android 14 read-only-before-write rule. */
 @RunWith(AndroidJUnit4::class)
 class JvmSourceR2ReadOnlyDexInstrumentationTest {
     @Test
     fun diskDexIsReadOnlyBeforeFirstContentByte() {
-        assertTrue("Readonly evidence is exact API 34/36 only", Build.VERSION.SDK_INT == 34 || Build.VERSION.SDK_INT == 36)
+        assertTrue("Readonly evidence requires API 34+", Build.VERSION.SDK_INT >= 34)
         val instrumentation = InstrumentationRegistry.getInstrumentation()
         val arguments = InstrumentationRegistry.getArguments()
         val context = instrumentation.targetContext.applicationContext

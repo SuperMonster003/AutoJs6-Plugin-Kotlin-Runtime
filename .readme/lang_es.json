@@ -69,7 +69,7 @@
   "h3_build": "Compilación",
   "p_build_intro": "El repositorio incluye AAR de protocolo congelados (`protocol/`) y se compila sin conexión sin checkout de AutoJs6. Se recomienda JDK 21; el SDK de Android debe proporcionar las platforms 24 y 36. Build debug",
   "text_release_build": "Build release",
-  "p_build_params": "Los parámetros de build se centralizan en `version.properties`: versión actual {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 36",
+  "p_build_params": "Los parámetros de build se centralizan en `version.properties`: versión actual {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 37",
   "p_build_signing": "Los APK release/debug deben firmarse con el mismo certificado que AutoJs6 para que el host los acepte; el material de firma local reside en `sign.properties` y `app/sm003.jks`, ignorados por el control de versiones. Vea [RELEASE_CHECKLIST]({{ release_checklist_url }}) para los comandos de control y el flujo de publicación",
   "h3_resource_layout": "Estructura de recursos",
   "p_resource_layout": "`strings.xml` localiza el nombre y la descripción del plugin; README y CHANGELOG se generan con `.python/generate_markdown.py` a partir de las fuentes JSON. Para modificar la documentación, edite las fuentes JSON en lugar del Markdown generado",

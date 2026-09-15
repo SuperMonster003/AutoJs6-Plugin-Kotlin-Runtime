@@ -152,6 +152,12 @@ Le plugin est conçu en refus par défaut ; les restrictions suivantes sont touj
 
 ******
 
+# v0.7.2
+
+###### 2026/09/15
+
+* `Amélioration` compileSdk et targetSdk passent à 37 (Android 17) ; le comportement du plugin ne dépend pas de la nouvelle cible
+
 # v0.7.1
 
 ###### 2026/09/13
@@ -164,16 +170,6 @@ Le plugin est conçu en refus par défaut ; les restrictions suivantes sont touj
 ###### 2026/09/11
 
 * `Amélioration` La vérification de compilation rejette les dépendances natives involontaires et produit un rapport JSON
-
-# v0.7.0-m10
-
-###### 2026/08/26
-
-* `Note` Les capacités publiées restent en Protocol 1.1 / Entry API 2 ; aucune capacité 1.2 n'est ouverte avant son arrivée côté hôte
-* `Nouveauté` Ajout de la proposition de capacités JVM Source Protocol 1.2, soumise à la revue de l'hôte : presse-papiers borné, documents autorisés par l'utilisateur, HTTPS proxifié par l'hôte et notifications gérées par l'hôte
-* `Nouveauté` Ajout d'un pipeline d'appel hôte en quatre étapes (autorisation → validation du payload → dispatch → validation de la réponse) ; `app.launch` et `toast.show` migrés sans changement de comportement
-* `Amélioration` Passage des AAR de protocole gelés au verrouillage de provenance schema-2, avec script de rafraîchissement staging-only et SOP complète
-* `Amélioration` Ajout de sept tests de négociation 1.1/1.2 couvrant les paires hôte/plugin anciennes et nouvelles, la rétrogradation et les rejets stables
 
 ##### Pour plus d'historique, voir
 
@@ -197,7 +193,7 @@ Build release:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Les paramètres de build sont centralisés dans `version.properties` : version actuelle 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
+Les paramètres de build sont centralisés dans `version.properties` : version actuelle 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
 
 Les APK release/debug doivent être signés avec le même certificat qu'AutoJs6 pour être acceptés par l'hôte ; le matériel de signature local réside dans `sign.properties` et `app/sm003.jks`, ignorés par le contrôle de version. Voir [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) pour les commandes de contrôle et le flux de publication.
 

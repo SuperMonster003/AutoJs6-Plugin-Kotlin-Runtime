@@ -69,7 +69,7 @@
   "h3_build": "Сборка",
   "p_build_intro": "Репозиторий содержит замороженные AAR протокола (`protocol/`) и собирается офлайн без чекаута AutoJs6. Рекомендуется JDK 21; Android SDK должен предоставлять platforms 24 и 36. Debug-сборка",
   "text_release_build": "Release-сборка",
-  "p_build_params": "Параметры сборки централизованы в `version.properties`: текущая версия {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 36",
+  "p_build_params": "Параметры сборки централизованы в `version.properties`: текущая версия {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 37",
   "p_build_signing": "Release/debug APK должны быть подписаны тем же сертификатом, что и AutoJs6, чтобы хост их принял; локальные материалы подписи находятся в игнорируемых системой контроля версий `sign.properties` и `app/sm003.jks`. Полные команды контроля и процесс выпуска см. в [RELEASE_CHECKLIST]({{ release_checklist_url }})",
   "h3_resource_layout": "Структура ресурсов",
   "p_resource_layout": "`strings.xml` локализует имя и описание плагина; README и CHANGELOG генерируются скриптом `.python/generate_markdown.py` из JSON-источников. Для изменения документации редактируйте JSON-источники, а не сгенерированный Markdown",

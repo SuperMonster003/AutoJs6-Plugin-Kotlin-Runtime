@@ -69,7 +69,7 @@
   "h3_build": "빌드",
   "p_build_intro": "저장소는 동결된 프로토콜 AAR (`protocol/`)을 포함하므로 AutoJs6 체크아웃 없이 오프라인 빌드가 가능합니다. JDK 21 권장, Android SDK에는 platforms 24와 36이 필요합니다. Debug 빌드",
   "text_release_build": "Release 빌드",
-  "p_build_params": "빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 36",
+  "p_build_params": "빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 37",
   "p_build_signing": "Release/debug APK는 호스트가 수락하려면 AutoJs6와 동일 인증서로 서명되어야 합니다. 로컬 서명 자료는 버전 관리에서 제외된 `sign.properties`와 `app/sm003.jks`에 있습니다. 전체 게이트 명령과 릴리스 절차는 [RELEASE_CHECKLIST]({{ release_checklist_url }}) 참조",
   "h3_resource_layout": "리소스 구조",
   "p_resource_layout": "`strings.xml`은 플러그인 이름과 설명의 현지화를 제공합니다. README와 CHANGELOG는 `.python/generate_markdown.py`가 JSON 소스에서 생성합니다. 문서를 수정하려면 생성된 Markdown이 아니라 JSON 소스를 편집하세요",

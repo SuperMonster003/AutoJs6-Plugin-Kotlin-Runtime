@@ -69,7 +69,7 @@
   "h3_build": "البناء",
   "p_build_intro": "يتضمن المستودع ملفات AAR مجمّدة للبروتوكول (`protocol/`) ويُبنى دون اتصال ودون الحاجة إلى نسخة من AutoJs6. يوصى بـ JDK 21؛ ويجب أن يوفر Android SDK المنصتين 24 و 36. بناء Debug",
   "text_release_build": "بناء Release",
-  "p_build_params": "تتركز معاملات البناء في `version.properties`: الإصدار الحالي {{ version_name }} (build {{ version_build }})، minSdk {{ min_api }}، targetSdk 36",
+  "p_build_params": "تتركز معاملات البناء في `version.properties`: الإصدار الحالي {{ version_name }} (build {{ version_build }})، minSdk {{ min_api }}، targetSdk 37",
   "p_build_signing": "يجب توقيع APK بنسختي release/debug بنفس شهادة AutoJs6 ليقبلها المضيف؛ وتوجد مواد التوقيع المحلية في `sign.properties` و `app/sm003.jks` المتجاهلين من نظام التحكم بالإصدارات. انظر [RELEASE_CHECKLIST]({{ release_checklist_url }}) لأوامر البوابات وسير الإصدار كاملة",
   "h3_resource_layout": "بنية الموارد",
   "p_resource_layout": "يوفّر `strings.xml` توطين اسم الإضافة ووصفها؛ ويُولَّد README و CHANGELOG بواسطة `.python/generate_markdown.py` من مصادر JSON. لتعديل الوثائق حرّر مصادر JSON لا ملفات Markdown المولّدة",

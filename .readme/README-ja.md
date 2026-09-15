@@ -152,6 +152,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.2
+
+###### 2026/09/15
+
+* `改善` compileSdk と targetSdk を 37 (Android 17) に引き上げ, プラグインの動作は新しいターゲットの影響を受けない
+
 # v0.7.1
 
 ###### 2026/09/13
@@ -164,16 +170,6 @@ class Main : AutoJsJvmEntry {
 ###### 2026/09/11
 
 * `改善` 意図しないネイティブ依存関係をビルド時に拒否し, JSON レポートを生成
-
-# v0.7.0-m10
-
-###### 2026/08/26
-
-* `ヒント` 公開能力は Protocol 1.1 / Entry API 2 のまま. 1.2 の新能力はホスト側で実装されるまで開放されません
-* `新機能` JVM Source Protocol 1.2 の能力提案を追加しホストのレビューに提出: 有界クリップボード, ユーザー許可ドキュメント, ホスト代理 HTTPS, ホスト管理の通知
-* `新機能` 「認可 → payload 検証 → ディスパッチ → レスポンス検証」の 4 段階ホスト呼び出しパイプラインを追加. 既存の `app.launch` と `toast.show` は挙動を変えずに移行済み
-* `改善` 凍結プロトコル AAR を schema-2 来歴ロックに更新し, staging 専用リフレッシュスクリプトと完全な SOP を追加
-* `改善` 新旧ホスト/プラグインの組み合わせ, ダウングレード, 安定拒否経路を網羅する 7 組の 1.1/1.2 プロトコル交渉テストを追加
 
 ##### さらに詳しい履歴はこちら
 
@@ -197,7 +193,7 @@ Release ビルド:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
+ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
 
 Release/debug APK はホストに受け入れられるために AutoJs6 と同一証明書での署名が必須です. ローカル署名素材はバージョン管理対象外の `sign.properties` と `app/sm003.jks` にあります. ゲートコマンドとリリース手順の全容は [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) を参照.
 

@@ -152,6 +152,12 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 
 ******
 
+# v0.7.2
+
+###### 2026/09/15
+
+* `Mejora` compileSdk y targetSdk suben a 37 (Android 17); el comportamiento del plugin no depende del nuevo objetivo
+
 # v0.7.1
 
 ###### 2026/09/13
@@ -164,16 +170,6 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 ###### 2026/09/11
 
 * `Mejora` La verificación de compilación rechaza dependencias nativas accidentales y genera un informe JSON
-
-# v0.7.0-m10
-
-###### 2026/08/26
-
-* `Nota` Las capacidades publicadas se mantienen en Protocol 1.1 / Entry API 2; ninguna capacidad 1.2 se abre antes de que el host la implemente
-* `Novedad` Añadida la propuesta de capacidades JVM Source Protocol 1.2, enviada a revisión del host: portapapeles acotado, documentos autorizados por el usuario, HTTPS mediado por el host y notificaciones gestionadas por el host
-* `Novedad` Añadida una canalización de llamadas al host en cuatro etapas (autorización → validación del payload → despacho → validación de la respuesta); `app.launch` y `toast.show` migrados sin cambios de comportamiento
-* `Mejora` Los AAR de protocolo congelados pasan a bloqueo de procedencia schema-2, con script de actualización staging-only y SOP completa
-* `Mejora` Añadidas siete pruebas de negociación 1.1/1.2 que cubren combinaciones de host/plugin antiguos y nuevos, degradación y rechazos estables
 
 ##### Para más historial, consulte
 
@@ -197,7 +193,7 @@ Build release:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
+Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
 
 Los APK release/debug deben firmarse con el mismo certificado que AutoJs6 para que el host los acepte; el material de firma local reside en `sign.properties` y `app/sm003.jks`, ignorados por el control de versiones. Vea [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) para los comandos de control y el flujo de publicación.
 

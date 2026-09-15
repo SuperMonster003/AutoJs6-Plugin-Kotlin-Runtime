@@ -152,6 +152,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.2
+
+###### 2026/09/15
+
+* `優化` 將 compileSdk 與 targetSdk 提升到 37 (Android 17), 外掛程式行為不受新目標版本影響
+
 # v0.7.1
 
 ###### 2026/09/13
@@ -164,16 +170,6 @@ class Main : AutoJsJvmEntry {
 ###### 2026/09/11
 
 * `優化` 建置階段阻止意外引入原生相依套件, 並輸出 JSON 校驗報告
-
-# v0.7.0-m10
-
-###### 2026/08/26
-
-* `提示` 發佈能力保持 Protocol 1.1 / Entry API 2 不變, 所有 1.2 新能力在宿主落地前均不開放
-* `新增` 新增 JVM Source Protocol 1.2 能力提案並提交宿主評審: 有界剪貼簿、使用者授權文件、宿主代理 HTTPS 與宿主管理的通知
-* `新增` 新增「授權校驗 → payload 校驗 → 派發 → 回應校驗」四階段宿主呼叫管線, 現有 `app.launch` 與 `toast.show` 已遷移且行為不變
-* `優化` 協定凍結 AAR 升級為 schema-2 來源鎖定, 並提供 staging-only 重新整理指令碼與完整重新整理 SOP
-* `優化` 新增 7 組 1.1/1.2 協定協商組合測試, 涵蓋新舊宿主與插件互配、降級與穩定拒絕路徑
 
 ##### 更多發行歷史可參閱
 
@@ -197,7 +193,7 @@ Release 建置:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-建置參數集中於 `version.properties`: 目前版本 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
+建置參數集中於 `version.properties`: 目前版本 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
 
 Release/debug APK 必須與 AutoJs6 同憑證簽章才能被宿主接受; 本地簽章材料位於被版本控制忽略的 `sign.properties` 與 `app/sm003.jks`. 完整門禁命令與發佈流程見 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 

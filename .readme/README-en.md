@@ -152,6 +152,12 @@ The plugin is designed deny-by-default; the following restrictions are always in
 
 ******
 
+# v0.7.2
+
+###### 2026/09/15
+
+* `Improvement` Raise compileSdk and targetSdk to 37 (Android 17); the plugin's behavior does not depend on the new target
+
 # v0.7.1
 
 ###### 2026/09/13
@@ -164,16 +170,6 @@ The plugin is designed deny-by-default; the following restrictions are always in
 ###### 2026/09/11
 
 * `Improvement` Build verification rejects accidental native dependencies and produces a JSON report
-
-# v0.7.0-m10
-
-###### 2026/08/26
-
-* `Hint` Released capabilities stay at Protocol 1.1 / Entry API 2; no 1.2 capability opens before the host lands it
-* `Feature` Added the JVM Source Protocol 1.2 capability proposal and submitted it for host review: bounded clipboard, user-granted documents, host-proxied HTTPS, and host-owned notifications
-* `Feature` Added a four-stage host-call pipeline (authorization → payload validation → dispatch → response validation); existing `app.launch` and `toast.show` migrated with unchanged behavior
-* `Improvement` Upgraded the frozen protocol AARs to schema-2 provenance locking, with a staging-only refresh script and a complete refresh SOP
-* `Improvement` Added seven 1.1/1.2 protocol negotiation combination tests covering old/new host-plugin pairings, downgrade, and stable rejection paths
 
 ##### For more release history, see
 
@@ -197,7 +193,7 @@ Release build:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Build parameters are centralized in `version.properties`: current version 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
+Build parameters are centralized in `version.properties`: current version 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
 
 Release/debug APKs must be signed with the same certificate as AutoJs6 to be accepted by the host; local signing material lives in the version-control-ignored `sign.properties` and `app/sm003.jks`. See [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) for the full gate commands and release flow.
 

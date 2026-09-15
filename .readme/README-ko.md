@@ -152,6 +152,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.2
+
+###### 2026/09/15
+
+* `개선` compileSdk 와 targetSdk 를 37 (Android 17) 로 올리며, 플러그인 동작은 새 대상 버전의 영향을 받지 않음
+
 # v0.7.1
 
 ###### 2026/09/13
@@ -164,16 +170,6 @@ class Main : AutoJsJvmEntry {
 ###### 2026/09/11
 
 * `개선` 빌드 시 의도하지 않은 네이티브 의존성을 거부하고 JSON 보고서 생성
-
-# v0.7.0-m10
-
-###### 2026/08/26
-
-* `힌트` 공개 기능은 Protocol 1.1 / Entry API 2를 유지합니다. 1.2 신규 기능은 호스트에 구현되기 전까지 개방되지 않습니다
-* `새 기능` JVM Source Protocol 1.2 기능 제안을 추가하고 호스트 검토에 제출: 제한된 클립보드, 사용자 승인 문서, 호스트 대리 HTTPS, 호스트 관리 알림
-* `새 기능` 「인가 → payload 검증 → 디스패치 → 응답 검증」 4단계 호스트 호출 파이프라인 추가. 기존 `app.launch`와 `toast.show`는 동작 변화 없이 이관 완료
-* `개선` 동결 프로토콜 AAR을 schema-2 출처 잠금으로 업그레이드하고 staging 전용 갱신 스크립트와 완전한 SOP 제공
-* `개선` 신구 호스트/플러그인 조합, 다운그레이드, 안정적 거부 경로를 포괄하는 7가지 1.1/1.2 프로토콜 협상 테스트 추가
 
 ##### 더 많은 릴리스 이력은 다음을 참조
 
@@ -197,7 +193,7 @@ Release 빌드:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 0.7.1-m10 (build 23), minSdk 26, targetSdk 36.
+빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
 
 Release/debug APK는 호스트가 수락하려면 AutoJs6와 동일 인증서로 서명되어야 합니다. 로컬 서명 자료는 버전 관리에서 제외된 `sign.properties`와 `app/sm003.jks`에 있습니다. 전체 게이트 명령과 릴리스 절차는 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) 참조.
 

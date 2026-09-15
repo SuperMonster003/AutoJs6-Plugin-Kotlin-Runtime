@@ -69,7 +69,7 @@
   "h3_build": "构建",
   "p_build_intro": "仓库自带冻结的协议 AAR (`protocol/`), 无需检出 AutoJs6 源码即可离线构建. 推荐 JDK 21, Android SDK 需提供 platforms 24 与 36. Debug 构建",
   "text_release_build": "Release 构建",
-  "p_build_params": "构建参数集中于 `version.properties`: 当前版本 {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 36",
+  "p_build_params": "构建参数集中于 `version.properties`: 当前版本 {{ version_name }} (build {{ version_build }}), minSdk {{ min_api }}, targetSdk 37",
   "p_build_signing": "Release/debug APK 必须与 AutoJs6 同证书签名才能被宿主接受; 本地签名材料位于被版本控制忽略的 `sign.properties` 与 `app/sm003.jks`. 完整门禁命令与发布流程见 [RELEASE_CHECKLIST]({{ release_checklist_url }})",
   "h3_resource_layout": "资源结构",
   "p_resource_layout": "`strings.xml` 提供插件名称与描述的本地化; README 与 CHANGELOG 由 `.python/generate_markdown.py` 根据 JSON 源文件生成. 修改文档请编辑 JSON 源文件而非生成的 Markdown",

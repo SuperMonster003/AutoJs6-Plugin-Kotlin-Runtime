@@ -9,6 +9,7 @@
 ###### 2026/10/04
 
 * `Improvement` Application and Plugin Center icons use maintainer-supplied artwork, preserving colors and proportions with transparent padding and unified optical sizing to keep the complete silhouette visible, with Icon Studio adjustment and regeneration
+* `Improvement` Plugin Center icons use the sizes, positions, light and dark artwork, and circular backgrounds adjusted in Icon Studio, retaining reproducible sources and parameters
 
 # v0.7.2
 

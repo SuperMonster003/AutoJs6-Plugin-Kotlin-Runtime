@@ -160,6 +160,7 @@ class Main : AutoJsJvmEntry {
 ###### 2026/10/04
 
 * `優化` 應用程式與外掛程式中心圖示採用維護者提供的新圖稿, 保留顏色和比例, 按統一視覺基準補充透明留白以完整顯示輪廓, 並支援 Icon Studio 調整和重建
+* `優化` 外掛程式中心圖示採用統一工作台調整後的尺寸, 位置, 明暗圖稿與圓形底色, 保留可重建原稿和參數
 
 # v0.7.2
 
@@ -197,7 +198,7 @@ Release 構建:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-構建參數集中於 `version.properties`: 目前版本 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
+構建參數集中於 `version.properties`: 目前版本 0.7.3-m10 (build 32), minSdk 26, targetSdk 37.
 
 Release/debug APK 必須與 AutoJs6 同證書簽名才能被宿主接受; 本地簽名材料位於被版本控制忽略的 `sign.properties` 與 `app/sm003.jks`. 完整門禁命令與發佈流程見 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 

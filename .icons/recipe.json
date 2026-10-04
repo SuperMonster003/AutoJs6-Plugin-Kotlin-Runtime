@@ -15,25 +15,25 @@
     },
     "geometry": {
       "mode": "normalized",
-      "scale": 1.0,
-      "offsetX": 0.0,
-      "offsetY": 0.0
+      "scale": 0.975,
+      "offsetX": 0.02,
+      "offsetY": 0
     },
     "day": {
       "mode": "original",
       "foreground": "#272727",
-      "brightness": 1.0,
-      "contrast": 1.0,
-      "gamma": 1.0,
+      "brightness": 1,
+      "contrast": 1,
+      "gamma": 1,
       "threshold": 128,
       "invert": false
     },
     "night": {
       "mode": "original",
       "foreground": "#d8d8d8",
-      "brightness": 1.0,
-      "contrast": 1.0,
-      "gamma": 1.0,
+      "brightness": 1,
+      "contrast": 1,
+      "gamma": 1,
       "threshold": 128,
       "invert": false
     },

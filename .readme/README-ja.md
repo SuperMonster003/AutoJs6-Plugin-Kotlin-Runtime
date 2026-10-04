@@ -160,6 +160,7 @@ class Main : AutoJsJvmEntry {
 ###### 2026/10/04
 
 * `改善` アプリとプラグインセンターのアイコンに管理者提供の図稿を使用し, 色と比率を維持, 共通の視覚基準と透明な余白で輪郭全体を表示, Icon Studio による調整と再生成に対応
+* `改善` プラグインセンターのアイコンに Icon Studio で調整したサイズ, 位置, 明暗の図稿と円形背景を適用し, 再生成可能な原稿とパラメーターを保持
 
 # v0.7.2
 
@@ -197,7 +198,7 @@ Release ビルド:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
+ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.3-m10 (build 32), minSdk 26, targetSdk 37.
 
 Release/debug APK はホストに受け入れられるために AutoJs6 と同一証明書での署名が必須です. ローカル署名素材はバージョン管理対象外の `sign.properties` と `app/sm003.jks` にあります. ゲートコマンドとリリース手順の全容は [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) を参照.
 

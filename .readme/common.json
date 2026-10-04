@@ -5,7 +5,7 @@
   "created_timestamp": "1787396606",
   "app_id": "io.github.supermonster003.autojs6.plugin.kotlin.runtime",
   "version_name": "0.7.3-m10",
-  "version_build": "31",
+  "version_build": "32",
   "kotlin_version": "2.3.21",
   "d8_version": "8.13.17",
   "coroutines_version": "1.11.0",

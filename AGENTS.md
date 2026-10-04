@@ -27,3 +27,9 @@ INFO `getInfo()` also enforces the configured AutoJs6 host UID. Plugin instrumen
 - `.icons/recipe.json` owns later Icon Studio adjustments; application `ic_launcher` and dedicated `ic_plugin_center` use the same day/night outputs. Keep the portable renderer, source snapshots, generated PNGs, keep rules and icon CI together. Regenerate/check with `.python/generate_icon_studio.py`.
 - An icon replacement must not add a MAIN / LAUNCHER entry or change compiler/runtime contracts.
 - With warningsAsErrors enabled, `app/lint-baseline.xml` records only the intentional four-file application/catalog IconDuplicates group. Both stable PNG names and both theme resources are required. Do not disable IconDuplicates globally or add unrelated findings to that entry.
+
+
+## Icon Studio publication snapshot (2026-10-04)
+
+- `.icons/recipe.json` and its content-addressed original assets own the current icon geometry, tone and backgrounds. Keep the portable renderer, generated resources, keep rules and icon CI in the same change.
+- Use `.python/generate_icon_studio.py --check` for read-only reproduction checks. Optical size bands are advisory; retain canvas, transparency and safe-circle checks. Three uses neutral foregrounds and fixed #FAFAFA / #212121 surfaces; other plugins may use colored artwork and custom or transparent surfaces.

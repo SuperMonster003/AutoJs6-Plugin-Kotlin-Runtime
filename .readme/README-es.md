@@ -160,6 +160,7 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 ###### 2026/10/04
 
 * `Mejora` Los iconos de la aplicación y del centro de plugins usan las imágenes del mantenedor, conservando colores y proporciones con márgenes transparentes y un tamaño óptico común para mostrar la silueta completa, con ajustes y generación en Icon Studio
+* `Mejora` Los iconos del centro de plugins usan los tamaños, posiciones, imágenes claras y oscuras y fondos circulares ajustados en Icon Studio, conservando fuentes y parámetros reproducibles
 
 # v0.7.2
 
@@ -197,7 +198,7 @@ Build release:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
+Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.3-m10 (build 32), minSdk 26, targetSdk 37.
 
 Los APK release/debug deben firmarse con el mismo certificado que AutoJs6 para que el host los acepte; el material de firma local reside en `sign.properties` y `app/sm003.jks`, ignorados por el control de versiones. Vea [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) para los comandos de control y el flujo de publicación.
 

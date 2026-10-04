@@ -160,6 +160,7 @@ class Main : AutoJsJvmEntry {
 ###### 2026/10/04
 
 * `개선` 앱과 플러그인 센터 아이콘에 관리자가 제공한 이미지를 사용하며 색상과 비율을 유지하고 공통 시각 기준과 투명 여백으로 전체 윤곽을 표시, Icon Studio 조정과 재생성 지원
+* `개선` 플러그인 센터 아이콘에 Icon Studio에서 조정한 크기, 위치, 밝은 이미지와 어두운 이미지 및 원형 배경을 적용하고 재생성 가능한 원본과 매개변수를 유지
 
 # v0.7.2
 
@@ -197,7 +198,7 @@ Release 빌드:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
+빌드 매개변수는 `version.properties`에 집중되어 있습니다: 현재 버전 0.7.3-m10 (build 32), minSdk 26, targetSdk 37.
 
 Release/debug APK는 호스트가 수락하려면 AutoJs6와 동일 인증서로 서명되어야 합니다. 로컬 서명 자료는 버전 관리에서 제외된 `sign.properties`와 `app/sm003.jks`에 있습니다. 전체 게이트 명령과 릴리스 절차는 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) 참조.
 

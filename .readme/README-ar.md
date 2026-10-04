@@ -160,6 +160,7 @@ class Main : AutoJsJvmEntry {
 ###### 2026/10/04
 
 * `تحسين` تستخدم أيقونات التطبيق ومركز الملحقات الصور التي قدمها مسؤول المشروع مع الحفاظ على الألوان والنسب وإضافة هوامش شفافة وحجم بصري موحد لإظهار الشكل كاملا ودعم التعديل وإعادة التوليد عبر Icon Studio
+* `تحسين` تستخدم أيقونات مركز الملحقات الأحجام والمواضع والصور الفاتحة والداكنة والخلفيات الدائرية المعدلة في Icon Studio مع الاحتفاظ بالمصادر والمعلمات لإعادة إنتاجها
 
 # v0.7.2
 
@@ -197,7 +198,7 @@ class Main : AutoJsJvmEntry {
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-تتركز معاملات البناء في `version.properties`: الإصدار الحالي 0.7.3-m10 (build 31)، minSdk 26، targetSdk 37.
+تتركز معاملات البناء في `version.properties`: الإصدار الحالي 0.7.3-m10 (build 32)، minSdk 26، targetSdk 37.
 
 يجب توقيع APK بنسختي release/debug بنفس شهادة AutoJs6 ليقبلها المضيف؛ وتوجد مواد التوقيع المحلية في `sign.properties` و `app/sm003.jks` المتجاهلين من نظام التحكم بالإصدارات. انظر [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) لأوامر البوابات وسير الإصدار كاملة.
 

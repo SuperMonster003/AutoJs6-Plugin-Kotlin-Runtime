@@ -9,6 +9,7 @@
 ###### 2026/10/04
 
 * `Mejora` Los iconos de la aplicación y del centro de plugins usan las imágenes del mantenedor, conservando colores y proporciones con márgenes transparentes y un tamaño óptico común para mostrar la silueta completa, con ajustes y generación en Icon Studio
+* `Mejora` Los iconos del centro de plugins usan los tamaños, posiciones, imágenes claras y oscuras y fondos circulares ajustados en Icon Studio, conservando fuentes y parámetros reproducibles
 
 # v0.7.2
 

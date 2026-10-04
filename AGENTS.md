@@ -19,3 +19,11 @@ Pure JVM compiler assets have no ABI-specific native payload; ABI splits do not 
 - Preserve native source/license locks, ABI inventory and 16 KB alignment checks. Existing device evidence is historical; never claim a new install, Binder or OEM test that was not executed.
 
 INFO `getInfo()` also enforces the configured AutoJs6 host UID. Plugin instrumentation verifies discovery, explicit binding, the descriptor and rejection of its own non-host UID. Positive INFO metadata and runtime Binder acceptance must run from the matching signed AutoJs6 host; do not weaken caller verification to make a plugin-local test pass.
+
+
+## Icon artwork (2026-10-04)
+
+- Preserve the maintainer-supplied `.python/icons/kotlin-runtime.png` and its original bytes. Keep the colored artwork in both themes, with uniform scaling and transparent padding so the full silhouette fits the Plugin Center circle.
+- `.icons/recipe.json` owns later Icon Studio adjustments; application `ic_launcher` and dedicated `ic_plugin_center` use the same day/night outputs. Keep the portable renderer, source snapshots, generated PNGs, keep rules and icon CI together. Regenerate/check with `.python/generate_icon_studio.py`.
+- An icon replacement must not add a MAIN / LAUNCHER entry or change compiler/runtime contracts.
+- With warningsAsErrors enabled, `app/lint-baseline.xml` records only the intentional four-file application/catalog IconDuplicates group. Both stable PNG names and both theme resources are required. Do not disable IconDuplicates globally or add unrelated findings to that entry.

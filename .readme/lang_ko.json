@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "Kotlin 공식 프로젝트",
   "text_link_samples": "샘플 디렉터리",
   "text_link_roadmap": "프로젝트 로드맵 (마일스톤별 검증 기록 포함)",
-  "text_link_third_party": "서드파티 고지"
+  "text_link_third_party": "서드파티 고지",
+  "p_icon_artwork": "아이콘 [원본]({{ icon_source_url }})은 관리자가 제공했습니다. `.icons/recipe.json`에 조정값을 저장하며 `python .python/generate_icon_studio.py --check`로 레시피와 리소스의 일치 여부를 확인할 수 있습니다."
 }

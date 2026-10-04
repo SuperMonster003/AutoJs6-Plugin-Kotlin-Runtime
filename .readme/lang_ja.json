@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "Kotlin 公式プロジェクト",
   "text_link_samples": "サンプルディレクトリ",
   "text_link_roadmap": "プロジェクトロードマップ (マイルストーンごとの検証記録付き)",
-  "text_link_third_party": "サードパーティ通知"
+  "text_link_third_party": "サードパーティ通知",
+  "p_icon_artwork": "アイコンの[原稿]({{ icon_source_url }})は管理者から提供されました. `.icons/recipe.json` に調整値を保存し, `python .python/generate_icon_studio.py --check` でレシピとリソースの一致を確認できます."
 }

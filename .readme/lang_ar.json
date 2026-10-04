@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "مشروع Kotlin الرسمي",
   "text_link_samples": "مجلد الأمثلة",
   "text_link_roadmap": "خارطة طريق المشروع (مع سجلات التحقق لكل مرحلة)",
-  "text_link_third_party": "إشعارات الأطراف الثالثة"
+  "text_link_third_party": "إشعارات الأطراف الثالثة",
+  "p_icon_artwork": "قدم مسؤول المشروع [الصورة الأصلية]({{ icon_source_url }}). يحفظ `.icons/recipe.json` التعديلات ويمكن استخدام `python .python/generate_icon_studio.py --check` للتحقق من تطابق الوصفة والموارد."
 }

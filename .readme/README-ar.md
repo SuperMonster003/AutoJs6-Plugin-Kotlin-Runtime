@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>إضافة لترجمة وتشغيل شيفرة Kotlin 2.3.21 أحادية الملف لتطبيق AutoJs6</p>
@@ -152,6 +155,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.3
+
+###### 2026/10/04
+
+* `تحسين` تستخدم أيقونات التطبيق ومركز الملحقات الصور التي قدمها مسؤول المشروع مع الحفاظ على الألوان والنسب وإضافة هوامش شفافة وحجم بصري موحد لإظهار الشكل كاملا ودعم التعديل وإعادة التوليد عبر Icon Studio
+
 # v0.7.2
 
 ###### 2026/09/19
@@ -165,12 +174,6 @@ class Main : AutoJsJvmEntry {
 
 * `إصلاح` يمكن لمركز الإضافات تنشيط المزود المثبت حديثا عبر مدخل محمي; تطابق البيانات المعروضة الحزمة المثبتة
 * `تحسين` توحيد تنشيط المضيف وبيانات الإضافة والوثائق المترجمة وتجميع إصدارات APK الموقعة وفق قواعد الإضافات المشتركة
-
-# v0.7.0
-
-###### 2026/09/11
-
-* `تحسين` التحقق أثناء البناء لمنع إدخال تبعيات أصلية غير مقصودة, مع تقرير JSON
 
 ##### لمزيد من سجل الإصدارات، انظر
 
@@ -194,7 +197,7 @@ class Main : AutoJsJvmEntry {
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-تتركز معاملات البناء في `version.properties`: الإصدار الحالي 0.7.2-m10 (build 27)، minSdk 26، targetSdk 37.
+تتركز معاملات البناء في `version.properties`: الإصدار الحالي 0.7.3-m10 (build 31)، minSdk 26، targetSdk 37.
 
 يجب توقيع APK بنسختي release/debug بنفس شهادة AutoJs6 ليقبلها المضيف؛ وتوجد مواد التوقيع المحلية في `sign.properties` و `app/sm003.jks` المتجاهلين من نظام التحكم بالإصدارات. انظر [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) لأوامر البوابات وسير الإصدار كاملة.
 
@@ -214,6 +217,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 يوفّر `strings.xml` توطين اسم الإضافة ووصفها؛ ويُولَّد README و CHANGELOG بواسطة `.python/generate_markdown.py` من مصادر JSON. لتعديل الوثائق حرّر مصادر JSON لا ملفات Markdown المولّدة.
+
+قدم مسؤول المشروع [الصورة الأصلية](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.python/icons/kotlin-runtime.png). يحفظ `.icons/recipe.json` التعديلات ويمكن استخدام `python .python/generate_icon_studio.py --check` للتحقق من تطابق الوصفة والموارد.
 
 ******
 

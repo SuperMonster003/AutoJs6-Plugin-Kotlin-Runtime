@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>Plugin de compilación y ejecución de código Kotlin 2.3.21 de archivo único para AutoJs6</p>
@@ -152,6 +155,12 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 
 ******
 
+# v0.7.3
+
+###### 2026/10/04
+
+* `Mejora` Los iconos de la aplicación y del centro de plugins usan las imágenes del mantenedor, conservando colores y proporciones con márgenes transparentes y un tamaño óptico común para mostrar la silueta completa, con ajustes y generación en Icon Studio
+
 # v0.7.2
 
 ###### 2026/09/19
@@ -165,12 +174,6 @@ El plugin está diseñado con denegación por defecto; las siguientes restriccio
 
 * `Corrección` El centro de complementos puede activar un proveedor recién instalado mediante una entrada protegida; los metadatos reflejan el paquete instalado
 * `Mejora` Activación del host, metadatos, documentación traducida y recopilación de APK firmados conforme a las convenciones comunes
-
-# v0.7.0
-
-###### 2026/09/11
-
-* `Mejora` La verificación de compilación rechaza dependencias nativas accidentales y genera un informe JSON
 
 ##### Para más historial, consulte
 
@@ -194,7 +197,7 @@ Build release:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
+Los parámetros de build se centralizan en `version.properties`: versión actual 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
 
 Los APK release/debug deben firmarse con el mismo certificado que AutoJs6 para que el host los acepte; el material de firma local reside en `sign.properties` y `app/sm003.jks`, ignorados por el control de versiones. Vea [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) para los comandos de control y el flujo de publicación.
 
@@ -214,6 +217,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 `strings.xml` localiza el nombre y la descripción del plugin; README y CHANGELOG se generan con `.python/generate_markdown.py` a partir de las fuentes JSON. Para modificar la documentación, edite las fuentes JSON en lugar del Markdown generado.
+
+El [diseño original](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.python/icons/kotlin-runtime.png) fue proporcionado por el mantenedor. `.icons/recipe.json` guarda los ajustes; use `python .python/generate_icon_studio.py --check` para verificar la receta y los recursos.
 
 ******
 

@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "Kotlin official project",
   "text_link_samples": "Samples directory",
   "text_link_roadmap": "Project roadmap (with per-milestone verification records)",
-  "text_link_third_party": "Third-party notices"
+  "text_link_third_party": "Third-party notices",
+  "p_icon_artwork": "The [original artwork]({{ icon_source_url }}) was supplied by the maintainer. `.icons/recipe.json` records later adjustments; use `python .python/generate_icon_studio.py --check` to verify the recipe and resources."
 }

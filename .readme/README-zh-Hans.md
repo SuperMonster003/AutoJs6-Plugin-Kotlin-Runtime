@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>用于 AutoJs6 的 Kotlin 2.3.21 单文件源码编译与运行插件</p>
@@ -152,6 +155,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.3
+
+###### 2026/10/04
+
+* `优化` 应用与插件中心图标采用维护者提供的新图稿, 保留颜色和比例, 按统一视觉基准补充透明留白以完整显示轮廓, 并支持 Icon Studio 调整和重建
+
 # v0.7.2
 
 ###### 2026/09/19
@@ -165,12 +174,6 @@ class Main : AutoJsJvmEntry {
 
 * `修复` 新安装插件的激活及插件信息显示问题
 * `优化` 统一宿主激活流程, 插件信息及多语言文档, 并完善签名发布校验
-
-# v0.7.0
-
-###### 2026/09/11
-
-* `优化` 构建阶段阻止意外引入原生依赖, 并输出 JSON 校验报告
 
 ##### 更多发行历史可参阅
 
@@ -194,7 +197,7 @@ Release 构建:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-构建参数集中于 `version.properties`: 当前版本 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
+构建参数集中于 `version.properties`: 当前版本 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
 
 Release/debug APK 必须与 AutoJs6 同证书签名才能被宿主接受; 本地签名材料位于被版本控制忽略的 `sign.properties` 与 `app/sm003.jks`. 完整门禁命令与发布流程见 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 
@@ -214,6 +217,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 `strings.xml` 提供插件名称与描述的本地化; README 与 CHANGELOG 由 `.python/generate_markdown.py` 根据 JSON 源文件生成. 修改文档请编辑 JSON 源文件而非生成的 Markdown.
+
+图标[原稿](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.python/icons/kotlin-runtime.png)由维护者提供. `.icons/recipe.json` 保存后续调整参数, 使用 `python .python/generate_icon_studio.py --check` 检查配方与资源的一致性.
 
 ******
 

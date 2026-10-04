@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>AutoJs6 向け Kotlin 2.3.21 単一ファイルソースのコンパイル/実行プラグイン</p>
@@ -152,6 +155,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.3
+
+###### 2026/10/04
+
+* `改善` アプリとプラグインセンターのアイコンに管理者提供の図稿を使用し, 色と比率を維持, 共通の視覚基準と透明な余白で輪郭全体を表示, Icon Studio による調整と再生成に対応
+
 # v0.7.2
 
 ###### 2026/09/19
@@ -165,12 +174,6 @@ class Main : AutoJsJvmEntry {
 
 * `修正` プラグインセンターから保護された入口を通じて新規インストールを有効化でき, メタデータはインストール済みパッケージに追従
 * `改善` ホストからの有効化, メタデータ, 多言語文書および署名済み APK の収集を共通規約に統一
-
-# v0.7.0
-
-###### 2026/09/11
-
-* `改善` 意図しないネイティブ依存関係をビルド時に拒否し, JSON レポートを生成
 
 ##### さらに詳しい履歴はこちら
 
@@ -194,7 +197,7 @@ Release ビルド:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
+ビルドパラメータは `version.properties` に集約: 現在のバージョン 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
 
 Release/debug APK はホストに受け入れられるために AutoJs6 と同一証明書での署名が必須です. ローカル署名素材はバージョン管理対象外の `sign.properties` と `app/sm003.jks` にあります. ゲートコマンドとリリース手順の全容は [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md) を参照.
 
@@ -214,6 +217,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 `strings.xml` はプラグイン名と説明のローカライズを提供します. README と CHANGELOG は `.python/generate_markdown.py` が JSON ソースから生成します. ドキュメントの変更は生成済み Markdown ではなく JSON ソースを編集してください.
+
+アイコンの[原稿](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.python/icons/kotlin-runtime.png)は管理者から提供されました. `.icons/recipe.json` に調整値を保存し, `python .python/generate_icon_studio.py --check` でレシピとリソースの一致を確認できます.
 
 ******
 

@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "Официальный проект Kotlin",
   "text_link_samples": "Каталог примеров",
   "text_link_roadmap": "Дорожная карта проекта (с записями проверок по вехам)",
-  "text_link_third_party": "Уведомления о сторонних компонентах"
+  "text_link_third_party": "Уведомления о сторонних компонентах",
+  "p_icon_artwork": "[Исходное изображение]({{ icon_source_url }}) предоставлено сопровождающим. `.icons/recipe.json` сохраняет настройки; команда `python .python/generate_icon_studio.py --check` проверяет соответствие рецепта ресурсам."
 }

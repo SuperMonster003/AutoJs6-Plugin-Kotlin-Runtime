@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>用於 AutoJs6 的 Kotlin 2.3.21 單檔案原始碼編譯與執行插件</p>
@@ -152,6 +155,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.3
+
+###### 2026/10/04
+
+* `優化` 應用程式與外掛程式中心圖示採用維護者提供的新圖稿, 保留顏色和比例, 按統一視覺基準補充透明留白以完整顯示輪廓, 並支援 Icon Studio 調整和重建
+
 # v0.7.2
 
 ###### 2026/09/19
@@ -165,12 +174,6 @@ class Main : AutoJsJvmEntry {
 
 * `修復` 外掛中心可透過受保護入口啟用新安裝的外掛, 顯示的中繼資料與實際安裝套件一致
 * `優化` 宿主啟用, 外掛中繼資料, 多語言文件與簽章發佈彙整遵循統一外掛規範
-
-# v0.7.0
-
-###### 2026/09/11
-
-* `優化` 建置階段阻止意外引入原生相依套件, 並輸出 JSON 校驗報告
 
 ##### 更多發行歷史可參閱
 
@@ -194,7 +197,7 @@ Release 建置:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-建置參數集中於 `version.properties`: 目前版本 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
+建置參數集中於 `version.properties`: 目前版本 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
 
 Release/debug APK 必須與 AutoJs6 同憑證簽章才能被宿主接受; 本地簽章材料位於被版本控制忽略的 `sign.properties` 與 `app/sm003.jks`. 完整門禁命令與發佈流程見 [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 
@@ -214,6 +217,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 `strings.xml` 提供插件名稱與描述的本地化; README 與 CHANGELOG 由 `.python/generate_markdown.py` 根據 JSON 來源檔案產生. 修改文件請編輯 JSON 來源檔案而非產生的 Markdown.
+
+圖示[原稿](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.python/icons/kotlin-runtime.png)由維護者提供. `.icons/recipe.json` 儲存後續調整參數, 使用 `python .python/generate_icon_studio.py --check` 檢查配方與資源的一致性.
 
 ******
 

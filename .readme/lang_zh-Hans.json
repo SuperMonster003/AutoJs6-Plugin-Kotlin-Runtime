@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "Kotlin 官方项目",
   "text_link_samples": "示例目录",
   "text_link_roadmap": "项目路线图 (含各里程碑验证记录)",
-  "text_link_third_party": "第三方组件声明"
+  "text_link_third_party": "第三方组件声明",
+  "p_icon_artwork": "图标[原稿]({{ icon_source_url }})由维护者提供. `.icons/recipe.json` 保存后续调整参数, 使用 `python .python/generate_icon_studio.py --check` 检查配方与资源的一致性."
 }

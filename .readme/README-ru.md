@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>Плагин компиляции и запуска однофайлового исходного кода Kotlin 2.3.21 для AutoJs6</p>
@@ -152,6 +155,12 @@ class Main : AutoJsJvmEntry {
 
 ******
 
+# v0.7.3
+
+###### 2026/10/04
+
+* `Улучшение` Значки приложения и центра плагинов используют изображения сопровождающего, сохраняя цвета и пропорции с прозрачными отступами и единым визуальным размером для отображения полного силуэта, с настройкой и генерацией в Icon Studio
+
 # v0.7.2
 
 ###### 2026/09/19
@@ -165,12 +174,6 @@ class Main : AutoJsJvmEntry {
 
 * `Исправление` Центр плагинов может активировать новую установку через защищенный вход; метаданные соответствуют установленному пакету
 * `Улучшение` Активация из хоста, метаданные, переведенная документация и сборка подписанных APK приведены к общим правилам
-
-# v0.7.0
-
-###### 2026/09/11
-
-* `Улучшение` Проверка сборки отклоняет непреднамеренные нативные зависимости и создает отчет JSON
 
 ##### Подробнее об истории выпусков см.
 
@@ -194,7 +197,7 @@ Release-сборка:
 .\gradlew.bat :app:assembleRelease --offline
 ```
 
-Параметры сборки централизованы в `version.properties`: текущая версия 0.7.2-m10 (build 27), minSdk 26, targetSdk 37.
+Параметры сборки централизованы в `version.properties`: текущая версия 0.7.3-m10 (build 31), minSdk 26, targetSdk 37.
 
 Release/debug APK должны быть подписаны тем же сертификатом, что и AutoJs6, чтобы хост их принял; локальные материалы подписи находятся в игнорируемых системой контроля версий `sign.properties` и `app/sm003.jks`. Полные команды контроля и процесс выпуска см. в [RELEASE_CHECKLIST](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/docs/RELEASE_CHECKLIST.md).
 
@@ -214,6 +217,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 `strings.xml` локализует имя и описание плагина; README и CHANGELOG генерируются скриптом `.python/generate_markdown.py` из JSON-источников. Для изменения документации редактируйте JSON-источники, а не сгенерированный Markdown.
+
+[Исходное изображение](https://github.com/SuperMonster003/AutoJs6-Plugin-Kotlin-Runtime/blob/main/.python/icons/kotlin-runtime.png) предоставлено сопровождающим. `.icons/recipe.json` сохраняет настройки; команда `python .python/generate_icon_studio.py --check` проверяет соответствие рецепта ресурсам.
 
 ******
 

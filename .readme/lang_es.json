@@ -80,5 +80,6 @@
   "text_link_kotlin_official": "Proyecto oficial de Kotlin",
   "text_link_samples": "Directorio de ejemplos",
   "text_link_roadmap": "Hoja de ruta (con registros de verificación por hito)",
-  "text_link_third_party": "Avisos de terceros"
+  "text_link_third_party": "Avisos de terceros",
+  "p_icon_artwork": "El [diseño original]({{ icon_source_url }}) fue proporcionado por el mantenedor. `.icons/recipe.json` guarda los ajustes; use `python .python/generate_icon_studio.py --check` para verificar la receta y los recursos."
 }

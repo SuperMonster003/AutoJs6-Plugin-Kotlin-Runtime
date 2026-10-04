@@ -5,6 +5,12 @@
   "changelog_label_improvement": "優化",
   "changelog_label_dependency": "依賴",
   "$data": {
+    "v0.7.3": {
+      "released_date": "2026/10/04",
+      "improvement": [
+        "應用程式與外掛程式中心圖示採用維護者提供的新圖稿, 保留顏色和比例, 按統一視覺基準補充透明留白以完整顯示輪廓, 並支援 Icon Studio 調整和重建"
+      ]
+    },
     "v0.7.2": {
       "released_date": "2026/09/19",
       "improvement": [

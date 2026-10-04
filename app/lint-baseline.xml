@@ -144,4 +144,16 @@
             column="24"/>
     </issue>
 
+    <!-- The application and Plugin Center deliberately share the supplied artwork.
+         Both resource names are required contracts, and both themes retain the colors.
+         Keep this exact group scoped; other IconDuplicates findings remain errors. -->
+    <issue
+        id="IconDuplicates"
+        message="The following unrelated icon files have identical contents: ic_launcher.png, ic_plugin_center.png, ic_launcher.png, ic_plugin_center.png">
+        <location file="src/main/res/mipmap/ic_plugin_center.png" />
+        <location file="src/main/res/mipmap/ic_launcher.png" />
+        <location file="src/main/res/mipmap-night/ic_plugin_center.png" />
+        <location file="src/main/res/mipmap-night/ic_launcher.png" />
+    </issue>
+
 </issues>

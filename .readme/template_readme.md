@@ -2,7 +2,10 @@
 
 <div align="center">
   <p>
-    <img src="{{ repo_url }}/blob/{{ default_branch }}/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="{{ repo_url }}/blob/{{ default_branch }}/app/src/main/res/mipmap-night/ic_launcher.png?raw=true" />
+      <img src="{{ repo_url }}/blob/{{ default_branch }}/app/src/main/res/mipmap/ic_launcher.png?raw=true" alt="autojs6-plugin-kotlin-runtime-ic-launcher" border="0" width="128" />
+    </picture>
   </p>
 
   <p>{{ text_plugin_synopsis }}</p>
@@ -166,6 +169,8 @@ app/src/main/res/values*/strings.xml
 ```
 
 {{ p_resource_layout }}.
+
+{{ p_icon_artwork }}
 
 ******
 
